@@ -1,6 +1,6 @@
 [
   {
-    "ParameterKey": "Email",
+    "ParameterKey": "NotificationEmailAddressForCloudWatchAlarms",
     "ParameterValue": "distlist@example.org"
   }
 ]
