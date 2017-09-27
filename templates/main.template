@@ -58,26 +58,17 @@ Parameters:
     - 'No'
 
   QSS3BucketName:
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-.]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, periods (.), and hyphens (-). It cannot start or
-      end with a hyphen (-).
-    Default: quickstart-reference
-    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
+    Default: "quickstart-reference"
+    Description: "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
     Type: String
 
   QSS3KeyPrefix:
-    AllowedPattern: ^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slash (/). It cannot start or end
-      with forward slash (/) because they are automatically appended.
-    Default: enterprise-accelerator/cis/latest
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
-      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
-      forward slash (/). It cannot start or end with forward slash (/) because they
-      are automatically appended.
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Default: "enterprise-accelerator/cis/benchmark/latest/"
+    Description: "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: String
 
 Conditions:
@@ -147,7 +138,7 @@ Resources:
     Properties:
       TemplateURL:
         !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}/templates/cis-benchmark.template
+        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cis-benchmark.template
         - QuickStartS3URL:
             !FindInMap
             - AWSInfoRegionMap
@@ -164,7 +155,7 @@ Resources:
     Properties:
       TemplateURL:
         !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}/templates/pre-requisites.template
+        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/pre-requisites.template
         - QuickStartS3URL:
             !FindInMap
             - AWSInfoRegionMap
@@ -178,7 +169,7 @@ Resources:
     Properties:
       TemplateURL:
         !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}/templates/cis-benchmark.template
+        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cis-benchmark.template
         - QuickStartS3URL:
             !FindInMap
             - AWSInfoRegionMap
