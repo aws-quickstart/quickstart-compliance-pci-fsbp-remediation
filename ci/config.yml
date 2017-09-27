@@ -19,9 +19,4 @@ tests:
   defaults:
     parameter_input: defaults.json
     template_file: main.template
-  RunWithoutConfiguringCTrailAndConfig:
-    regions:
-      - us-east-1
-    reporting: true 
-    parameter_input: cisOnly.json
-    template_file: main.template 
+  
