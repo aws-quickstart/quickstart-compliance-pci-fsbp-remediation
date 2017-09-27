@@ -6,6 +6,5 @@
     {
         "ParameterKey": "ConfigureCloudtrailAndConfig",
         "ParameterValue": "Yes"
-    },
-    
+    }
 ]
