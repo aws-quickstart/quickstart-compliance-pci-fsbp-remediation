@@ -1,0 +1,162 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Enables Cloudtrail and Config'
+
+Resources:
+
+#===============================================================================================================================
+# Resources for Enabling Cloudtrail and Config
+#===============================================================================================================================
+
+
+  cTrailS3Bucket: 
+      DeletionPolicy: Retain
+      Type: "AWS::S3::Bucket"
+
+  BucketPolicy: 
+      Type: "AWS::S3::BucketPolicy"
+      Properties: 
+        Bucket: 
+          Ref: cTrailS3Bucket
+        PolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - 
+              Sid: "AWSCloudTrailAclCheck"
+              Effect: "Allow"
+              Principal: 
+                Service: "cloudtrail.amazonaws.com"
+              Action: "s3:GetBucketAcl"
+              Resource: 
+                !Sub |-
+                  arn:aws:s3:::${cTrailS3Bucket}
+            - 
+              Sid: "AWSCloudTrailWrite"
+              Effect: "Allow"
+              Principal: 
+                Service: "cloudtrail.amazonaws.com"
+              Action: "s3:PutObject"
+              Resource:
+                !Sub |-
+                  arn:aws:s3:::${cTrailS3Bucket}/AWSLogs/${AWS::AccountId}/*
+              Condition: 
+                StringEquals:
+                  s3:x-amz-acl: "bucket-owner-full-control"  
+                 
+  cloudTrail: 
+      DependsOn: 
+        - BucketPolicy
+      Type: "AWS::CloudTrail::Trail"
+      Properties: 
+        S3BucketName: 
+          Ref: cTrailS3Bucket
+        IsLogging: true
+        EnableLogFileValidation: true
+        IncludeGlobalServiceEvents: true
+        CloudWatchLogsLogGroupArn: !GetAtt 'TrailLogGroup.Arn'
+        CloudWatchLogsRoleArn: !GetAtt 'TrailLogGroupRole.Arn'
+
+  TrailLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      RetentionInDays: 90
+
+  TrailLogGroupRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AssumeRole1
+          Effect: Allow
+          Principal:
+            Service: 'cloudtrail.amazonaws.com'
+          Action: 'sts:AssumeRole'
+      Policies:
+      - PolicyName: 'CIS-cloudtrail-policy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: AWSCloudTrailCreateLogStream
+            Effect: Allow
+            Action: 'logs:CreateLogStream'
+            Resource: !GetAtt 'TrailLogGroup.Arn'
+          - Sid: AWSCloudTrailPutLogEvents
+            Effect: Allow
+            Action: 'logs:PutLogEvents'
+            Resource: !GetAtt 'TrailLogGroup.Arn'
+
+  
+  ConfigurationRecorder:
+    Type: "AWS::Config::ConfigurationRecorder"
+    DependsOn: 
+      - cloudTrail
+    Properties:
+      Name: 'MyConfig' 
+      RecordingGroup:
+        AllSupported: true
+        IncludeGlobalResourceTypes: true
+      RoleARN: !GetAtt
+        - ConfigRole
+        - Arn
+
+  configS3Bucket: 
+    DependsOn: 
+      - cloudTrail
+    DeletionPolicy: Retain
+    Type: "AWS::S3::Bucket"
+
+
+  DeliveryChannel1: 
+    Type: "AWS::Config::DeliveryChannel"
+    DependsOn: 
+      - cloudTrail
+    Properties: 
+      ConfigSnapshotDeliveryProperties: 
+        DeliveryFrequency: "Six_Hours"
+      S3BucketName:
+        Ref: configS3Bucket
+
+  
+
+  ConfigRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - config.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        -  'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      Policies:
+      - PolicyName: 'CIS-config-policy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: AWSCloudTrailCreateLogStream
+            Effect: Allow
+            Action: 
+            - config:Put*
+            Resource: '*'
+          - Sid: AWSConfigPutObject
+            Effect: "Allow"
+            Action: "s3:PutObject"
+            Resource:
+              !Sub |-
+                arn:aws:s3:::${configS3Bucket}/AWSLogs/${AWS::AccountId}/*
+            Condition: 
+                StringEquals:
+                  s3:x-amz-acl: "bucket-owner-full-control"  
+
+          - Sid: AWSConfigGetObject
+            Effect: "Allow"
+            Action: "s3:GetBucketAcl"
+            Resource: 
+              !Sub |-
+                arn:aws:s3:::${configS3Bucket}
+
+

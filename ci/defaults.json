@@ -1,6 +1,11 @@
 [
-  {
-    "ParameterKey": "NotificationEmailAddressForCloudWatchAlarms",
-    "ParameterValue": "distlist@example.org"
-  }
+    {
+        "ParameterKey": "NotificationEmailAddressForCloudWatchAlarms",
+        "ParameterValue": "distlist@example.org"
+    },
+    {
+        "ParameterKey": "ConfigureCloudtrailAndConfig",
+        "ParameterValue": "Yes"
+    },
+    
 ]
