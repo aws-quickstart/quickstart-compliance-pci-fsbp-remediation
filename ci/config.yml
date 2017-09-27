@@ -11,7 +11,6 @@ global:
     - eu-central-1
     - eu-west-1
     - sa-east-1
-    - us-east-1
     - us-east-2
     - us-west-1
     - us-west-2
@@ -20,3 +19,9 @@ tests:
   defaults:
     parameter_input: defaults.json
     template_file: main.template
+  RunWithoutConfiguringCTrailAndConfig:
+    regions:
+      - us-east-1
+    reporting: true 
+    parameter_input: cisOnly.json
+    template_file: main.template 
