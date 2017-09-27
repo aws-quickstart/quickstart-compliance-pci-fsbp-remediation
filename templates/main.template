@@ -172,13 +172,13 @@ Resources:
             - QuickStartS3URL
       TimeoutInMinutes: 20
 
-  CISBenchmarkStackPreExistingPreReq:
+  CISBenchmarkStackExistingPreReq:
     Type: AWS::CloudFormation::Stack
     Condition: notEnableCTrailConfig
     Properties:
       TemplateURL:
         !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}/templates/cis-benchmark.yml
+        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}/templates/cis-benchmark.template
         - QuickStartS3URL:
             !FindInMap
             - AWSInfoRegionMap
