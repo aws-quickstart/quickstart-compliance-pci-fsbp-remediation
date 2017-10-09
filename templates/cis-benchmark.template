@@ -232,10 +232,12 @@ Resources:
             def evaluate_compliance(configuration_item):
                 if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
                   return 'NOT_APPLICABLE'
+
                 user_name = configuration_item['configuration']['userName']
                 iam = boto3.resource('iam')
                 client = boto3.client('iam')
                 user=iam.User(user_name)
+
                 # lists all mfa devices
                 mfa = client.list_mfa_devices(UserName=user_name)
                 # evaluating compliance only for users that have password enabled '
