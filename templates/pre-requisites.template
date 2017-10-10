@@ -1,16 +1,102 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Enables Cloudtrail and Config'
-
+Description: 'Configures AWS Cloudtrail and AWS Config. Cloudtrail is configured globally, while Config is configured regionally.'
+Conditions:
+    IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 Resources:
 
 #===============================================================================================================================
 # Resources for Enabling Cloudtrail and Config
 #===============================================================================================================================
 
+# Define an KMS Key to Encrypt the CloudTrail Logs with
+  CloudTrailKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: CloudTrail KMS Key
+      Enabled: 'true'
+      EnableKeyRotation: 'true'
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: key-default-1
+        Statement:
+        - Sid: Allow administration of the key
+          Effect: Allow
+          Principal:
+            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: ['kms:Create*', 'kms:Describe*', 'kms:Enable*', 'kms:List*', 'kms:Put*',
+            'kms:Update*', 'kms:Revoke*', 'kms:Disable*', 'kms:Get*', 'kms:Delete*',
+            'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion']
+          Resource: '*'
+        - Sid: Allow use of the key
+          Effect: Allow
+          Principal:
+            Service: cloudtrail.amazonaws.com
+          Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey']
+          Resource: '*'
+        - Sid: Allow local use of the key
+          Effect: Allow
+          Principal:
+            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+          Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey']
+          Resource: '*'
+  CloudtrailKMSKeyAlias:
+    Type: "AWS::KMS::Alias"
+    Properties:
+      AliasName: !Sub "alias/${AWS::StackName}KMSKey"
+      TargetKeyId: !Ref CloudTrailKMSKey
+
+  rArchiveLogsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+        AccessControl: LogDeliveryWrite
+        LifecycleConfiguration:
+            Rules:
+              - Id: Transition90daysRetain7yrs
+                Status: Enabled
+                ExpirationInDays: 2555
+                Transition:
+                    TransitionInDays: 90
+                    StorageClass: STANDARD_IA
+        VersioningConfiguration:
+            Status: Enabled
+
+  rArchiveLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: rArchiveLogsBucket
+    Properties:
+        Bucket: !Ref rArchiveLogsBucket
+        PolicyDocument:
+            Statement:
+              - Sid: Enforce HTTPS Connections
+                Action: s3:*
+                Effect: Deny
+                Principal: '*'
+                Resource: !Sub
+                  - arn:${Partition}:s3:::${rArchiveLogsBucket}/*
+                  - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+                Condition:
+                    Bool:
+                        aws:SecureTransport: false
+              - Sid: Restrict Delete* Actions
+                Action: s3:Delete*
+                Effect: Deny
+                Principal: '*'
+                Resource: !Sub
+                  - arn:${Partition}:s3:::${rArchiveLogsBucket}/*
+                  - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+              
 
   cTrailS3Bucket: 
+      Type: "AWS::S3::Bucket"  
       DeletionPolicy: Retain
-      Type: "AWS::S3::Bucket"
+      Properties:
+        AccessControl: Private
+        VersioningConfiguration:
+          Status: Enabled
+        LoggingConfiguration:
+          DestinationBucketName: !Ref rArchiveLogsBucket
+          LogFilePrefix: cloudtraillogs
 
   BucketPolicy: 
       Type: "AWS::S3::BucketPolicy"
@@ -20,27 +106,44 @@ Resources:
         PolicyDocument: 
           Version: "2012-10-17"
           Statement: 
-            - 
-              Sid: "AWSCloudTrailAclCheck"
+            - Sid: "AWSCloudTrailAclCheck"
               Effect: "Allow"
               Principal: 
                 Service: "cloudtrail.amazonaws.com"
               Action: "s3:GetBucketAcl"
-              Resource: 
-                !Sub |-
-                  arn:aws:s3:::${cTrailS3Bucket}
-            - 
-              Sid: "AWSCloudTrailWrite"
-              Effect: "Allow"
-              Principal: 
-                Service: "cloudtrail.amazonaws.com"
-              Action: "s3:PutObject"
-              Resource:
-                !Sub |-
-                  arn:aws:s3:::${cTrailS3Bucket}/AWSLogs/${AWS::AccountId}/*
-              Condition: 
-                StringEquals:
-                  s3:x-amz-acl: "bucket-owner-full-control"  
+              Resource: !Sub
+                - arn:${Partition}:s3:::${cTrailS3Bucket}
+                - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+
+            - Sid: AWSCloudTrailWrite20150319
+              Effect: Allow
+              Principal:
+                  Service: cloudtrail.amazonaws.com
+              Action: s3:PutObject
+              Resource: !Sub
+                - arn:${Partition}:s3:::${cTrailS3Bucket}/*
+                - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+              Condition:
+                  StringEquals:
+                      s3:x-amz-acl: bucket-owner-full-control
+            - Sid: Enforce HTTPS Connections
+              Action: s3:*
+              Effect: Deny
+              Principal: '*'
+              Resource: !Sub
+                - arn:${Partition}:s3:::${cTrailS3Bucket}/*
+                - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+              Condition:
+                  Bool:
+                      aws:SecureTransport: false
+            - Sid: Restrict Delete* Actions
+              Action: s3:Delete*
+              Effect: Deny
+              Principal: '*'
+              Resource: !Sub
+                - arn:${Partition}:s3:::${cTrailS3Bucket}/*
+                - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+            
                  
   cloudTrail: 
       DependsOn: 
@@ -54,6 +157,7 @@ Resources:
         IncludeGlobalServiceEvents: true
         CloudWatchLogsLogGroupArn: !GetAtt 'TrailLogGroup.Arn'
         CloudWatchLogsRoleArn: !GetAtt 'TrailLogGroupRole.Arn'
+        KMSKeyId: !Ref 'CloudTrailKMSKey'
 
   TrailLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -145,9 +249,9 @@ Resources:
           - Sid: AWSConfigPutObject
             Effect: "Allow"
             Action: "s3:PutObject"
-            Resource:
-              !Sub |-
-                arn:aws:s3:::${configS3Bucket}/AWSLogs/${AWS::AccountId}/*
+            Resource: !Sub
+              - arn:${Partition}:s3:::${configS3Bucket}/AWSLogs/${AWS::AccountId}/*
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
             Condition: 
                 StringEquals:
                   s3:x-amz-acl: "bucket-owner-full-control"  
@@ -155,8 +259,6 @@ Resources:
           - Sid: AWSConfigGetObject
             Effect: "Allow"
             Action: "s3:GetBucketAcl"
-            Resource: 
-              !Sub |-
-                arn:aws:s3:::${configS3Bucket}
-
-
+            Resource: !Sub
+              - arn:${Partition}:s3:::${configS3Bucket}
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }

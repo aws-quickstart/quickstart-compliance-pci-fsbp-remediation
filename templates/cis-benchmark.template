@@ -279,9 +279,9 @@ Resources:
   ConfigRuleForEvaluateMFAAllUsers:
     Type: 'AWS::Config::ConfigRule'
     Properties:
-      ConfigRuleName: CIS-EvaluateMFAAllUsers
+      ConfigRuleName: CIS-UsersMustHaveMfaEnabled
       Description: >-
-        ConfigRule for CIS 1.2 - Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a password (Scored)
+        CIS 1.2 - Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a password (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::User'
@@ -318,7 +318,7 @@ Resources:
       - MasterConfigRole
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      FunctionName: CIS-EvaluateUnusedCredentials
+      FunctionName: CIS-DisableUnusedCredentials
       Description: >-
         Evaluates whether users with password enabled have credentials unused for 90 days or greater
       Code:
@@ -395,10 +395,9 @@ Resources:
       - EvaluateUnusedCredentialsLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateUnusedCredentials
+      ConfigRuleName: CIS-DisableUnusedCredentials
       Description: >-
-        ConfigRule to evaluate whether users with password enabled have credentials unused for 90 days or greater - CIS 1.3 - Ensure credentials
-        unused for 90 days or greater are disabled (Scored)
+        CIS 1.3 - Ensure credentials unused for 90 days or greater are disabled (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::User'
@@ -432,7 +431,7 @@ Resources:
       - MasterConfigRole
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      FunctionName: CIS-EvaluateRotationOfAccessKeys
+      FunctionName: CIS-RotateAccessKeys
       Description: >-
         Evaluates whether users have unused active access keys for 90 days or greater
       Code:
@@ -510,11 +509,9 @@ Resources:
       - EvaluateAccessKeysLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateAccessKeys
+      ConfigRuleName: CIS-RotateAccessKeys
       Description: >-
-        ConfigRule to evaluate whether users have unused active access keys for
-        90 days or greater - CIS 1.4 - Ensure access keys are rotated every 90
-        days or less (Scored)
+        CIS 1.4 - Ensure access keys are rotated every 90 days or less (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::User'
@@ -542,7 +539,7 @@ Resources:
       DependsOn: ResourceForEvaluateCISBenchmarkPreconditions
       Properties:
         ConfigRuleName: CIS-IamPasswordPolicyMustMeetRequirements
-        Description: Evaluates whether the account password policy for IAM users meets the specified requirements 1.5, 1.6, 1.7, 1.8,1.9,1.10,1.11
+        Description: Evaluates whether the account password policy for IAM users meets the specified CIS requirements 1.5 through 1.11
         Scope:
           ComplianceResourceTypes:
             - AWS::IAM::User
@@ -655,8 +652,7 @@ Resources:
               )
 
       Description: >-
-        Evaluates the security properties of the root account - CIS 1.12, 1.13,
-        1.14
+        Evaluates the security properties of the root account - CIS 1.12, 1.13, 1.14
       Handler: index.lambda_handler
       MemorySize: 1024
       Role: !GetAtt
@@ -674,9 +670,8 @@ Resources:
     Properties:
       ConfigRuleName: CIS-RootAccoutMustHaveMfaEnabled
       Description: >-
-        ConfigRule to evaluate the root account for CIS 1.12 - Ensure no root
-        account access key exists (Scored)
-         CIS 1.13 - Ensure  MFA is enabled for the 'root' account (Scored)
+         CIS 1.12 - Ensure no root account access key exists (Scored) ,
+         CIS 1.13 - Ensure  MFA is enabled for the 'root' account (Scored) ,
          CIS 1.14 - Ensure hardware MFA is enabled for the 'root' account (Scored)
       Source:
         Owner: CUSTOM_LAMBDA
@@ -777,9 +772,7 @@ Resources:
     Properties:
       ConfigRuleName: CIS-UsersMustNotHaveAssociatedPolicies
       Description: >-
-        ConfigRule to evaluate whether users have policies associated with them;
-        users should inherit permissions from groups instead - CIS 1.16 - Ensure
-        IAM policies are attached only to groups or roles (Scored)
+        CIS 1.16 - Ensure IAM policies are attached only to groups or roles (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::User'
@@ -792,9 +785,9 @@ Resources:
           - FunctionForEvaluateUserPolicyAssociationRule
           - Arn
 
-#==================================================
+#===================================================================================================
 # CIS 1.21  Ensure IAM instance roles are used for AWS resource access from instances
-#==================================================
+#===================================================================================================
   FunctionForInstanceRoleUseRule:
       Type: AWS::Lambda::Function
       Condition: IsLevel2
@@ -865,7 +858,7 @@ Resources:
         - ConfigPermissionToCallInstanceRoleUseLambda
       Properties:
         ConfigRuleName: CIS-InstancesMustUseIamRoles
-        Description: Evaluates whether instances use instance roles
+        Description: CIS 1.21  Ensure IAM instance roles are used for AWS resource access from instances
         Scope:
           ComplianceResourceTypes:
             - AWS::EC2::Instance
@@ -898,7 +891,7 @@ Resources:
       - MasterConfigRole
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      FunctionName: CIS-EvaluateAwsSupportAccessPolicy
+      FunctionName: CIS-EvaluateSupportRoleExists
       Description: >-
         Evaluates whether users / groups / roles have the 'AWSSupportAccess' policy associated.
       Code:
@@ -967,11 +960,9 @@ Resources:
       - EvaluateAwsSupportAccessPolicyLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-AwsSupportAccessPolicy
+      ConfigRuleName: CIS-AwsSupportRoleExists
       Description: >-
-        ConfigRule to evaluate whether users / groups / roles have the
-        'AWSSupportAccess' policy associated - CIS 1.22 - Ensure a support role
-        has been created to manage incidents with AWS Support (Scored)
+        CIS 1.22 - Ensure a support role has been created to manage incidents with AWS Support (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::User'
@@ -1072,9 +1063,7 @@ Resources:
     Properties:
       ConfigRuleName: CIS-EvaluateFullAdminPrivilegesPolicies
       Description: >-
-        ConfigRule to evaluate whether policies allowing full admin privileges
-        '*:*' have been created - CIS 1.24 - Ensure IAM policies that allow full
-        '*:*' administrative privileges are not created (Scored)
+        CIS 1.24 - Ensure IAM policies that allow full '*:*' administrative privileges are not created (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::IAM::Policy'
@@ -1089,8 +1078,8 @@ Resources:
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 2.1	Ensure CloudTrail is enabled in all regions (Scored)
-# CIS AWS Foundations Benchmark - 2.4	Ensure CloudTrail trails are integrated with CloudWatch Logs (Scored)
+# CIS AWS Foundations Benchmark - 2.1   Ensure CloudTrail is enabled in all regions (Scored)
+# CIS AWS Foundations Benchmark - 2.4   Ensure CloudTrail trails are integrated with CloudWatch Logs (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailEnabledIntegratedLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1109,7 +1098,7 @@ Resources:
       - MasterConfigRole
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      FunctionName: CIS-EvaluateCloudTrailWithCWLogs
+      FunctionName: CIS-EvaluateCloudTrail
       Code:
         ZipFile: |
             #==================================================================================================
@@ -1176,7 +1165,7 @@ Resources:
                 Evaluations = evaluations,
                 ResultToken = result_token
               )
-      Description: 'Evaluates CloudTrail for CIS 2.1, 2.4'
+      Description: 'Evaluates whether CloudTrail has appropriate security properties. Meets CIS 2.1, 2.4'
       Handler: index.lambda_handler
       MemorySize: 1024
       Role: !GetAtt
@@ -1191,11 +1180,9 @@ Resources:
         - EvaluateCloudTrailEnabledIntegratedLambdaInvokePermission
         - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateCloudTrailEnabledIntegrated
+      ConfigRuleName: CIS-CloudTrailMustBeActive
       Description: >-
-        ConfigRule to evaluate CloudTrail for CIS 2.1, 2.4 - Ensure CloudTrail
-        is enabled in all regions (Scored), ensure CloudTrail trails are
-        integrated with CloudWatch Logs (Scored)
+        CIS 2.1, 2.4 - Ensure CloudTrail is enabled in all regions (Scored), ensure CloudTrail trails are integrated with CloudWatch Logs (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::CloudTrail::Trail'
@@ -1211,8 +1198,8 @@ Resources:
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 2.3	Ensure the S3 bucket CloudTrail logs to is not publicly accessible (Scored)
-# CIS AWS Foundations Benchmark - 2.6	Ensure S3 Bucket Access Logging is enabled on the CloudTrail S3 bucket (Scored)
+# CIS AWS Foundations Benchmark - 2.3   Ensure the S3 bucket CloudTrail logs to is not publicly accessible (Scored)
+# CIS AWS Foundations Benchmark - 2.6   Ensure S3 Bucket Access Logging is enabled on the CloudTrail S3 bucket (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailS3AccessLoggingLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1307,7 +1294,7 @@ Resources:
       - EvaluateCloudTrailS3AccessLoggingLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateCloudTrailS3AccessLogging
+      ConfigRuleName: CIS-CloudTrailBucketMustBeSecure
       Description: >-
         ConfigRule to evaluate whether access logging is enabled on the CloudTrail S3 bucket and the S3 bucket is not publicly accessible for CIS 2.3, 2.6
       Scope:
@@ -1323,8 +1310,8 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 2.2	Ensure CloudTrail log file validation is enabled (Scored)
-# CIS AWS Foundations Benchmark - 2.7	Ensure CloudTrail logs are encrypted at rest using KMS CMKs (Scored)
+# CIS AWS Foundations Benchmark - 2.2   Ensure CloudTrail log file validation is enabled (Scored)
+# CIS AWS Foundations Benchmark - 2.7   Ensure CloudTrail logs are encrypted at rest using KMS CMKs (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailLogsEncryptionValidationLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1404,11 +1391,9 @@ Resources:
       - EvaluateCloudTrailLogsEncryptionValidationLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateCloudTrailLogsEncryptionValidation
+      ConfigRuleName: CIS-CloudTrailLogsMustBeValidatedAndEncrypted
       Description: >-
-        ConfigRule to evaluate whether CloudTrail logs are validated and encrypted at rest -
-        CIS 2.2, 2.7 - Ensure CloudTrail log file validation is enabled (Scored), ensure CloudTrail logs are encrypted at rest using KMS CMKs
-        (Scored)
+        CIS 2.2, 2.7 - Ensure CloudTrail log file validation is enabled (Scored), ensure CloudTrail logs are encrypted at rest using KMS CMKs (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::CloudTrail::Trail'
@@ -1422,7 +1407,7 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 2.8	Ensure rotation for customer created CMKs is enabled (Scored)
+# CIS AWS Foundations Benchmark - 2.8   Ensure rotation for customer created CMKs is enabled (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCMKsRotationLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1518,11 +1503,9 @@ Resources:
       - EvaluateCMKsRotationLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateCMKsRotation
+      ConfigRuleName: CIS-KmsCustomerKeysMustBeRotated
       Description: >-
-        ConfigRule to evaluate whether existing customer managed keys (CMKs)
-        have key rotation enabled - CIS 2.8 - Ensure rotation for customer
-        created CMKs is enabled (Scored)
+        CIS 2.8 - Ensure rotation for customer created CMKs is enabled (Scored).
       Scope:
         ComplianceResourceTypes:
           - 'AWS::KMS::Key'
@@ -1537,18 +1520,16 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.1	Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
+# CIS AWS Foundations Benchmark - 4.1   Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   ConfigRuleForEvaluateSecurityGroupsSsh:
     Type: 'AWS::Config::ConfigRule'
     DependsOn:
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateSecurityGroupsSsh
+      ConfigRuleName: CIS-SecurityGroupsMustRestrictSshTraffic
       Description: >-
-        ConfigRule to evaluate whether security groups that are in use disallow
-        unrestricted incoming SSH traffic - CIS 4.1 - Ensure no security groups
-        allow ingress from 0.0.0.0/0 to port 22 (Scored)
+        CIS 4.1 - Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::EC2::SecurityGroup'
@@ -1557,18 +1538,16 @@ Resources:
         SourceIdentifier: INCOMING_SSH_DISABLED
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.2	Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
+# CIS AWS Foundations Benchmark - 4.2   Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   ConfigRuleForEvaluateSecurityGroupsRdp:
     Type: 'AWS::Config::ConfigRule'
     DependsOn:
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateSecurityGroupsRdp
+      ConfigRuleName: CIS-SecurityGroupsMustDisallowTcpTraffic
       Description: >-
-        ConfigRule to evaluate whether security groups that are in use disallow
-        unrestricted incoming RDP traffic - CIS 4.2 - Ensure no security groups
-        allow ingress from 0.0.0.0/0 to port 3389 (Scored)
+        CIS 4.2 - Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
       InputParameters:
         blockedPort1: '3389'
       Scope:
@@ -1579,7 +1558,7 @@ Resources:
         SourceIdentifier: RESTRICTED_INCOMING_TRAFFIC
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.3	Ensure VPC flow logging is enabled in all VPCs (Scored)
+# CIS AWS Foundations Benchmark - 4.3   Ensure VPC flow logging is enabled in all VPCs (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateVpcFlowLogsLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1667,8 +1646,7 @@ Resources:
     Properties:
       ConfigRuleName: CIS-EvaluateVpcFlowLogs
       Description: >-
-        ConfigRule to evaluate whether VPC flow logging is enabled - CIS 4.3 -
-        Ensure VPC flow logging is enabled in all VPCs (Scored)
+        CIS 4.3 - Ensure VPC flow logging is enabled in all VPCs (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::EC2::VPC'
@@ -1682,7 +1660,7 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.4	Ensure the default security group of every VPC restricts all traffic (Scored)
+# CIS AWS Foundations Benchmark - 4.4   Ensure the default security group of every VPC restricts all traffic (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateDefaultSecurityGroupLambdaInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -1754,11 +1732,9 @@ Resources:
       - EvaluateVpcFlowLogsLambdaInvokePermission
       - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-EvaluateDefaultSecurityGroup
+      ConfigRuleName: CIS-VpcDefaultSecurityGroupsMustRestrictAllTraffic
       Description: >-
-        ConfigRule to evaluate whether VPC default security groups restrict all
-        traffic - CIS 4.4 - Ensure the default security group of every VPC
-        restricts all traffic (Scored)
+        CIS 4.4 - Ensure the default security group of every VPC restricts all traffic (Scored)
       Scope:
         ComplianceResourceTypes:
           - 'AWS::EC2::SecurityGroup'
