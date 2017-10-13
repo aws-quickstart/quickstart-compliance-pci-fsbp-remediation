@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Configures AWS Cloudtrail and AWS Config. Cloudtrail is configured globally, while Config is configured regionally.'
+Description: 'Configures AWS Cloudtrail and AWS Config. Cloudtrail is configured globally, while AWS Config is configured regionally.'
 Conditions:
     IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 Resources:

@@ -36,7 +36,7 @@ Metadata:
 Parameters:
 
   ProfileLevel:
-      Description: "Level 1 controls are baseline governance controls, whereas Level 2 controls represent redundant or stricter governance controls. See the control list here for guidance: https://benchmarks.cisecurity.org/en-us/?route=downloads.form.awsfoundations.110"
+      Description: "Level 1 controls are baseline governance controls, whereas Level 2 controls represent redundant or stricter governance controls. See the control list here for guidance: https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf"
       Type: String
       Default: Level 2
       AllowedValues:
