@@ -1,33 +1,33 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS Benchmark security configuration. Optionally enables AWS Cloudtrail (enabled at a region level) and AWS Config prior to creating the CIS Benchmark stack.
+Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS Benchmark security configuration. Optionally configures AWS Cloudtrail and AWS Config regionally, prior to creating the CIS Benchmark stack.
   
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
-            default: Profile Level
+            default: CIS benchmark configuration parameters
         Parameters:
-            - ProfileLevel
-
-      - Label:
-            default: CloudWatch Rules and Alarms Parameters
-        Parameters:
+          - ProfileLevel
           - NotificationEmailAddressForCloudWatchAlarms
-
       - Label:
-            default: (Optional) Configure AWS Cloudtrail and AWS Config
+            default: Configure AWS Cloudtrail and AWS Config (Optional)
         Parameters:
-          - ConfigureCloudtrailAndConfig
+          - ConfigureCloudtrail
+          - ConfigureConfig
+      - Label:
+            default: AWS Quick Start Configuration
+        Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
-
     ParameterLabels:
         ProfileLevel:
           default: Profile Level
         NotificationEmailAddressForCloudWatchAlarms:
           default: Notification Address
-        ConfigureCloudtrailAndConfig:
-          default: Enable?     
+        ConfigureCloudtrail:
+          default: 'Configure Cloudtrail?'     
+        ConfigureConfig:
+          default: 'Configure Config?'     
         QSS3BucketName:
           default: Quick Start S3 Bucket Name
         QSS3KeyPrefix:
@@ -36,7 +36,7 @@ Metadata:
 Parameters:
 
   ProfileLevel:
-      Description: "Level 1 controls are baseline governance controls, whereas Level 2 controls represent redundant or stricter governance controls. See the control list here for guidance: https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf"
+      Description: "Level 1 controls are baseline governance controls, whereas Level 2 controls (recommended) represent redundant or stricter governance controls. See the control list here for guidance: https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf"
       Type: String
       Default: Level 2
       AllowedValues:
@@ -49,14 +49,22 @@ Parameters:
     AllowedPattern: ([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)
     ConstraintDescription: Must be a valid email address!
 
-  ConfigureCloudtrailAndConfig:
+  ConfigureCloudtrail:
     Type: String
     Default: 'No'
-    Description: Enables and configures AWS Cloudtrail and AWS Config in the region where this CloudFormation template is being run.
+    Description: Configures AWS Cloudtrail regionally.
     AllowedValues: 
     - 'Yes'
     - 'No'
 
+  ConfigureConfig:
+    Type: String
+    Default: 'No'
+    Description: Configures AWS Config regionally.
+    AllowedValues: 
+    - 'Yes'
+    - 'No'
+      
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
@@ -73,8 +81,6 @@ Parameters:
 
 Conditions:
     IsLevel2: !Equals ["Level 2", !Ref "ProfileLevel"]
-    enableCTrailConfig: !Equals ["Yes", !Ref "ConfigureCloudtrailAndConfig"]
-    notEnableCTrailConfig: !Equals ["No", !Ref "ConfigureCloudtrailAndConfig"]
 
 Mappings:
   AWSInfoRegionMap:
@@ -127,13 +133,8 @@ Mappings:
 
 Resources:
 
-#===============================================================================================================================
-# Resources for Enabling Cloudtrail and Config
-#===============================================================================================================================
-
   CISBenchmarkStack:
     Type: AWS::CloudFormation::Stack
-    Condition: enableCTrailConfig
     DependsOn: PreRequisitesForCISBenchmark
     Properties:
       TemplateURL:
@@ -151,8 +152,17 @@ Resources:
 
   PreRequisitesForCISBenchmark:
     Type: AWS::CloudFormation::Stack
-    Condition: enableCTrailConfig
     Properties:
+      Parameters:
+        ConfigureCloudtrail: !Ref ConfigureCloudtrail
+        ConfigureConfig: !Ref ConfigureConfig
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QsS3URL: 
+          !FindInMap
+            - AWSInfoRegionMap
+            - !Ref AWS::Region
+            - QuickStartS3URL
       TemplateURL:
         !Sub
         - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/pre-requisites.template
@@ -163,19 +173,4 @@ Resources:
             - QuickStartS3URL
       TimeoutInMinutes: 20
 
-  CISBenchmarkStackExistingPreReq:
-    Type: AWS::CloudFormation::Stack
-    Condition: notEnableCTrailConfig
-    Properties:
-      TemplateURL:
-        !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cis-benchmark.template
-        - QuickStartS3URL:
-            !FindInMap
-            - AWSInfoRegionMap
-            - !Ref AWS::Region
-            - QuickStartS3URL
-      TimeoutInMinutes: 20
-      Parameters:
-        ProfileLevel: !Ref ProfileLevel
-        NotificationEmailAddressForCloudWatchAlarms: !Ref NotificationEmailAddressForCloudWatchAlarms
+  

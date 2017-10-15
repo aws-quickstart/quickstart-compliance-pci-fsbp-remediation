@@ -1101,17 +1101,18 @@ Resources:
       FunctionName: CIS-EvaluateCloudTrail
       Code:
         ZipFile: |
-            #==================================================================================================
-            # Function: EvaluateCloudTrailEnabledIntegrated
-            # Purpose:  Evaluates CloudTrail for CIS 2.1, 2.4
-            #==================================================================================================
-            import json
-            import boto3
-            import datetime
-            import time
+          #==================================================================================================
+          # Function: EvaluateCloudTrailEnabledIntegrated
+          # Purpose:  Evaluates CloudTrail for CIS 2.1, 2.4
+          #==================================================================================================
+          import json
+          import boto3
+          import datetime
+          import time
 
-            def lambda_handler(event, context):
-              # Default values'
+          client = boto3.client('cloudtrail')
+
+          def lambda_handler(event, context):
               is_compliant = True
               annotation = ''
               is_multi_region = True
@@ -1120,51 +1121,63 @@ Resources:
 
               # List all trails, including 'shadow' trails, which are trails in
               # other regions that could be capturing multi-regional events
-              client = boto3.client('cloudtrail')
               for trail in client.describe_trails()['trailList']:
-                is_multi_region = is_multi_region or trail['IsMultiRegionTrail']
+
                 if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
-                  current_region_trail = trail
-              # Enabled in all regions
-              if not is_multi_region:
-                is_compliant = False
-                annotation = annotation + ' CloudTrail is not enabled in all regions.'
-              # Integration with CloudWatch Logs'
-              if 'CloudWatchLogsLogGroupArn' in current_region_trail and not current_region_trail['CloudWatchLogsLogGroupArn']:
-                is_compliant = False
-                annotation = annotation + ' CloudTrail is not integrated with Cloudwatch Logs.'
-              # CloudWatch Logs delivered within the last day
-              trail_details = client.get_trail_status(Name = current_region_trail['Name'])
-              if 'LatestCloudWatchLogsDeliveryTime' in trail_details:
+                    current_region_trail = trail
+                    annotation = ''
+                    is_compliant= True
+                    is_multi_region = current_region_trail['IsMultiRegionTrail']
+                    
+                    # Enabled in all regions?
+                    if not is_multi_region:
+                        is_compliant = False
+                        annotation = annotation + ' CloudTrail is not enabled in all regions.'
+                    
+                    # Integration with CloudWatch Logs?
+                    if 'CloudWatchLogsLogGroupArn' in current_region_trail and not current_region_trail['CloudWatchLogsLogGroupArn']:
 
-              # Determine whether the number of minutes since the last delivery time exceeds 24 hours.
-                if ((int(time.time()) - int(trail_details['LatestCloudWatchLogsDeliveryTime'].strftime("%s"))) / 1440) > 24:
-                  is_compliant = False
-                  annotation = annotation + ' The latest CloudTrail log delivery exceeds 24 hours.'
-              else:
-                is_compliant = False
-                annotation = annotation + ' There is no record of CloudTrail log delivery.'
+                        is_compliant = False
+                        annotation = annotation + ' CloudTrail is not integrated with Cloudwatch Logs.'
+              
+                    # Check if Trail logging has been turned off
+                    trail_details = client.get_trail_status(Name = current_region_trail['Name'])
+                    if not trail_details['IsLogging']:
+                        is_compliant = False
+                        annotation = annotation + 'CloudTrail trail is not logging any AWS API calls.'
 
-              # Set up evaluations
-              result_token = 'No token found.'
-              if 'resultToken' in event: result_token = event['resultToken']
-              evaluations = [
-                {
-                  'ComplianceResourceType': 'AWS::CloudTrail::Trail',
-                  'ComplianceResourceId': current_region_trail['Name'],
-                  'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                  'OrderingTimestamp': datetime.datetime.now()
-                }
-              ]
-              # Is compliant message
-              if is_compliant: annotation = 'CloudTrail is enabled in all regions and trails are integrated with CloudWatch Logs!'
-              if annotation: evaluations[0]['Annotation'] = annotation
-              config = boto3.client('config')
-              #deliver evaluations
-              config.put_evaluations(
-                Evaluations = evaluations,
-                ResultToken = result_token
-              )
+                    # CloudWatch Logs delivered within the last day
+                    if 'LatestCloudWatchLogsDeliveryTime' in trail_details:
+                    
+                    # Determine whether the number of minutes since the last delivery time exceeds 24 hours.
+                        if ((int(time.time()) - int(trail_details['LatestCloudWatchLogsDeliveryTime'].strftime("%s"))) / 1440) > 24:
+                            is_compliant = False
+                            annotation = annotation + ' The latest CloudTrail log delivery exceeds 24 hours.'
+                    else:
+                        is_compliant = False
+                        annotation = annotation + ' There is no record of CloudTrail log delivery.'
+
+                    # Set up evaluations
+                    result_token = 'No token found.'
+                    if 'resultToken' in event: result_token = event['resultToken']
+
+                    evaluations = [
+                        {
+                        'ComplianceResourceType': 'AWS::CloudTrail::Trail',
+                        'ComplianceResourceId': current_region_trail['Name'],
+                        'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                        'OrderingTimestamp': datetime.datetime.now()
+                        }
+                    ]
+                    # Is compliant message
+                    if is_compliant: annotation = 'CloudTrail is enabled in all regions and trails are integrated with CloudWatch Logs!'
+                    if annotation: evaluations[0]['Annotation'] = annotation
+                    config = boto3.client('config')
+                    #deliver evaluations
+                    config.put_evaluations(
+                        Evaluations = evaluations,
+                        ResultToken = result_token
+                    )
       Description: 'Evaluates whether CloudTrail has appropriate security properties. Meets CIS 2.1, 2.4'
       Handler: index.lambda_handler
       MemorySize: 1024
@@ -1342,38 +1355,45 @@ Resources:
             import datetime
             import time
 
+            client_ct = boto3.client('cloudtrail')
+            config = boto3.client('config')
+
             def lambda_handler(event, context):
               is_compliant = True
-              annotation = ''
-              current_region_trail = {}
-              client_ct = boto3.client('cloudtrail')
+
               for trail in client_ct.describe_trails()['trailList']:
                 if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
-                  current_region_trail = trail
-              # evaluate log file validation
-              if not current_region_trail['LogFileValidationEnabled']:
-                  is_compliant = False
-                  annotation = annotation + ' CloudTrail log file validation is not enabled.'
-              # evaluate log file encryption
-              if not 'KmsKeyId' in current_region_trail:
-                  is_compliant = False
-                  annotation = annotation + ' CloudTrail log files are not encrypted in S3.'
-              result_token = 'No token found.'
-              if 'resultToken' in event: result_token = event['resultToken']
-              evaluations = [
-                    {
-                        'ComplianceResourceType': 'AWS::CloudTrail::Trail',
-                        'ComplianceResourceId': current_region_trail['Name'],
-                        'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                        'OrderingTimestamp': datetime.datetime.now()
-                    }
-                  ]
-              if is_compliant: annotation = 'CloudTrail log files are encrypted in S3'
-              if annotation: evaluations[0]['Annotation'] = annotation
-              config = boto3.client('config')
-              config.put_evaluations(
-                  Evaluations = evaluations,
-                  ResultToken = result_token)
+                    current_region_trail = trail
+                    annotation = ''
+                    
+                    # evaluate log file validation
+                    if not current_region_trail['LogFileValidationEnabled']:
+                        is_compliant = False
+                        annotation = annotation + ' CloudTrail log file validation is not enabled.'
+              
+                    # evaluate log file encryption
+                    if not 'KmsKeyId' in current_region_trail:
+                        is_compliant = False
+                        annotation = annotation + ' CloudTrail log files are not encrypted in S3.'
+                    
+                    result_token = 'No token found.'
+
+                    if 'resultToken' in event: result_token = event['resultToken']
+                    evaluations = [
+                        {
+                            'ComplianceResourceType': 'AWS::CloudTrail::Trail',
+                            'ComplianceResourceId': current_region_trail['Name'],
+                            'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                            'OrderingTimestamp': datetime.datetime.now()
+                        }
+                    ]
+
+                    if is_compliant: annotation = 'CloudTrail log files are encrypted and validated in S3.'
+                    if annotation: evaluations[0]['Annotation'] = annotation
+
+                    config.put_evaluations(
+                        Evaluations = evaluations,
+                        ResultToken = result_token)
 
       Handler: index.lambda_handler
       MemorySize: 1024

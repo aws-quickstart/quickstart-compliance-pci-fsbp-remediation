@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Configures AWS Config regionally.'
+Conditions:
+    IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
+Resources:
+
+  ConfigurationRecorder:
+    Type: "AWS::Config::ConfigurationRecorder"
+    Properties:
+      Name: 'MyConfig' 
+      RecordingGroup:
+        AllSupported: true
+        IncludeGlobalResourceTypes: true
+      RoleARN: !GetAtt
+        - ConfigRole
+        - Arn
+
+  configS3Bucket: 
+    DeletionPolicy: Retain
+    Type: "AWS::S3::Bucket"
+
+
+  DeliveryChannel1: 
+    Type: "AWS::Config::DeliveryChannel"
+    Properties: 
+      ConfigSnapshotDeliveryProperties: 
+        DeliveryFrequency: "Six_Hours"
+      S3BucketName:
+        Ref: configS3Bucket
+
+  
+  ConfigRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - config.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        -  'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      Policies:
+      - PolicyName: 'CIS-config-policy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: AWSConfigRole
+            Effect: Allow
+            Action: 
+            - config:Put*
+            Resource: '*'
+          - Sid: AWSConfigPutObject
+            Effect: "Allow"
+            Action: "s3:PutObject"
+            Resource: !Sub
+              - arn:${Partition}:s3:::${configS3Bucket}/AWSLogs/${AWS::AccountId}/*
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+            Condition: 
+                StringEquals:
+                  s3:x-amz-acl: "bucket-owner-full-control"  
+
+          - Sid: AWSConfigGetObject
+            Effect: "Allow"
+            Action: "s3:GetBucketAcl"
+            Resource: !Sub
+              - arn:${Partition}:s3:::${configS3Bucket}
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
