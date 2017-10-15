@@ -9,7 +9,7 @@ The ```cis-benchmark-matrix.xlsx``` is a spreadsheet that maps the CIS Amazon We
 
 The AWS services used for these benchmarks are used in the following relationship:
 
-![CIS Benchmark Architecture Diagram] (https://github.com/aws-quickstart/quickstart-enterprise-accelerator-cis-benchmark/blob/develop/assets/CIS_Benchmark_Architecture.png)
+![Architecture] (https://github.com/aws-quickstart/quickstart-enterprise-accelerator-cis-benchmark/blob/develop/assets/CIS_Benchmark_Architecture.png)
 
 The following preconditions must be met before the stack can be launched:
 
