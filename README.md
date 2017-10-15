@@ -1,7 +1,7 @@
 # quickstart-enterprise-accelerator-cis-benchmark
 
 The CIS Enterprise Accelerator Quick Start deploys a standard environment for establishing CIS AWS 1.1 benchmark governance rules.
-Refer the benchmark specification [here](https://benchmarks.cisecurity.org/en-us/?route=downloads.form.awsfoundations.110)).
+Refer the benchmark specification [here](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf).
 
 The ```main.template``` is an AWS CloudFormation template for establishing CIS AWS 1.1 benchmark governance rules.
 
