@@ -22,11 +22,10 @@ Please note that these resources will incur costs in your account; please refer 
 
 For example, an estimate in us-east-1:
 
-Config Rules: 15 rules   @ $2.00/rule/month    = $30.00/month
-CloudWatch Alarms:  5 alarms  @ $0.10/alarm/month   =  $0.50/month
-CloudWatch Metrics: 5 metrics @ $0.30/metric/month  =  $1.50/month
-
-CloudWatch Logs:  23 logs    @ $0.50/GB ingested   =  based on usage
-CloudWatch Event Rules: 7 Rules - Variable - $1.00 per million custom events generated.
-AWS Lambda:  Variable (first 1 million requests per month are free)
-S3 Storage: Variable
+* Config Rules: 15 rules   @ $2.00/rule/month    = $30.00/month
+* CloudWatch Alarms:  5 alarms  @ $0.10/alarm/month   =  $0.50/month
+* CloudWatch Metrics: 5 metrics @ $0.30/metric/month  =  $1.50/month
+* CloudWatch Logs:  23 logs    @ $0.50/GB ingested   =  based on usage
+* CloudWatch Event Rules: 7 Rules - Variable - $1.00 per million custom events generated.
+* AWS Lambda:  Variable (first 1 million requests per month are free)
+* S3 Storage: Variable
