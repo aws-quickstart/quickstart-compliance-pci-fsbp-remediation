@@ -9,7 +9,7 @@ The ```cis-benchmark-matrix.xlsx``` is a spreadsheet that maps the CIS Amazon We
 
 The AWS services used for these benchmarks are used in the following relationship:
 
-![CIS Benchmark Architecture Diagram] TODO
+![CIS Benchmark Architecture Diagram] (https://github.com/aws-quickstart/quickstart-enterprise-accelerator-cis-benchmark/blob/develop/assets/CIS_Benchmark_Architecture.png)
 
 The following preconditions must be met before the stack can be launched:
 
@@ -21,3 +21,12 @@ The controls are a combination of AWS Config Rules, Amazon CloudWatch rules, and
 Please note that these resources will incur costs in your account; please refer to the pricing model for each service.
 
 For example, an estimate in us-east-1:
+
+Config Rules: 15 rules   @ $2.00/rule/month    = $30.00/month
+CloudWatch Alarms:  5 alarms  @ $0.10/alarm/month   =  $0.50/month
+CloudWatch Metrics: 5 metrics @ $0.30/metric/month  =  $1.50/month
+
+CloudWatch Logs:  23 logs    @ $0.50/GB ingested   =  based on usage
+CloudWatch Event Rules: 7 Rules - Variable - $1.00 per million custom events generated.
+AWS Lambda:  Variable (first 1 million requests per month are free)
+S3 Storage: Variable
