@@ -4,7 +4,11 @@
         "ParameterValue": "distlist@example.org"
     },
     {
-        "ParameterKey": "ConfigureCloudtrailAndConfig",
+        "ParameterKey": "ConfigureCloudtrail",
+        "ParameterValue": "Yes"
+    },
+    {
+        "ParameterKey": "ConfigureConfig",
         "ParameterValue": "Yes"
     }
 ]
