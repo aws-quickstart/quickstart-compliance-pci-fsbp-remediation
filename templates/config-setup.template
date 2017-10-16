@@ -4,10 +4,115 @@ Conditions:
     IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 Resources:
 
+  ConfigurationRecorderSanitiser:
+    Type: 'AWS::Lambda::Function'
+    DependsOn:
+      - ConfigSanitiserRole
+    Properties:
+      Code:
+        ZipFile: |
+            import boto3
+            import cfnresponse
+            import datetime
+
+            client = boto3.client('config')
+            configRecorderName = 'conf-rec-' + datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")
+
+            def lambda_handler(event, context):
+
+                # Only execute in a custom CloudFormation resource creation event.
+                if 'RequestType' in event and event['RequestType'] == 'Create':
+
+                    try:
+                        # Get all Config Recorders
+                        response = client.describe_configuration_recorders()
+                        for recorder in response['ConfigurationRecorders']:
+
+                            # Try stopping the Config Recorder
+                            response = client.stop_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                            print('Stopped Config - ', recorder['name'])
+
+                            # Get all Delivery Channels. Only one per Region is allowed currently
+                            response = client.describe_delivery_channels()
+                            for channel in response['DeliveryChannels']:
+
+                                # Delete the Delivery Channel
+                                response = client.delete_delivery_channel(DeliveryChannelName=channel['name'])
+                                print('Deleted Channel - ', channel['name'])
+
+                            # Delete the Configuration Recorder
+                            response = client.delete_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                            print('Deleted Config recorder - ', recorder['name'])
+
+                    except:
+                        cfnresponse.send(event, context, cfnresponse.FAILED, {"configRecName": 'error'}, '')
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {"configRecName": configRecorderName}, '')
+
+          
+      Description: Deletes existig Delivery Channels if any
+      Handler: index.lambda_handler
+      MemorySize: 1024
+      Role: !GetAtt
+        - ConfigSanitiserRole
+        - Arn
+      Runtime: python2.7
+      Timeout: 5
+
+  ResourceForDeletingExistingDeliveryChannel:
+    Type: 'Custom::ResourceForDeletingExistingDeliveryChannel'
+    DependsOn: ConfigurationRecorderSanitiser
+    Properties:
+      ServiceToken: !GetAtt
+        - ConfigurationRecorderSanitiser
+        - Arn
+
+  ConfigSanitiserRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: ConfigSanitiserPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Sid: ConfigPolicy
+            Effect: Allow
+            Action:
+            - 'iam:PassRole'
+            Resource: !GetAtt ConfigRole.Arn
+          - Sid: cwLogs
+            Effect: "Allow"
+            Action:
+            - 'logs:CreateLogGroup'
+            - 'logs:CreateLogStream'
+            - 'logs:PutLogEvents'
+            Resource: '*'
+          - Sid: configDeliveryChannels
+            Effect: "Allow"
+            Action:
+            - 'config:DeleteDeliveryChannel'
+            - 'config:DescribeConfigurationRecorders'
+            - 'config:DescribeDeliveryChannels'
+            - 'config:PutConfigurationRecorder'
+            - 'config:StopConfigurationRecorder'
+            - 'config:DeleteConfigurationRecorder'
+            Resource: '*'
+
   ConfigurationRecorder:
     Type: "AWS::Config::ConfigurationRecorder"
     Properties:
-      Name: 'MyConfig' 
+      Name: !GetAtt
+      - ResourceForDeletingExistingDeliveryChannel
+      - configRecName
       RecordingGroup:
         AllSupported: true
         IncludeGlobalResourceTypes: true
@@ -23,6 +128,9 @@ Resources:
   DeliveryChannel1: 
     Type: "AWS::Config::DeliveryChannel"
     Properties: 
+      Name: !GetAtt
+      - ResourceForDeletingExistingDeliveryChannel
+      - configRecName
       ConfigSnapshotDeliveryProperties: 
         DeliveryFrequency: "Six_Hours"
       S3BucketName:
