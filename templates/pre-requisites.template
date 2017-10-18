@@ -20,6 +20,7 @@ Parameters:
     Type: String
 
   QsS3URL:
+    Description: "Represents S3 Url in a AWS region."
     Type: String
 
 Conditions:
