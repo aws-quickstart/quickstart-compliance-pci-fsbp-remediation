@@ -1243,15 +1243,16 @@ Resources:
             from botocore.exceptions import ClientError
 
             def lambda_handler(event, context):
-              annotation = ''
-              is_publicly_accessible = False
-              s3_bucket_name = ''
-              is_compliant = True
 
               # get the trail for the current region
               client_ct = boto3.client('cloudtrail')
 
               for trail in client_ct.describe_trails(includeShadowTrails = False)['trailList']:
+
+                annotation = ''
+                is_publicly_accessible = False
+                s3_bucket_name = ''
+                is_compliant = True
 
                 # check if the cloudtrail s3 bucket is publicly accessible and logged
                 if trail['S3BucketName']:
@@ -1294,8 +1295,8 @@ Resources:
                 if annotation: evaluations[0]['Annotation'] = annotation
                 config = boto3.client('config')
                 config.put_evaluations(
-                    Evaluations = evaluations,
-                    ResultToken = result_token)
+                  Evaluations = evaluations,
+                  ResultToken = result_token)
 
       Handler: index.lambda_handler
       MemorySize: 1024
