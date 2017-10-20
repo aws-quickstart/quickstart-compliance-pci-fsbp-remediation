@@ -1250,20 +1250,24 @@ Resources:
 
               # get the trail for the current region
               client_ct = boto3.client('cloudtrail')
+
               for trail in client_ct.describe_trails(includeShadowTrails = False)['trailList']:
+
                 # check if the cloudtrail s3 bucket is publicly accessible and logged
                 if trail['S3BucketName']:
                   s3_bucket_name = trail['S3BucketName']
                   client_s=boto3.client('s3')
                   try:
                     for grant in client_s.get_bucket_acl(Bucket = s3_bucket_name)['Grants']:
-                    # verify cloudtrail s3 bucket ACL
+                      # verify cloudtrail s3 bucket ACL
                       if grant['Permission'] in ['READ','FULL_CONTROL'] and ('URI' in grant['Grantee'] and ('AuthenticatedUsers' in grant['Grantee']['URI'] or 'AllUsers' in grant['Grantee']['URI'])):
                         is_publicly_accessible = True
+
                     if is_publicly_accessible:
                       is_compliant = False
                       annotation = annotation + ' The CloudTrail S3 bucket \'{}\' is publicly accessible.'.format(s3_bucket_name)
-                      # verify cloudtrail s3 bucket logging
+
+                    # verify cloudtrail s3 bucket logging
                     response = client_s.get_bucket_logging(Bucket = s3_bucket_name)
                     if 'LoggingEnabled' not in response:
                       is_compliant=False
@@ -1273,10 +1277,11 @@ Resources:
                     annotation = annotation + ' There was an error looking up CloudTrail S3 bucket \'{}\'.'.format(s3_bucket_name)
                 else:
                   annotation = annotation + ' CloudTrail is not integrated with S3.'
-              result_token = 'No token found.'
 
-              if 'resultToken' in event: result_token = event['resultToken']
-              evaluations = [
+                result_token = 'No token found.'
+
+                if 'resultToken' in event: result_token = event['resultToken']
+                evaluations = [
                     {
                         'ComplianceResourceType': 'AWS::S3::Bucket',
                         'ComplianceResourceId': s3_bucket_name,
@@ -1285,12 +1290,12 @@ Resources:
                     }
                   ]
 
-              if is_compliant: annotation = 'Acces logging is enabled on the CloudTrail S3 bucket \'{}\' and the S3 bucket is not publicly accessible'.format(s3_bucket_name)
-              if annotation: evaluations[0]['Annotation'] = annotation
-              config = boto3.client('config')
-              config.put_evaluations(
-                  Evaluations = evaluations,
-                  ResultToken = result_token)
+                if is_compliant: annotation = 'Acces logging is enabled on the CloudTrail S3 bucket \'{}\' and the S3 bucket is not publicly accessible'.format(s3_bucket_name)
+                if annotation: evaluations[0]['Annotation'] = annotation
+                config = boto3.client('config')
+                config.put_evaluations(
+                    Evaluations = evaluations,
+                    ResultToken = result_token)
 
       Handler: index.lambda_handler
       MemorySize: 1024
