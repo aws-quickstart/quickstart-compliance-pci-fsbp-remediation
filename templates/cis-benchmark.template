@@ -472,6 +472,7 @@ Resources:
                   if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
                     return 'NON_COMPLIANT'
                   else: return 'COMPLIANT'
+              return 'NOT_APPLICABLE'
 
             def lambda_handler(event, context):
               invoking_event = json.loads(event['invokingEvent'])
