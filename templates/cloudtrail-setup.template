@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Configures AWS Cloudtrail regionally.'
+Description: Configures AWS Cloudtrail regionally.(qs-1nrf3c2ia)
 Conditions:
     IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 Resources:

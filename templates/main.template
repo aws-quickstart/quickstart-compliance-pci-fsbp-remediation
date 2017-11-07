@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS Benchmark security configuration. Optionally configures AWS Cloudtrail and AWS Config regionally, prior to creating the CIS Benchmark stack.
+Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS Benchmark security configuration. Optionally configures AWS Cloudtrail and AWS Config regionally, prior to creating the CIS Benchmark stack.(qs-1nrf3c2hq)
   
 Metadata:
   'AWS::CloudFormation::Interface':

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Provides nesting for enabling AWS Cloudtrail and/or AWS Config.
+Description: Provides nesting for enabling AWS Cloudtrail and/or AWS Config. (qs-1nrf3c2i0)
     
 Parameters:
 

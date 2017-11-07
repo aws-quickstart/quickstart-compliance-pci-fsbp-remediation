@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'CIS AWS Foundations Bechmark - The CIS AWS Foundation Benchmark provides a set of security configuration best practices for AWS'
+Description: CIS AWS Foundations Bechmark - The CIS AWS Foundation Benchmark provides a set of security configuration best practices for AWS. (qs-1nrf3c2if)
 
 Metadata:
   'AWS::CloudFormation::Interface':
