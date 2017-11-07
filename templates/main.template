@@ -173,4 +173,10 @@ Resources:
             - QuickStartS3URL
       TimeoutInMinutes: 20
 
-  
+Outputs:
+  SurveyLink:
+    Description: Please take a moment to complete the survey by clicking this link
+    Value: https://aws.au1.qualtrics.com/SE/?SID=SV_55sYYdtY1NhTTgN&qs=CIS
+  Help:
+    Description: For assistance or questions regarding this quickstart please email compliance-accelerator@amazon.com
+    Value: ''

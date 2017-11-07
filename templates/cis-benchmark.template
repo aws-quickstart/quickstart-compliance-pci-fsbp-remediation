@@ -43,6 +43,7 @@ Parameters:
 
 Conditions:
   IsLevel2: !Equals ["Level 2", !Ref "ProfileLevel"] 
+  IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 
 Resources:
 
@@ -63,11 +64,22 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess'
-        - 'arn:aws:iam::aws:policy/AWSCloudTrailReadOnlyAccess'
-        - 'arn:aws:iam::aws:policy/IAMReadOnlyAccess'
-        - 'arn:aws:iam::aws:policy/service-role/AWSConfigRulesExecutionRole'
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+        - !Sub
+          - arn:${Partition}:iam::aws:policy/AmazonEC2ReadOnlyAccess
+          - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+        - !Sub
+          - arn:${Partition}:iam::aws:policy/AWSCloudTrailReadOnlyAccess
+          - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+        - !Sub
+          - arn:${Partition}:iam::aws:policy/IAMReadOnlyAccess
+          - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+        - !Sub
+          - arn:${Partition}:iam::aws:policy/service-role/AWSConfigRulesExecutionRole
+          - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+        - !Sub
+          - arn:${Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+          
       Policies:
         - PolicyName: KmsReadOnly
           PolicyDocument:
@@ -261,7 +273,6 @@ Resources:
                             'ComplianceResourceType':configuration_item['resourceType'],
                             'ComplianceResourceId':configuration_item['resourceId'],
                             'ComplianceType': evaluate_compliance(configuration_item),
-                            'Annotation': 'Evaluates whether this IAM user (with password enabled) has MFA enabled.',
                             'OrderingTimestamp': configuration_item['configurationItemCaptureTime']
                         },
                     ],
@@ -345,6 +356,7 @@ Resources:
               now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
               iam = boto3.client('iam')
               user = iam.get_user(UserName=user_name)
+
               # evaluate only users that have password enabled or have logged in at least once
               if user['User'].get('PasswordLastUsed') is None:
                 return 'NOT_APPLICABLE'
@@ -374,7 +386,6 @@ Resources:
                         'ComplianceResourceType' : configuration_item['resourceType'],
                         'ComplianceResourceId' : configuration_item['resourceId'],
                         'ComplianceType' : evaluate_compliance(configuration_item),
-                        'Annotation' : 'Evaluates whether this IAM user (with password enabled) has credentials unused for 90 days or greater',
                         'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
                       },
                     ],
@@ -489,7 +500,6 @@ Resources:
                           'ComplianceResourceType' : configuration_item['resourceType'],
                           'ComplianceResourceId' : configuration_item['resourceId'],
                           'ComplianceType' : evaluate_compliance(configuration_item),
-                          'Annotation' : 'Evaluates whether this IAM user has unused active access keys for 90 days or greater',
                           'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
                       },
                     ],
@@ -900,12 +910,25 @@ Resources:
 
             import boto3
             import json
+            import os
 
             def evaluate_compliance(resource_type):
               return_value = 'COMPLIANT'
               client = boto3.client('iam')
+
+              partition = 'aws'
+              if (os.environ['AWS_REGION'].find("-gov-") > 0):
+                partition = 'aws-us-gov'
+
+              policy_arn = 'arn:' + partition + ':iam::aws:policy/AWSSupportAccess'
+              print 'policyarn = ', policy_arn
+
+              # If GovCloud, dont evaluate as the Managed Policy 'AWSSupportAccess' doesn't exist
+              if (policy_arn.find("-gov") > 0):
+                return 'NOT_APPLICABLE'
+
               # search for all entities that have a specific policy associated: AWSSupportAccess
-              response = client.list_entities_for_policy(PolicyArn='arn:aws:iam::aws:policy/AWSSupportAccess')
+              response = client.list_entities_for_policy(PolicyArn=policy_arn)
               if (resource_type) == 'user' and len(response['PolicyUsers']) == 0:
                 return_value = 'NON_COMPLIANT'
               elif (resource_type) == 'group' and len(response['PolicyGroups']) == 0:
@@ -920,27 +943,43 @@ Resources:
             def lambda_handler(event, context):
               invoking_event = json.loads(event['invokingEvent'])
               config = boto3.client('config')
+              userAnnotation = 'Atleast one IAM User has the AWSSupportAccess IAM policy assigned'
+              grpAnnotation = 'Atleast one IAM Group has the AWSSupportAccess IAM policy assigned'
+              roleAnnotation = 'Atleast one IAM Role has the AWSSupportAccess IAM policy assigned'
+
+              userCompliance = evaluate_compliance('user')
+              if (userCompliance == 'NON_COMPLIANT'):
+                userAnnotation = 'No IAM User has the AWSSupportAccess IAM policy assigned'  
+
+              groupCompliance = evaluate_compliance('group')
+              if (groupCompliance == 'NON_COMPLIANT'):
+                grpAnnotation = 'No IAM Group has the AWSSupportAccess IAM policy assigned'  
+
+              roleCompliance = evaluate_compliance('role')
+              if (roleCompliance == 'NON_COMPLIANT'):
+                roleAnnotation = 'No IAM Role has the AWSSupportAccess IAM policy assigned'  
+
               response = config.put_evaluations(
                   Evaluations=[
                     {
                       'ComplianceResourceType': 'AWS::IAM::User',
                       'ComplianceResourceId': 'NA',
-                      'ComplianceType': evaluate_compliance('user'),
-                      'Annotation': 'Checks to see if AWSSupportAccess policy is assigned to IAM User',
+                      'ComplianceType': userCompliance,
+                      'Annotation': userAnnotation,
                       'OrderingTimestamp': invoking_event['notificationCreationTime']
                     },
                     {
                       'ComplianceResourceType': 'AWS::IAM::Group',
                       'ComplianceResourceId': 'NA',
-                      'ComplianceType': evaluate_compliance('group'),
-                      'Annotation': 'Checks to see if AWSSupportAccess policy is assigned to IAM Group',
+                      'ComplianceType': groupCompliance,
+                      'Annotation': grpAnnotation,
                       'OrderingTimestamp': invoking_event['notificationCreationTime']
                     },
                     {
                       'ComplianceResourceType': 'AWS::IAM::Role',
                       'ComplianceResourceId': 'NA',
-                      'ComplianceType': evaluate_compliance('role'),
-                      'Annotation': 'Checks to see if AWSSupportAccess policy is assigned to IAM Role',
+                      'ComplianceType': roleCompliance,
+                      'Annotation': roleAnnotation,
                       'OrderingTimestamp': invoking_event['notificationCreationTime']
                     }
                   ],
@@ -1041,7 +1080,6 @@ Resources:
                         'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
                         'ComplianceResourceId': invoking_event['configurationItem']['resourceId'],
                         'ComplianceType': compliance_value,
-                        'Annotation' : 'Evaluates whether the customer managed policy is allowing full admin privileges - *:*',
                         'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
                       },
                     ],
@@ -1170,10 +1208,12 @@ Resources:
                         'OrderingTimestamp': datetime.datetime.now()
                         }
                     ]
+
                     # Is compliant message
                     if is_compliant: annotation = 'CloudTrail is enabled in all regions and trails are integrated with CloudWatch Logs!'
                     if annotation: evaluations[0]['Annotation'] = annotation
                     config = boto3.client('config')
+
                     #deliver evaluations
                     config.put_evaluations(
                         Evaluations = evaluations,
@@ -1274,7 +1314,8 @@ Resources:
                     if 'LoggingEnabled' not in response:
                       is_compliant=False
                       annotation = annotation + ' The CloudTrail S3 bucket \'{}\' does not have logging enabled.'.format(s3_bucket_name)
-                  except:
+                  except Exception as ex:
+                    print ex
                     is_compliant = False
                     annotation = annotation + ' There was an error looking up CloudTrail S3 bucket \'{}\'.'.format(s3_bucket_name)
                 else:
@@ -1294,6 +1335,7 @@ Resources:
 
                 if is_compliant: annotation = 'Acces logging is enabled on the CloudTrail S3 bucket \'{}\' and the S3 bucket is not publicly accessible'.format(s3_bucket_name)
                 if annotation: evaluations[0]['Annotation'] = annotation
+
                 config = boto3.client('config')
                 config.put_evaluations(
                   Evaluations = evaluations,
@@ -1466,6 +1508,16 @@ Resources:
             import json
             import datetime
 
+            def getKeyAlias(keyAliases, keyId):
+              for key in keyAliases:
+                if 'TargetKeyId' in key and key['AliasName'].startswith('alias/aws'):
+                  continue
+                if 'TargetKeyId' in key:
+                  if key['TargetKeyId'] == keyId:
+                    return key['AliasName']
+
+              return ''  
+                  
             def lambda_handler(event, context):
               is_compliant = True
               result_token = 'No token found.'
@@ -1475,33 +1527,28 @@ Resources:
               evaluations = []
               kms_client = boto3.client('kms')
               config_client = boto3.client('config')
+
+              # Get a list of key aliases. This will be used to discard AWS managed keys from rotation consideration.
               aws_managed_keys = []
-              #  list key aliases
-              for key in kms_client.list_aliases()['Aliases']:
-              # find aws managed keys
+              keyAliases = kms_client.list_aliases()['Aliases']
+
+              for key in keyAliases:
                 if 'TargetKeyId' in key and key['AliasName'].startswith('alias/aws'):
                   aws_managed_keys.append(key['TargetKeyId'])
-              if key not in kms_client.list_keys()['Keys']:
-                  evaluations.append(
-                      {
-                          'ComplianceResourceType': 'AWS::KMS::Key',
-                          'ComplianceResourceId': 'NA',
-                          'ComplianceType': 'NON_COMPLIANT',
-                          'Annotation': 'No CMKs found have been found',
-                          'OrderingTimestamp': datetime.datetime.now()
-                      }
-                    )
+
               for key in kms_client.list_keys()['Keys']:
-                  # evaluate key rotation compliance
-                  # do not evaluate aws managed keys
+
+                  # Do not evaluate AWS-managed keys.
                   if not key['KeyId'] in aws_managed_keys:
                     try:
                         is_compliant = kms_client.get_key_rotation_status(KeyId = key['KeyId'])['KeyRotationEnabled']
                     except:
                         is_compliant = True
-                  if is_compliant: annotation = 'Key rotation is enabled for the specified CMK'
-                  else: annotation = 'Key rotation is not enabled for the specified CMK'
-                  evaluations.append(
+
+                    if is_compliant: annotation = 'Key rotation is enabled for the specified CMK. Key Alias = ' + getKeyAlias(keyAliases, key['KeyId']) 
+                    else: annotation = 'Key rotation is not enabled for the specified CMK. Key Alias = ' + getKeyAlias(keyAliases, key['KeyId']) 
+
+                    evaluations.append(
                       {
                         'ComplianceResourceType': 'AWS::KMS::Key',
                         'ComplianceResourceId': key['KeyId'],
@@ -1649,7 +1696,6 @@ Resources:
                             'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
                             'ComplianceResourceId': vpc_id,
                             'ComplianceType': compliance_value,
-                            'Annotation' : 'Evaluates whether VPC flow logging is enabled',
                             'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
                         },
                       ],
@@ -2299,7 +2345,9 @@ Resources:
               Action:
                 - sts:AssumeRole
         ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+          - !Sub
+            - arn:${Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
         Policies:
           -
             PolicyName: CIS-AllowSnsPublish

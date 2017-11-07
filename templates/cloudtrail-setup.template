@@ -18,7 +18,10 @@ Resources:
         - Sid: Allow administration of the key
           Effect: Allow
           Principal:
-            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            AWS: !Sub 
+              - arn:${Partition}:iam::${AWS::AccountId}:root
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+
           Action: ['kms:Create*', 'kms:Describe*', 'kms:Enable*', 'kms:List*', 'kms:Put*',
             'kms:Update*', 'kms:Revoke*', 'kms:Disable*', 'kms:Get*', 'kms:Delete*',
             'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion']
@@ -32,7 +35,9 @@ Resources:
         - Sid: Allow local use of the key
           Effect: Allow
           Principal:
-            AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            AWS: !Sub 
+              - arn:${Partition}:iam::${AWS::AccountId}:root
+              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
           Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey']
           Resource: '*'
   CloudtrailKMSKeyAlias:
