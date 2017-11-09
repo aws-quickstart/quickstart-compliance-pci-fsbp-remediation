@@ -1545,8 +1545,16 @@ Resources:
                     except:
                         is_compliant = True
 
-                    if is_compliant: annotation = 'Key rotation is enabled for the specified CMK. Key Alias = ' + getKeyAlias(keyAliases, key['KeyId']) 
-                    else: annotation = 'Key rotation is not enabled for the specified CMK. Key Alias = ' + getKeyAlias(keyAliases, key['KeyId']) 
+
+                    keyIdentifier = ''
+                    kIdentifier1 =  getKeyAlias(keyAliases, key['KeyId'])
+                    if kIdentifier1 == '' :
+                        keyIdentifier = ' KeyId = ' + key['KeyId']
+                    else:
+                        keyIdentifier = ' Key Alias = ' + kIdentifier1
+                           
+                    if is_compliant: annotation = 'Key rotation is enabled for the specified CMK.' +  keyIdentifier
+                    else: annotation = 'Key rotation is not enabled for the specified CMK.' + keyIdentifier
 
                     evaluations.append(
                       {
