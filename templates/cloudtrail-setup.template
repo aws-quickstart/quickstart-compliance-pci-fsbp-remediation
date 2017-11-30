@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Configures AWS Cloudtrail regionally.(qs-1nrf3c2ia)
+Description: Configures AWS CloudTrail regionally.(qs-1nrf3c2ia)
 Conditions:
     IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 Resources:
@@ -18,7 +18,7 @@ Resources:
         - Sid: Allow administration of the key
           Effect: Allow
           Principal:
-            AWS: !Sub 
+            AWS: !Sub
               - arn:${Partition}:iam::${AWS::AccountId}:root
               - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
 
@@ -35,7 +35,7 @@ Resources:
         - Sid: Allow local use of the key
           Effect: Allow
           Principal:
-            AWS: !Sub 
+            AWS: !Sub
               - arn:${Partition}:iam::${AWS::AccountId}:root
               - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
           Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey']
@@ -86,10 +86,10 @@ Resources:
                 Resource: !Sub
                   - arn:${Partition}:s3:::${rArchiveLogsBucket}/*
                   - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
-              
 
-  cTrailS3Bucket: 
-      Type: "AWS::S3::Bucket"  
+
+  cTrailS3Bucket:
+      Type: "AWS::S3::Bucket"
       DeletionPolicy: Retain
       Properties:
         AccessControl: Private
@@ -99,17 +99,17 @@ Resources:
           DestinationBucketName: !Ref rArchiveLogsBucket
           LogFilePrefix: cloudtraillogs
 
-  BucketPolicy: 
+  BucketPolicy:
       Type: "AWS::S3::BucketPolicy"
-      Properties: 
-        Bucket: 
+      Properties:
+        Bucket:
           Ref: cTrailS3Bucket
-        PolicyDocument: 
+        PolicyDocument:
           Version: "2012-10-17"
-          Statement: 
+          Statement:
             - Sid: "AWSCloudTrailAclCheck"
               Effect: "Allow"
-              Principal: 
+              Principal:
                 Service: "cloudtrail.amazonaws.com"
               Action: "s3:GetBucketAcl"
               Resource: !Sub
@@ -144,14 +144,14 @@ Resources:
               Resource: !Sub
                 - arn:${Partition}:s3:::${cTrailS3Bucket}/*
                 - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
-            
-                 
-  cloudTrail: 
-      DependsOn: 
+
+
+  cloudTrail:
+      DependsOn:
         - BucketPolicy
       Type: "AWS::CloudTrail::Trail"
-      Properties: 
-        S3BucketName: 
+      Properties:
+        S3BucketName:
           Ref: cTrailS3Bucket
         IsLogging: true
         EnableLogFileValidation: true
@@ -189,5 +189,3 @@ Resources:
             Effect: Allow
             Action: 'logs:PutLogEvents'
             Resource: !GetAtt 'TrailLogGroup.Arn'
-
-  

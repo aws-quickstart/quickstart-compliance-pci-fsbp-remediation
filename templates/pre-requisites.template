@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Provides nesting for enabling AWS Cloudtrail and/or AWS Config. (qs-1nrf3c2i0)
-    
+Description: Provides nesting for configuration of AWS Cloudtrail and/or AWS Config. (qs-1nrf3c2i0)
+
 Parameters:
 
   ConfigureCloudtrail:
@@ -10,7 +10,7 @@ Parameters:
   ConfigureConfig:
     Type: String
     Description: Configures AWS Config regionally.
-      
+
   QSS3BucketName:
     Description: "S3 bucket name for the Quick Start assets."
     Type: String
@@ -33,7 +33,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: configureAWSCloudtrail
     Properties:
-      TemplateURL: 
+      TemplateURL:
         !Sub ${QsS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cloudtrail-setup.template
       TimeoutInMinutes: 20
 
@@ -41,7 +41,6 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: configureAWSConfig
     Properties:
-      TemplateURL: 
+      TemplateURL:
         !Sub ${QsS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/config-setup.template
       TimeoutInMinutes: 20
-  

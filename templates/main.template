@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS Benchmark security configuration. Optionally configures AWS Cloudtrail and AWS Config regionally, prior to creating the CIS Benchmark stack.(qs-1nrf3c2hq)
-  
+Description: Enterprise Accelerator - Provides nesting for required stacks to deploy CIS AWS Foundations Benchmark security configurations. Optionally configures AWS Cloudtrail and AWS Config regionally, prior to creating the CIS AWS Foundations Benchmark stack.(qs-1nrf3c2hq)
+
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -25,9 +25,9 @@ Metadata:
         NotificationEmailAddressForCloudWatchAlarms:
           default: Notification Address
         ConfigureCloudtrail:
-          default: 'Configure Cloudtrail?'     
+          default: 'Configure CloudTrail?'
         ConfigureConfig:
-          default: 'Configure Config?'     
+          default: 'Configure AWS Config?'
         QSS3BucketName:
           default: Quick Start S3 Bucket Name
         QSS3KeyPrefix:
@@ -53,7 +53,7 @@ Parameters:
     Type: String
     Default: 'No'
     Description: Configures AWS Cloudtrail regionally.
-    AllowedValues: 
+    AllowedValues:
     - 'Yes'
     - 'No'
 
@@ -61,10 +61,10 @@ Parameters:
     Type: String
     Default: 'No'
     Description: Configures AWS Config regionally.
-    AllowedValues: 
+    AllowedValues:
     - 'Yes'
     - 'No'
-      
+
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
@@ -158,7 +158,7 @@ Resources:
         ConfigureConfig: !Ref ConfigureConfig
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QsS3URL: 
+        QsS3URL:
           !FindInMap
             - AWSInfoRegionMap
             - !Ref AWS::Region

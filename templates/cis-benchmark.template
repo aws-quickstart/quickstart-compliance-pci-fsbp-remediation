@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CIS AWS Foundations Bechmark - The CIS AWS Foundation Benchmark provides a set of security configuration best practices for AWS. (qs-1nrf3c2if)
+Description: CIS AWS Foundations Benchmark - The CIS AWS Foundations Benchmark provides a set of security configuration best practices for AWS. (qs-1nrf3c2if)
 
 Metadata:
   'AWS::CloudFormation::Interface':
@@ -24,7 +24,7 @@ Metadata:
           default: Profile Level
         NotificationEmailAddressForCloudWatchAlarms:
           default: Notification Address
-  
+
 Parameters:
 
   ProfileLevel:
@@ -42,7 +42,7 @@ Parameters:
     ConstraintDescription: Must be a valid email address!
 
 Conditions:
-  IsLevel2: !Equals ["Level 2", !Ref "ProfileLevel"] 
+  IsLevel2: !Equals ["Level 2", !Ref "ProfileLevel"]
   IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
 
 Resources:
@@ -79,7 +79,7 @@ Resources:
         - !Sub
           - arn:${Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
           - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
-          
+
       Policies:
         - PolicyName: KmsReadOnly
           PolicyDocument:
@@ -949,15 +949,15 @@ Resources:
 
               userCompliance = evaluate_compliance('user')
               if (userCompliance == 'NON_COMPLIANT'):
-                userAnnotation = 'No IAM User has the AWSSupportAccess IAM policy assigned'  
+                userAnnotation = 'No IAM User has the AWSSupportAccess IAM policy assigned'
 
               groupCompliance = evaluate_compliance('group')
               if (groupCompliance == 'NON_COMPLIANT'):
-                grpAnnotation = 'No IAM Group has the AWSSupportAccess IAM policy assigned'  
+                grpAnnotation = 'No IAM Group has the AWSSupportAccess IAM policy assigned'
 
               roleCompliance = evaluate_compliance('role')
               if (roleCompliance == 'NON_COMPLIANT'):
-                roleAnnotation = 'No IAM Role has the AWSSupportAccess IAM policy assigned'  
+                roleAnnotation = 'No IAM Role has the AWSSupportAccess IAM policy assigned'
 
               response = config.put_evaluations(
                   Evaluations=[
@@ -1167,18 +1167,18 @@ Resources:
                     annotation = ''
                     is_compliant= True
                     is_multi_region = current_region_trail['IsMultiRegionTrail']
-                    
+
                     # Enabled in all regions?
                     if not is_multi_region:
                         is_compliant = False
                         annotation = annotation + ' CloudTrail is not enabled in all regions.'
-                    
+
                     # Integration with CloudWatch Logs?
                     if 'CloudWatchLogsLogGroupArn' in current_region_trail and not current_region_trail['CloudWatchLogsLogGroupArn']:
 
                         is_compliant = False
                         annotation = annotation + ' CloudTrail is not integrated with Cloudwatch Logs.'
-              
+
                     # Check if Trail logging has been turned off
                     trail_details = client.get_trail_status(Name = current_region_trail['Name'])
                     if not trail_details['IsLogging']:
@@ -1187,7 +1187,7 @@ Resources:
 
                     # CloudWatch Logs delivered within the last day
                     if 'LatestCloudWatchLogsDeliveryTime' in trail_details:
-                    
+
                     # Determine whether the number of minutes since the last delivery time exceeds 24 hours.
                         if ((int(time.time()) - int(trail_details['LatestCloudWatchLogsDeliveryTime'].strftime("%s"))) / 1440) > 24:
                             is_compliant = False
@@ -1414,17 +1414,17 @@ Resources:
                 if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
                     current_region_trail = trail
                     annotation = ''
-                    
+
                     # evaluate log file validation
                     if not current_region_trail['LogFileValidationEnabled']:
                         is_compliant = False
                         annotation = annotation + ' CloudTrail log file validation is not enabled.'
-              
+
                     # evaluate log file encryption
                     if not 'KmsKeyId' in current_region_trail:
                         is_compliant = False
                         annotation = annotation + ' CloudTrail log files are not encrypted in S3.'
-                    
+
                     result_token = 'No token found.'
 
                     if 'resultToken' in event: result_token = event['resultToken']
@@ -1516,8 +1516,8 @@ Resources:
                   if key['TargetKeyId'] == keyId:
                     return key['AliasName']
 
-              return ''  
-                  
+              return ''
+
             def lambda_handler(event, context):
               is_compliant = True
               result_token = 'No token found.'
@@ -1552,7 +1552,7 @@ Resources:
                         keyIdentifier = ' KeyId = ' + key['KeyId']
                     else:
                         keyIdentifier = ' Key Alias = ' + kIdentifier1
-                           
+
                     if is_compliant: annotation = 'Key rotation is enabled for the specified CMK.' +  keyIdentifier
                     else: annotation = 'Key rotation is not enabled for the specified CMK.' + keyIdentifier
 
@@ -1972,7 +1972,7 @@ Resources:
       Statistic: Sum
       Period: 60
       EvaluationPeriods: 1
-      Threshold: 1  
+      Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanThreshold
