@@ -1,31 +1,21 @@
 # quickstart-enterprise-accelerator-cis-benchmark
+## CIS AWS Foundations Benchmark in the AWS Cloud
 
-The CIS Enterprise Accelerator Quick Start deploys a standard environment for establishing CIS AWS 1.1 benchmark governance rules.
-Refer the benchmark specification [here](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf).
+This Quick Start deploys and configures a standardized architecture for the Center for Internet Security (CIS) AWS Foundations Benchmark.
 
-The ```main.template``` is an AWS CloudFormation template for establishing CIS AWS 1.1 benchmark governance rules.
+CIS Benchmarks are consensus-based configuration guidelines developed by experts in US government, business, industry, and academia to help organizations assess and improve security.
 
-The ```cis-benchmark-matrix.xlsx``` is a spreadsheet that maps the CIS Amazon Web Services Foundations benchmarks to the specific security controls provisioned in the CloudFormation template.
+This Quick Start implements the CIS AWS Foundations Benchmark, which is a set of security configuration best practices for hardening AWS accounts, and provides continuous monitoring capabilities for these security configurations.
 
-The AWS services used for these benchmarks are used in the following relationship:
+The Quick Start supports the benchmark by creating AWS Config rules, Amazon CloudWatch alarms, and CloudWatch Events rules in your AWS account. The deployment is automated by customizable AWS CloudFormation templates and scripts that build and configure the environment in about 10 minutes. The Quick Start also includes a security controls matrix (Microsoft Excel spreadsheet), which shows how the Quick Start components and configuration map to CIS controls. For more information about the recommendations implemented by this Quick Start, see the [CIS AWS Foundations Benchmark specification](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf) and the [security controls matrix](https://s3.amazonaws.com/quickstart-reference/enterprise-accelerator/cis/benchmark/latest/assets/CIS-Security-Controls-Mapping.xlsx).
 
-![Architecture](https://github.com/aws-quickstart/quickstart-enterprise-accelerator-cis-benchmark/blob/develop/assets/CIS_Benchmark_Architecture.png)
+You can also use the AWS CloudFormation templates as a starting point for your own implementation.
 
-The following preconditions must be met before the stack can be launched:
+This Quick Start was built by AWS solutions architects and compliance experts in collaboration with Accenture, an AWS Premier Consulting Partner.
 
-1. AWS Config must be running in the region where this template will be run. This is needed for Config Rules.
-2. Amazon CloudTrail must be delivering logs to CloudWatch Logs. This is needed for CloudWatch metrics and alarms.
-3. AWS Lambda must be supported in the region where this template will be launched. See [this](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/) page for region support.
+![Quick Start architecture for CIS AWS Foundations Benchmark](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/quickstart-architecture-for-cis-benchmark-on-aws.png)
 
-The controls are a combination of AWS Config Rules, Amazon CloudWatch rules, and Amazon CloudWatch alarms.
-Please note that these resources will incur costs in your account; please refer to the pricing model for each service.
+For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://s3.amazonaws.com/quickstart-reference/enterprise-accelerator/cis/benchmark/latest/doc/cis-benchmark-on-the-aws-cloud.pdf).
 
-For example, an estimate in us-east-1:
-
-* ```Config Rules```: 15 rules   @ $2.00/rule/month    = $30.00/month
-* ```CloudWatch Alarms```:  5 alarms  @ $0.10/alarm/month   =  $0.50/month
-* ```CloudWatch Metrics```: 5 metrics @ $0.30/metric/month  =  $1.50/month
-* ```CloudWatch Logs```:  23 logs    @ $0.50/GB ingested   =  based on usage
-* ```CloudWatch Event Rules```: 7 Rules - Variable - $1.00 per million custom events generated.
-* ```AWS Lambda```:  Variable (first 1 million requests per month are free)
-* ```S3 Storage```: Variable
+To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
+If you'd like to submit code for this Quick Start, please review the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/).
