@@ -936,11 +936,11 @@ Resources:
               # search for all entities that have a specific policy associated: AWSSupportAccess
               response = client.list_entities_for_policy(PolicyArn=policy_arn)
               if (resource_type) == 'user' and len(response['PolicyUsers']) == 0:
-                return_value = 'NON_COMPLIANT'
+                return_value = 'NOT_APPLICABLE'
               elif (resource_type) == 'group' and len(response['PolicyGroups']) == 0:
-                return_value = 'NON_COMPLIANT'
+                return_value = 'NOT_APPLICABLE'
               elif (resource_type) == 'role' and len(response['PolicyRoles']) == 0:
-                return_value = 'NON_COMPLIANT'
+                return_value = 'NOT_APPLICABLE'
               else:
                 return_value = 'COMPLIANT'
 
@@ -954,16 +954,8 @@ Resources:
               roleAnnotation = 'Atleast one IAM Role has the AWSSupportAccess IAM policy assigned'
 
               userCompliance = evaluate_compliance('user')
-              if (userCompliance == 'NON_COMPLIANT'):
-                userAnnotation = 'No IAM User has the AWSSupportAccess IAM policy assigned'
-
               groupCompliance = evaluate_compliance('group')
-              if (groupCompliance == 'NON_COMPLIANT'):
-                grpAnnotation = 'No IAM Group has the AWSSupportAccess IAM policy assigned'
-
               roleCompliance = evaluate_compliance('role')
-              if (roleCompliance == 'NON_COMPLIANT'):
-                roleAnnotation = 'No IAM Role has the AWSSupportAccess IAM policy assigned'
 
               response = config.put_evaluations(
                   Evaluations=[
