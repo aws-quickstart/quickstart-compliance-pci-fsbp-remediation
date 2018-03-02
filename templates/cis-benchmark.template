@@ -1406,9 +1406,8 @@ Resources:
             config = boto3.client('config')
 
             def lambda_handler(event, context):
-              is_compliant = True
-
               for trail in client_ct.describe_trails()['trailList']:
+                is_compliant = True
                 if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
                     current_region_trail = trail
                     annotation = ''
