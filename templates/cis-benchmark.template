@@ -622,7 +622,6 @@ Resources:
 
               if 'AccountMFAEnabled' in summary and summary['AccountMFAEnabled'] == 1:
                 is_compliant = is_compliant and True
-                annotation = annotation + ' The root account has MFA enabled.'
               else:
                 is_compliant = is_compliant and False
                 annotation = annotation + ' The root account does NOT have MFA enabled.'
@@ -630,12 +629,12 @@ Resources:
               # Determine whether the root account uses hardware-based MFA.
               mfa_devices = client.list_virtual_mfa_devices()['VirtualMFADevices']
               for mfa_device in mfa_devices:
-                if not 'SerialNumber' in mfa_device:
-                  is_compliant = is_compliant and True
-                  annotation = annotation + ' The root account has hardware-based MFA enabled.'
-                else:
+                if 'SerialNumber' in mfa_device and 'mfa/root-account-mfa-device' in mfa_device['SerialNumber']:
                   is_compliant = is_compliant and False
                   annotation = annotation + ' The root account does NOT have hardware-based MFA enabled.'
+                  break
+                else:
+                  is_compliant = is_compliant and True
 
               # Determine whether the root account has active access keys.
               # The credential report will contain comma-separated values, so transform the users into a list.
@@ -648,7 +647,6 @@ Resources:
                   user_values = user.split(',')
                   if user_values[FIELD_ACCESS_KEY_1_ACTIVE].lower() == 'false' and user_values[FIELD_ACCESS_KEY_2_ACTIVE].lower() == 'false':
                     is_compliant = is_compliant and True
-                    annotation = annotation + ' The root account does NOT have active access keys associated with it.'
                   else:
                     is_compliant = is_compliant and False
                     annotation = annotation + ' The root account HAS active access keys associated with it.'
