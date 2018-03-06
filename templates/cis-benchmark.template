@@ -825,6 +825,9 @@ Resources:
 
                 reservations = boto3.client('ec2').describe_instances(InstanceIds=[instance_id])['Reservations']
 
+                if (reservations[0]['Instances'][0]['State']['Name']).upper() == 'TERMINATED':
+                    return 'NOT_APPLICABLE'
+
                 if reservations and 'IamInstanceProfile' in reservations[0]['Instances'][0]: return 'COMPLIANT'
                 else: return 'NON_COMPLIANT'
 
