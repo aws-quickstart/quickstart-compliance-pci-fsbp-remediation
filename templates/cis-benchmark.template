@@ -611,7 +611,7 @@ Resources:
             FIELD_ACCESS_KEY_2_ACTIVE = 13
             def lambda_handler(event, context):
               is_compliant = True
-              annotation = ''
+              annotation = '-'
               invoking_event = json.loads(event['invokingEvent'])
               result_token = 'No token found.'
 
