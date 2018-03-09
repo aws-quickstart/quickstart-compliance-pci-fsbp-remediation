@@ -1935,10 +1935,10 @@ Resources:
       Statistic: Sum
       Period: 60
       EvaluationPeriods: '1'
-      Threshold: 5
+      Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
   UnauthorizedApiCallsFilter:
     Type: 'AWS::Logs::MetricFilter'
@@ -1973,7 +1973,7 @@ Resources:
       Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
   NoMfaConsoleLoginsFilter:
     Type: 'AWS::Logs::MetricFilter'
@@ -2012,7 +2012,7 @@ Resources:
       Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
   RootAccountLoginsFilter:
     Type: 'AWS::Logs::MetricFilter'
@@ -2108,10 +2108,10 @@ Resources:
       Statistic: Sum
       Period: '300'
       EvaluationPeriods: '1'
-      Threshold: '3'
+      Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
   FailedConsoleLoginsFilter:
     Type: 'AWS::Logs::MetricFilter'
@@ -2148,7 +2148,7 @@ Resources:
       Threshold: 1
       AlarmActions:
         - !Ref AlarmNotificationTopic
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: GreaterThanOrEqualToThreshold
 
   DisabledOrDeletedCmksFilter:
     Type: 'AWS::Logs::MetricFilter'
