@@ -89,6 +89,7 @@ Resources:
                 Action:
                   - 'kms:GetKeyRotationStatus'
                   - 'kms:ListKeys'
+                  - 'kms:ListAliases'
                 Resource: '*'
         - PolicyName: S3ReadOnly
           PolicyDocument:
@@ -1936,6 +1937,7 @@ Resources:
       Period: 60
       EvaluationPeriods: '1'
       Threshold: 1
+      TreatMissingData: notBreaching
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -1971,6 +1973,7 @@ Resources:
       Period: 60
       EvaluationPeriods: 1
       Threshold: 1
+      TreatMissingData: notBreaching
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -2010,6 +2013,7 @@ Resources:
       Period: 60
       EvaluationPeriods: 1
       Threshold: 1
+      TreatMissingData: notBreaching
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -2109,6 +2113,7 @@ Resources:
       Period: '300'
       EvaluationPeriods: '1'
       Threshold: 1
+      TreatMissingData: notBreaching
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold
@@ -2146,6 +2151,7 @@ Resources:
       Period: 60
       EvaluationPeriods: 1
       Threshold: 1
+      TreatMissingData: notBreaching
       AlarmActions:
         - !Ref AlarmNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold
