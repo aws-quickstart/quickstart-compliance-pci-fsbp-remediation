@@ -1,54 +1,55 @@
+---
 AWSTemplateFormatVersion: 2010-09-09
-Description: Provides nesting for required stacks to deploy CIS AWS Foundations Benchmark security configurations. Optionally configures AWS CloudTrail and AWS Config regionally, prior to creating the CIS AWS Foundations Benchmark stack.(qs-1nrf3c2hq)
-
+Description: Provides nesting for required stacks to deploy CIS AWS Foundations Benchmark
+  security configurations. Optionally configures AWS CloudTrail and AWS Config regionally,
+  prior to creating the CIS AWS Foundations Benchmark stack.(qs-1nrf3c2hq)
 Metadata:
-  'AWS::CloudFormation::Interface':
+  AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label:
-            default: CIS benchmark configuration parameters
-        Parameters:
-          - ProfileLevel
-          - NotificationEmailAddressForCloudWatchAlarms
-      - Label:
-            default: Configure AWS Cloudtrail and AWS Config (Optional)
-        Parameters:
-          - ConfigureCloudtrail
-          - ConfigureConfig
-      - Label:
-            default: AWS Quick Start Configuration
-        Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
+    - Label:
+        default: CIS benchmark configuration parameters
+      Parameters:
+      - ProfileLevel
+      - NotificationEmailAddressForCloudWatchAlarms
+    - Label:
+        default: Configure AWS Cloudtrail and AWS Config (Optional)
+      Parameters:
+      - ConfigureCloudtrail
+      - ConfigureConfig
+    - Label:
+        default: AWS Quick Start Configuration
+      Parameters:
+      - QSS3BucketName
+      - QSS3KeyPrefix
     ParameterLabels:
-        ProfileLevel:
-          default: Profile Level
-        NotificationEmailAddressForCloudWatchAlarms:
-          default: Notification Address
-        ConfigureCloudtrail:
-          default: 'Configure CloudTrail?'
-        ConfigureConfig:
-          default: 'Configure AWS Config?'
-        QSS3BucketName:
-          default: Quick Start S3 Bucket Name
-        QSS3KeyPrefix:
-          default: Quick Start S3 Key Prefix
-
+      ProfileLevel:
+        default: Profile Level
+      NotificationEmailAddressForCloudWatchAlarms:
+        default: Notification Address
+      ConfigureCloudtrail:
+        default: Configure CloudTrail?
+      ConfigureConfig:
+        default: Configure AWS Config?
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
 Parameters:
-
   ProfileLevel:
-      Description: "Level 1 controls are baseline governance controls, whereas Level 2 controls (recommended) represent redundant or stricter governance controls. See the control list here for guidance: https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf"
-      Type: String
-      Default: Level 2
-      AllowedValues:
-        - Level 1
-        - Level 2
-
+    Description: 'Level 1 controls are baseline governance controls, whereas Level
+      2 controls (recommended) represent redundant or stricter governance controls.
+      See the control list here for guidance: https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf'
+    Type: String
+    Default: Level 2
+    AllowedValues:
+    - Level 1
+    - Level 2
   NotificationEmailAddressForCloudWatchAlarms:
     Type: String
-    Description: Email address that will be subscribed to the SNS topic for CloudWatch alarms and rules (a subscription confirmation email will be sent).
+    Description: Email address that will be subscribed to the SNS topic for CloudWatch
+      alarms and rules (a subscription confirmation email will be sent).
     AllowedPattern: ([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)
     ConstraintDescription: Must be a valid email address!
-
   ConfigureCloudtrail:
     Type: String
     Default: 'No'
@@ -56,7 +57,6 @@ Parameters:
     AllowedValues:
     - 'Yes'
     - 'No'
-
   ConfigureConfig:
     Type: String
     Default: 'No'
@@ -64,119 +64,74 @@ Parameters:
     AllowedValues:
     - 'Yes'
     - 'No'
-
   QSS3BucketName:
-    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
-    ConstraintDescription: "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
-    Default: "quickstart-reference"
-    Description: "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-)."
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+    Default: aws-quickstart
+    Description: S3 bucket name for the Quick Start assets. Quick Start bucket name
+      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
+      It cannot start or end with a hyphen (-).
     Type: String
-
   QSS3KeyPrefix:
-    AllowedPattern: "^[0-9a-zA-Z-/]*$"
-    ConstraintDescription: "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
-    Default: "enterprise-accelerator/cis/benchmark/latest/"
-    Description: "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    AllowedPattern: ^[0-9a-zA-Z-/]*$
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slash (/).
+    Default: quickstart-compliance-cis-benchmark/
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
     Type: String
-
 Conditions:
-    IsLevel2: !Equals ["Level 2", !Ref "ProfileLevel"]
-
-Mappings:
-  AWSInfoRegionMap:
-    ap-northeast-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    ap-northeast-2:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    ap-south-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    ap-southeast-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    ap-southeast-2:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    ca-central-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    eu-central-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    eu-west-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    eu-west-2:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    sa-east-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    us-east-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    us-east-2:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    us-gov-west-1:
-      Partition: aws-us-gov
-      QuickStartS3URL: https://s3-us-gov-west-1.amazonaws.com
-    us-west-1:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-    us-west-2:
-      Partition: aws
-      QuickStartS3URL: https://s3.amazonaws.com
-
-
+  GovCloudCondition:
+    !Equals
+    - !Ref AWS::Region
+    - us-gov-west-1
+  IsLevel2:
+    !Equals
+    - Level 2
+    - !Ref ProfileLevel
 Resources:
-
   CISBenchmarkStack:
     Type: AWS::CloudFormation::Stack
     DependsOn: PreRequisitesForCISBenchmark
     Properties:
       TemplateURL:
         !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cis-benchmark.template
-        - QuickStartS3URL:
-            !FindInMap
-            - AWSInfoRegionMap
-            - !Ref AWS::Region
-            - QuickStartS3URL
+        - https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/cis-benchmark.template
+        - QSS3Region:
+            !If
+            - GovCloudCondition
+            - s3-us-gov-west-1
+            - s3
       TimeoutInMinutes: 20
       Parameters:
         ProfileLevel: !Ref ProfileLevel
         NotificationEmailAddressForCloudWatchAlarms: !Ref NotificationEmailAddressForCloudWatchAlarms
-
   PreRequisitesForCISBenchmark:
     Type: AWS::CloudFormation::Stack
     Properties:
+      TemplateURL:
+        !Sub
+        - https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/pre-requisites.template
+        - QSS3Region:
+            !If
+            - GovCloudCondition
+            - s3-us-gov-west-1
+            - s3
+      TimeoutInMinutes: 20
       Parameters:
         ConfigureCloudtrail: !Ref ConfigureCloudtrail
         ConfigureConfig: !Ref ConfigureConfig
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        QsS3URL:
-          !FindInMap
-            - AWSInfoRegionMap
-            - !Ref AWS::Region
-            - QuickStartS3URL
-      TemplateURL:
-        !Sub
-        - ${QuickStartS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/pre-requisites.template
-        - QuickStartS3URL:
-            !FindInMap
-            - AWSInfoRegionMap
-            - !Ref AWS::Region
-            - QuickStartS3URL
-      TimeoutInMinutes: 20
-
 Outputs:
   SurveyLink:
     Description: Please take a moment to complete the survey by clicking this link
     Value: https://aws.au1.qualtrics.com/SE/?SID=SV_55sYYdtY1NhTTgN&qs=CIS
   Help:
-    Description: For assistance or questions regarding this quickstart please email compliance-accelerator@amazon.com
+    Description: For assistance or questions regarding this quickstart please email
+      compliance-accelerator@amazon.com
     Value: ''
+...

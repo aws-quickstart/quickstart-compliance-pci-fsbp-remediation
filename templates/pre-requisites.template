@@ -1,46 +1,58 @@
+---
 AWSTemplateFormatVersion: 2010-09-09
-Description: Provides nesting for configuration of AWS Cloudtrail and/or AWS Config. (qs-1nrf3c2i0)
-
+Description: Provides nesting for configuration of AWS Cloudtrail and/or AWS Config.
+  (qs-1nrf3c2i0)
 Parameters:
-
   ConfigureCloudtrail:
     Type: String
     Description: Configures AWS Cloudtrail regionally.
-
   ConfigureConfig:
     Type: String
     Description: Configures AWS Config regionally.
-
   QSS3BucketName:
-    Description: "S3 bucket name for the Quick Start assets."
+    Description: S3 bucket name for the Quick Start assets.
     Type: String
-
   QSS3KeyPrefix:
-    Description: "S3 key prefix for the Quick Start assets."
+    Description: S3 key prefix for the Quick Start assets.
     Type: String
-
-  QsS3URL:
-    Description: "Represents S3 Url in a AWS region."
-    Type: String
-
 Conditions:
-    configureAWSCloudtrail: !Equals ["Yes", !Ref "ConfigureCloudtrail"]
-    configureAWSConfig: !Equals ["Yes", !Ref "ConfigureConfig"]
-
+  GovCloudCondition:
+    !Equals
+    - !Ref AWS::Region
+    - us-gov-west-1
+  configureAWSCloudtrail:
+    !Equals
+    - 'Yes'
+    - !Ref ConfigureCloudtrail
+  configureAWSConfig:
+    !Equals
+    - 'Yes'
+    - !Ref ConfigureConfig
 Resources:
-
   ConfigureAWSCloudtrailStack:
     Type: AWS::CloudFormation::Stack
     Condition: configureAWSCloudtrail
     Properties:
       TemplateURL:
-        !Sub ${QsS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/cloudtrail-setup.template
+        !Sub
+        - https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/cloudtrail-setup.template
+        - QSS3Region:
+            !If
+            - GovCloudCondition
+            - s3-us-gov-west-1
+            - s3
       TimeoutInMinutes: 20
-
   ConfigureAWSConfigStack:
     Type: AWS::CloudFormation::Stack
     Condition: configureAWSConfig
     Properties:
       TemplateURL:
-        !Sub ${QsS3URL}/${QSS3BucketName}/${QSS3KeyPrefix}templates/config-setup.template
+        !Sub
+        - https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/config-setup.template
+        - QSS3Region:
+            !If
+            - GovCloudCondition
+            - s3-us-gov-west-1
+            - s3
       TimeoutInMinutes: 20
+...

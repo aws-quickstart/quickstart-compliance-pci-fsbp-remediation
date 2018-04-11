@@ -1,86 +1,85 @@
+---
 AWSTemplateFormatVersion: 2010-09-09
 Description: Configures AWS Config regionally. (qs-1nrf3c2i5)
-
 Conditions:
-    IsGovCloud: !Equals [ us-gov-west-1, !Ref 'AWS::Region' ]
-
+  GovCloudCondition:
+    !Equals
+    - !Ref AWS::Region
+    - us-gov-west-1
 Resources:
-
   ConfigurationRecorderSanitiser:
-    Type: 'AWS::Lambda::Function'
+    Type: AWS::Lambda::Function
     DependsOn:
-      - ConfigSanitiserRole
+    - ConfigSanitiserRole
     Properties:
       Code:
         ZipFile: |
-            import boto3
-            import cfnresponse
-            import datetime
+          import boto3
+          import cfnresponse
+          import datetime
 
-            client = boto3.client('config')
-            configRecorderName = 'conf-rec-' + datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")
+          client = boto3.client('config')
+          configRecorderName = 'conf-rec-' + datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")
 
-            def lambda_handler(event, context):
+          def lambda_handler(event, context):
 
-                # Only execute in a custom CloudFormation resource creation event.
-                if 'RequestType' in event and event['RequestType'] == 'Create':
+              # Only execute in a custom CloudFormation resource creation event.
+              if 'RequestType' in event and event['RequestType'] == 'Create':
 
-                    try:
-                        # Get all Config Recorders
-                        response = client.describe_configuration_recorders()
-                        for recorder in response['ConfigurationRecorders']:
+                  try:
+                      # Get all Config Recorders
+                      response = client.describe_configuration_recorders()
+                      for recorder in response['ConfigurationRecorders']:
 
-                            # Try stopping the Config Recorder
-                            response = client.stop_configuration_recorder(ConfigurationRecorderName=recorder['name'])
-                            print('Stopped Config - ', recorder['name'])
+                          # Try stopping the Config Recorder
+                          response = client.stop_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                          print('Stopped Config - ', recorder['name'])
 
-                            # Get all Delivery Channels. Only one per Region is allowed currently
-                            response = client.describe_delivery_channels()
-                            for channel in response['DeliveryChannels']:
+                          # Get all Delivery Channels. Only one per Region is allowed currently
+                          response = client.describe_delivery_channels()
+                          for channel in response['DeliveryChannels']:
 
-                                # Delete the Delivery Channel
-                                response = client.delete_delivery_channel(DeliveryChannelName=channel['name'])
-                                print('Deleted Channel - ', channel['name'])
+                              # Delete the Delivery Channel
+                              response = client.delete_delivery_channel(DeliveryChannelName=channel['name'])
+                              print('Deleted Channel - ', channel['name'])
 
-                            # Delete the Configuration Recorder
-                            response = client.delete_configuration_recorder(ConfigurationRecorderName=recorder['name'])
-                            print('Deleted Config recorder - ', recorder['name'])
+                          # Delete the Configuration Recorder
+                          response = client.delete_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                          print('Deleted Config recorder - ', recorder['name'])
 
-                    except:
-                        cfnresponse.send(event, context, cfnresponse.FAILED, {"configRecName": 'error'}, '')
+                  except:
+                      cfnresponse.send(event, context, cfnresponse.FAILED, {"configRecName": 'error'}, '')
 
-                cfnresponse.send(event, context, cfnresponse.SUCCESS, {"configRecName": configRecorderName}, '')
-
-          
-      Description: Deletes existig Delivery Channels if any
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {"configRecName": configRecorderName}, '')
+      Description: Deletes existing Delivery Channels if any
       Handler: index.lambda_handler
       MemorySize: 1024
-      Role: !GetAtt
+      Role:
+        !GetAtt
         - ConfigSanitiserRole
         - Arn
       Runtime: python2.7
       Timeout: 5
-
   ResourceForDeletingExistingDeliveryChannel:
-    Type: 'Custom::ResourceForDeletingExistingDeliveryChannel'
+    Type: Custom::ResourceForDeletingExistingDeliveryChannel
     DependsOn: ConfigurationRecorderSanitiser
     Properties:
-      ServiceToken: !GetAtt
+      ServiceToken:
+        !GetAtt
         - ConfigurationRecorderSanitiser
         - Arn
-
   ConfigSanitiserRole:
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
       Policies:
       - PolicyName: ConfigSanitiserPolicy
         PolicyDocument:
@@ -89,93 +88,106 @@ Resources:
           - Sid: ConfigPolicy
             Effect: Allow
             Action:
-            - 'iam:PassRole'
+            - iam:PassRole
             Resource: !GetAtt ConfigRole.Arn
           - Sid: cwLogs
-            Effect: "Allow"
+            Effect: Allow
             Action:
-            - 'logs:CreateLogGroup'
-            - 'logs:CreateLogStream'
-            - 'logs:PutLogEvents'
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
             Resource: '*'
           - Sid: configDeliveryChannels
-            Effect: "Allow"
+            Effect: Allow
             Action:
-            - 'config:DeleteDeliveryChannel'
-            - 'config:DescribeConfigurationRecorders'
-            - 'config:DescribeDeliveryChannels'
-            - 'config:PutConfigurationRecorder'
-            - 'config:StopConfigurationRecorder'
-            - 'config:DeleteConfigurationRecorder'
+            - config:DeleteDeliveryChannel
+            - config:DescribeConfigurationRecorders
+            - config:DescribeDeliveryChannels
+            - config:PutConfigurationRecorder
+            - config:StopConfigurationRecorder
+            - config:DeleteConfigurationRecorder
             Resource: '*'
-
   ConfigurationRecorder:
-    Type: "AWS::Config::ConfigurationRecorder"
+    Type: AWS::Config::ConfigurationRecorder
     Properties:
-      Name: !GetAtt
-      - ResourceForDeletingExistingDeliveryChannel
-      - configRecName
+      Name:
+        !GetAtt
+        - ResourceForDeletingExistingDeliveryChannel
+        - configRecName
       RecordingGroup:
         AllSupported: true
         IncludeGlobalResourceTypes: true
-      RoleARN: !GetAtt
+      RoleARN:
+        !GetAtt
         - ConfigRole
         - Arn
-
-  configS3Bucket: 
+  configS3Bucket:
     DeletionPolicy: Retain
-    Type: "AWS::S3::Bucket"
-
-
-  DeliveryChannel1: 
-    Type: "AWS::Config::DeliveryChannel"
-    Properties: 
-      Name: !GetAtt
-      - ResourceForDeletingExistingDeliveryChannel
-      - configRecName
-      ConfigSnapshotDeliveryProperties: 
-        DeliveryFrequency: "Six_Hours"
+    Type: AWS::S3::Bucket
+  DeliveryChannel1:
+    Type: AWS::Config::DeliveryChannel
+    Properties:
+      Name:
+        !GetAtt
+        - ResourceForDeletingExistingDeliveryChannel
+        - configRecName
+      ConfigSnapshotDeliveryProperties:
+        DeliveryFrequency: Six_Hours
       S3BucketName:
         Ref: configS3Bucket
-
-  
   ConfigRole:
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - config.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
+        - Effect: Allow
+          Principal:
+            Service:
+            - config.amazonaws.com
+          Action:
+          - sts:AssumeRole
       ManagedPolicyArns:
-        -  'arn:aws:iam::aws:policy/service-role/AWSConfigRole'
+      - !Sub
+        - arn:${Partition}:iam::aws:policy/service-role/AWSConfigRole
+        - Partition:
+            !If
+            - GovCloudCondition
+            - aws-us-gov
+            - aws
       Policies:
-      - PolicyName: 'CIS-config-policy'
+      - PolicyName: CIS-config-policy
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
           - Sid: AWSConfigRole
             Effect: Allow
-            Action: 
+            Action:
             - config:Put*
             Resource: '*'
           - Sid: AWSConfigPutObject
-            Effect: "Allow"
-            Action: "s3:PutObject"
-            Resource: !Sub
+            Effect: Allow
+            Action: s3:PutObject
+            Resource:
+              !Sub
               - arn:${Partition}:s3:::${configS3Bucket}/AWSLogs/${AWS::AccountId}/*
-              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
-            Condition: 
-                StringEquals:
-                  s3:x-amz-acl: "bucket-owner-full-control"  
-
+              - Partition:
+                  !If
+                  - GovCloudCondition
+                  - aws-us-gov
+                  - aws
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
           - Sid: AWSConfigGetObject
-            Effect: "Allow"
-            Action: "s3:GetBucketAcl"
-            Resource: !Sub
+            Effect: Allow
+            Action: s3:GetBucketAcl
+            Resource:
+              !Sub
               - arn:${Partition}:s3:::${configS3Bucket}
-              - { Partition: !If [ IsGovCloud, aws-us-gov, aws ] }
+              - Partition:
+                  !If
+                  - GovCloudCondition
+                  - aws-us-gov
+                  - aws
+...
