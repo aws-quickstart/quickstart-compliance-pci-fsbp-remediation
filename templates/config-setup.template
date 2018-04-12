@@ -17,40 +17,30 @@ Resources:
           import boto3
           import cfnresponse
           import datetime
-
           client = boto3.client('config')
           configRecorderName = 'conf-rec-' + datetime.datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S")
-
           def lambda_handler(event, context):
-
-              # Only execute in a custom CloudFormation resource creation event.
-              if 'RequestType' in event and event['RequestType'] == 'Create':
-
-                  try:
-                      # Get all Config Recorders
-                      response = client.describe_configuration_recorders()
-                      for recorder in response['ConfigurationRecorders']:
-
-                          # Try stopping the Config Recorder
-                          response = client.stop_configuration_recorder(ConfigurationRecorderName=recorder['name'])
-                          print('Stopped Config - ', recorder['name'])
-
-                          # Get all Delivery Channels. Only one per Region is allowed currently
-                          response = client.describe_delivery_channels()
-                          for channel in response['DeliveryChannels']:
-
-                              # Delete the Delivery Channel
-                              response = client.delete_delivery_channel(DeliveryChannelName=channel['name'])
-                              print('Deleted Channel - ', channel['name'])
-
-                          # Delete the Configuration Recorder
-                          response = client.delete_configuration_recorder(ConfigurationRecorderName=recorder['name'])
-                          print('Deleted Config recorder - ', recorder['name'])
-
-                  except:
-                      cfnresponse.send(event, context, cfnresponse.FAILED, {"configRecName": 'error'}, '')
-
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, {"configRecName": configRecorderName}, '')
+            # Only execute in a custom CloudFormation resource creation event.
+            if 'RequestType' in event and event['RequestType'] == 'Create':
+              try:
+                # Get all Config Recorders
+                response = client.describe_configuration_recorders()
+                for recorder in response['ConfigurationRecorders']:
+                  # Try stopping the Config Recorder
+                  response = client.stop_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                  print('Stopped Config - ', recorder['name'])
+                  # Get all Delivery Channels. Only one per Region is allowed currently
+                  response = client.describe_delivery_channels()
+                  for channel in response['DeliveryChannels']:
+                    # Delete the Delivery Channel
+                    response = client.delete_delivery_channel(DeliveryChannelName=channel['name'])
+                    print('Deleted Channel - ', channel['name'])
+                  # Delete the Configuration Recorder
+                  response = client.delete_configuration_recorder(ConfigurationRecorderName=recorder['name'])
+                  print('Deleted Config recorder - ', recorder['name'])
+              except:
+                cfnresponse.send(event, context, cfnresponse.FAILED, {"configRecName": 'error'}, '')
+            cfnresponse.send(event, context, cfnresponse.SUCCESS, {"configRecName": configRecorderName}, '')
       Description: Deletes existing Delivery Channels if any
       Handler: index.lambda_handler
       MemorySize: 1024
