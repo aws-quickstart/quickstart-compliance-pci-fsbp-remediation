@@ -48,6 +48,9 @@ Conditions:
     - Level 2
     - !Ref ProfileLevel
 Resources:
+#===============================================================================================================================
+# Resources for EvaluateCisBenchmarkingPreconditions
+#===============================================================================================================================
   MasterConfigRole:
     Type: AWS::IAM::Role
     Properties:
@@ -116,6 +119,16 @@ Resources:
             - s3:GetBucketAcl
             - s3:GetBucketLogging
             Resource: '*'
+
+#==================================================================================================
+# Function: EvaluateCisBenchmarkingPreconditions
+# Purpose:  Evaluates preconditions for CIS benchmarking
+#
+#           Precondition 1: Config must have an active recorder running.
+#                           This is needed for Config Rules.
+#           Precondition 2: CloudTrail must be delivering logs to CloudWatch Logs
+#                           This is needed for CloudWatch metrics and alarms.
+#==================================================================================================
   FunctionForEvaluateCISBenchmarkPreconditions:
     Type: AWS::Lambda::Function
     DependsOn:
@@ -166,6 +179,13 @@ Resources:
         !GetAtt
         - FunctionForEvaluateCISBenchmarkPreconditions
         - Arn
+
+#===============================================================================================================================
+# Function to find and return CloudWatch log name Section
+# CloudWatch log name is needed (referenced) for custom metric filters
+# Lambda function will return the CloudWatch LogName used by CloudTrail
+# The function is executed only in a custom CloudFormation resource creation event
+#===============================================================================================================================
   GetCloudWatchLogName:
     Type: AWS::Lambda::Function
     DependsOn:
@@ -205,6 +225,10 @@ Resources:
         !GetAtt
         - GetCloudWatchLogName
         - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.2   Ensure multi-factor authentication (MFA) is enabled for all IAM users that have a password (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateMFAAllUsersLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -291,6 +315,10 @@ Resources:
     DependsOn:
     - EvaluateMFAAllUsersLambdaInvokePermission
     - ResourceForEvaluateCISBenchmarkPreconditions
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.3   Ensure credentials unused for 90 days or greater are disabled (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateUnusedCredentialsLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -395,6 +423,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateUnusedCredentials
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.4   Ensure access keys are rotated every 90 days or less (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateAccessKeysLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -499,6 +531,16 @@ Resources:
           !GetAtt
           - FunctionForEvaluateAccessKeys
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.5   Ensure IAM password policy requires at least one uppercase letter (Scored)
+# CIS AWS Foundations Benchmark - 1.6   Ensure IAM password policy require at least one lowercase letter (Scored)
+# CIS AWS Foundations Benchmark - 1.7   Ensure IAM password policy require at least one symbol (Scored)
+# CIS AWS Foundations Benchmark - 1.8   Ensure IAM password policy require at least one number (Scored)
+# CIS AWS Foundations Benchmark - 1.9   Ensure IAM password policy requires minimum length of 14 or greater (Scored)
+# CIS AWS Foundations Benchmark - 1.10  Ensure IAM password policy prevents password reuse (Scored)
+# CIS AWS Foundations Benchmark - 1.11  Ensure IAM password policy expires passwords within 90 days or less (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   ConfigRuleForIamPasswordPolicy:
     Type: AWS::Config::ConfigRule
     DependsOn: ResourceForEvaluateCISBenchmarkPreconditions
@@ -520,6 +562,12 @@ Resources:
       Source:
         Owner: AWS
         SourceIdentifier: IAM_PASSWORD_POLICY
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.12  Ensure no root account access key exists (Scored)
+# CIS AWS Foundations Benchmark - 1.13  Ensure  MFA is enabled for the "root" account (Scored)
+# CIS AWS Foundations Benchmark - 1.14  Ensure hardware MFA is enabled for the "root" account (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateRootAccountLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: IsLevel2
@@ -632,6 +680,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateRootAccountRule
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.16  Ensure IAM policies are attached only to groups or roles (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateUserPolicyAssociationLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -729,6 +781,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateUserPolicyAssociationRule
           - Arn
+
+#===================================================================================================
+# CIS 1.21  Ensure IAM instance roles are used for AWS resource access from instances
+#===================================================================================================
   FunctionForInstanceRoleUseRule:
     Type: AWS::Lambda::Function
     Condition: IsLevel2
@@ -802,6 +858,10 @@ Resources:
         - EventSource: aws.config
           MessageType: ConfigurationItemChangeNotification
         SourceIdentifier: !GetAtt FunctionForInstanceRoleUseRule.Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.22  Ensure a support role has been created to manage incidents with AWS Support (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateAwsSupportAccessPolicyLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -917,6 +977,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateAwsSupportAccessPolicy
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.24  Ensure IAM policies that allow full "*:*" administrative privileges are not created (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateFullAdminPrivilegesPoliciesLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -1005,6 +1069,11 @@ Resources:
           !GetAtt
           - FunctionForEvaluateFullAdminPrivilegesPolicies
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 2.1   Ensure CloudTrail is enabled in all regions (Scored)
+# CIS AWS Foundations Benchmark - 2.4   Ensure CloudTrail trails are integrated with CloudWatch Logs (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailEnabledIntegratedLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -1121,6 +1190,11 @@ Resources:
           !GetAtt
           - FunctionForEvaluateCloudTrailEnabledIntegrated
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 2.3   Ensure the S3 bucket CloudTrail logs to is not publicly accessible (Scored)
+# CIS AWS Foundations Benchmark - 2.6   Ensure S3 Bucket Access Logging is enabled on the CloudTrail S3 bucket (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailS3AccessLoggingLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -1228,6 +1302,11 @@ Resources:
           !GetAtt
           - FunctionForEvaluateCloudTrailS3AccessLogging
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 2.2   Ensure CloudTrail log file validation is enabled (Scored)
+# CIS AWS Foundations Benchmark - 2.7   Ensure CloudTrail logs are encrypted at rest using KMS CMKs (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCloudTrailLogsEncryptionValidationLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: IsLevel2
@@ -1320,6 +1399,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateCloudTrailLogsEncryptionValidation
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 2.8   Ensure rotation for customer created CMKs is enabled (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateCMKsRotationLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: IsLevel2
@@ -1431,6 +1514,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateCMKsRotation
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.1   Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   ConfigRuleForEvaluateSecurityGroupsSsh:
     Type: AWS::Config::ConfigRule
     DependsOn:
@@ -1445,6 +1532,10 @@ Resources:
       Source:
         Owner: AWS
         SourceIdentifier: INCOMING_SSH_DISABLED
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.2   Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   ConfigRuleForEvaluateSecurityGroupsRdp:
     Type: AWS::Config::ConfigRule
     DependsOn:
@@ -1461,6 +1552,10 @@ Resources:
       Source:
         Owner: AWS
         SourceIdentifier: RESTRICTED_INCOMING_TRAFFIC
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.3   Ensure VPC flow logging is enabled in all VPCs (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateVpcFlowLogsLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: IsLevel2
@@ -1555,6 +1650,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateVpcFlowLogs
           - Arn
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.4   Ensure the default security group of every VPC restricts all traffic (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateDefaultSecurityGroupLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Condition: IsLevel2
@@ -1640,6 +1739,10 @@ Resources:
           !GetAtt
           - FunctionForEvaluateDefaultSecurityGroup
           - Arn
+
+#====================================================================================================
+# CIS 4.5   Ensure routing tables for VPC peering are "least access"
+#====================================================================================================
   FunctionForVpcPeeringRouteTablesRule:
     Type: AWS::Lambda::Function
     Condition: IsLevel2
@@ -1712,6 +1815,15 @@ Resources:
         - EventSource: aws.config
           MessageType: ConfigurationItemChangeNotification
         SourceIdentifier: !GetAtt FunctionForVpcPeeringRouteTablesRule.Arn
+
+
+#===============================================================================================================================
+# MetricFilter and CloudWatch Alarm Section
+#===============================================================================================================================
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.1   Ensure a log metric filter and alarm exist for unauthorized API calls (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   UnauthorizedApiCallsAlarm:
     Type: AWS::CloudWatch::Alarm
     DependsOn:
@@ -1746,6 +1858,10 @@ Resources:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
         MetricName: UnauthorizedAttemptCount
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.2   Ensure a log metric filter and alarm exist for Management Console sign-in without MFA (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   NoMfaConsoleLoginsAlarm:
     Type: AWS::CloudWatch::Alarm
     DependsOn:
@@ -1782,6 +1898,10 @@ Resources:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
         MetricName: ConsoleSigninWithoutMFA
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.3   Ensure a log metric filter and alarm exist for usage of "root" account  (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   RootAccountLoginsAlarm:
     Type: AWS::CloudWatch::Alarm
     DependsOn:
@@ -1817,6 +1937,10 @@ Resources:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
         MetricName: RootUserEventCount
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.4   Ensure a log metric filter and alarm exist for IAM policy changes (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   IamPolicyChangesCloudWatchEventRule:
     Type: AWS::Events::Rule
     Properties:
@@ -1850,6 +1974,10 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.5   Ensure a log metric filter and alarm exist for CloudTrail configuration changes (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   CloudTrailCloudWatchEventRule:
     Type: AWS::Events::Rule
     Properties:
@@ -1869,6 +1997,10 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.6 Ensure a log metric filter and alarm exist for AWS Management Console authentication failures (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------
   FailedConsoleLoginsAlarm:
     Type: AWS::CloudWatch::Alarm
     DependsOn:
@@ -1904,6 +2036,10 @@ Resources:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
         MetricName: ConsoleLoginFailures
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.7   Ensure a log metric filter and alarm exist for disabling or scheduled deletion of customer created CMKs (Scored)
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
   DisabledOrDeletedCmksAlarm:
     Type: AWS::CloudWatch::Alarm
     DependsOn:
@@ -1940,6 +2076,10 @@ Resources:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
         MetricName: KMSCustomerKeyDeletion
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.8   Ensure a log metric filter and alarm exist for S3 bucket policy changes (Scored)
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
   DetectS3BucketPolicyChanges:
     Type: AWS::Events::Rule
     Properties:
@@ -1965,6 +2105,10 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.9   Ensure a log metric filter and alarm exist for AWS Config configuration changes (Scored)
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
   DetectConfigChanges:
     Type: AWS::Events::Rule
     Condition: IsLevel2
@@ -1986,6 +2130,10 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.10  Ensure a log metric filter and alarm exist for security group changes (Scored)
+# ------------------------------------------------------------------------------------------------------------------------------------
   SecurityGroupChangesCloudWatchEventRule:
     Type: AWS::Events::Rule
     Condition: IsLevel2
@@ -2009,6 +2157,10 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.11  Ensure a log metric filter and alarm exist for changes to Network Access Control Lists (NACL) (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   NetworkAclChangesCloudWatchEventRule:
     Type: AWS::Events::Rule
     Condition: IsLevel2
@@ -2032,6 +2184,12 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 3.12  Ensure a log metric filter and alarm exist for changes to network gateways (Scored)
+# CIS AWS Foundations Benchmark - 3.13  Ensure a log metric filter and alarm exist for route table changes (Scored)
+# CIS AWS Foundations Benchmark - 3.14  Ensure a log metric filter and alarm exist for VPC changes (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   NetworkChangeCloudWatchEventRule:
     Type: AWS::Events::Rule
     Properties:
@@ -2063,6 +2221,12 @@ Resources:
       Targets:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - Alarm Notification Topic - NotificationEmailAddressForCloudWatchAlarms
+# Any reporting / alerts to end user should be via an SNS Topic – the subscriber is the provided email address
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   AlarmNotificationTopic:
     Type: AWS::SNS::Topic
     DependsOn:
@@ -2073,6 +2237,12 @@ Resources:
       Subscription:
       - Endpoint: !Ref NotificationEmailAddressForCloudWatchAlarms
         Protocol: email
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# Cloudwatch Event rules Lambda function and IAM Role
+# Any reporting / alerts to end user should be via an SNS Topic – the subscriber is the provided email address
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
   RoleForCloudWatchEvents:
     Type: AWS::IAM::Role
     DependsOn: AlarmNotificationTopic
