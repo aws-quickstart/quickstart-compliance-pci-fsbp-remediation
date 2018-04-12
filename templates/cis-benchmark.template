@@ -127,36 +127,27 @@ Resources:
           import json
           import boto3
           import cfnresponse
-
           def lambda_handler(event, context):
-
             response_status = cfnresponse.SUCCESS
             response_data = ''
-
             # Only execute in a custom CloudFormation resource creation event.
             if 'RequestType' in event and event['RequestType'] == 'Create':
-
-                is_recording = False
-
-                # Determine whether there is at least one configuration recorder recording.
-                for recorder in boto3.client('config').describe_configuration_recorder_status()['ConfigurationRecordersStatus']:
-                    is_recording = is_recording or recorder['recording']
-
-                if not is_recording:
-                    response_status = cfnresponse.FAILED
-                    response_data = response_data + 'There is no active Config Recorder.'
-
-                # Determine whether any of the trails are delivering logs to CloudWatch Logs (the trail and log must be in-region)
-                is_delivering_logs = False
-                for trail in boto3.client('cloudtrail').describe_trails(includeShadowTrails=False)['trailList']:
-                  if 'CloudWatchLogsLogGroupArn' in trail:
-                      is_delivering_logs = True
-                      break
-
-                if not is_delivering_logs:
-                    response_status = cfnresponse.FAILED
-                    response_data = response_data + ' CloudTrail is not delivering logs to CloudWatch Logs.'
-
+              is_recording = False
+              # Determine whether there is at least one configuration recorder recording.
+              for recorder in boto3.client('config').describe_configuration_recorder_status()['ConfigurationRecordersStatus']:
+                is_recording = is_recording or recorder['recording']
+              if not is_recording:
+                response_status = cfnresponse.FAILED
+                response_data = response_data + 'There is no active Config Recorder.'
+              # Determine whether any of the trails are delivering logs to CloudWatch Logs (the trail and log must be in-region)
+              is_delivering_logs = False
+              for trail in boto3.client('cloudtrail').describe_trails(includeShadowTrails=False)['trailList']:
+                if 'CloudWatchLogsLogGroupArn' in trail:
+                  is_delivering_logs = True
+                  break
+              if not is_delivering_logs:
+                response_status = cfnresponse.FAILED
+                response_data = response_data + ' CloudTrail is not delivering logs to CloudWatch Logs.'
             cfnresponse.send(event, context, response_status, {"Response":response_data}, '')
       Description: Evaluates preconditions for CIS benchmarking
       Handler: index.lambda_handler
@@ -237,44 +228,39 @@ Resources:
           import json
           import boto3
           APPLICABLE_RESOURCES = ['AWS::IAM::User']
-
           def evaluate_compliance(configuration_item):
-              if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
-                return 'NOT_APPLICABLE'
-
-              user_name = configuration_item['configuration']['userName']
-              client = boto3.client('iam')
-              mfa = client.list_mfa_devices(UserName=user_name)
-
-              # Only check MFA for User with passwords.
-              try:
-                  profile = client.get_login_profile(UserName=user_name)
-              except:
-                  return 'NOT_APPLICABLE'
-
-              if len(mfa['MFADevices']) > 0:
-                  return 'COMPLIANT'
-              else:
-                  return 'NON_COMPLIANT'
-
+            if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
+              return 'NOT_APPLICABLE'
+            user_name = configuration_item['configuration']['userName']
+            client = boto3.client('iam')
+            mfa = client.list_mfa_devices(UserName=user_name)
+            # Only check MFA for User with passwords.
+            try:
+              profile = client.get_login_profile(UserName=user_name)
+            except:
+              return 'NOT_APPLICABLE'
+            if len(mfa['MFADevices']) > 0:
+              return 'COMPLIANT'
+            else:
+              return 'NON_COMPLIANT'
           def lambda_handler(event, context):
-              invoking_event = json.loads(event['invokingEvent'])
-              configuration_item = invoking_event['configurationItem']
-              result_token = 'No token found.'
-              if 'resultToken' in event:
-                  result_token = event['resultToken']
-              config = boto3.client('config')
-              config.put_evaluations(
-                  Evaluations=[
-                      {
-                          'ComplianceResourceType':configuration_item['resourceType'],
-                          'ComplianceResourceId':configuration_item['resourceId'],
-                          'ComplianceType': evaluate_compliance(configuration_item),
-                          'OrderingTimestamp': configuration_item['configurationItemCaptureTime']
-                      },
-                  ],
-                  ResultToken=result_token
-              )
+            invoking_event = json.loads(event['invokingEvent'])
+            configuration_item = invoking_event['configurationItem']
+            result_token = 'No token found.'
+            if 'resultToken' in event:
+              result_token = event['resultToken']
+            config = boto3.client('config')
+            config.put_evaluations(
+              Evaluations=[
+                {
+                  'ComplianceResourceType':configuration_item['resourceType'],
+                  'ComplianceResourceId':configuration_item['resourceId'],
+                  'ComplianceType': evaluate_compliance(configuration_item),
+                  'OrderingTimestamp': configuration_item['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=result_token
+            )
       Description: Evaluates whether MFA is enabled for all IAM users that have a
         password
       Handler: index.lambda_handler
@@ -334,62 +320,51 @@ Resources:
           from datetime import date
           APPLICABLE_RESOURCES = ['AWS::IAM::User']
           DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
-
           def evaluate_compliance(configuration_item):
-
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
               return 'NOT_APPLICABLE'
-
             config = boto3.client('config')
             resource_information = config.get_resource_config_history(
                 resourceType=configuration_item['resourceType'],
                 resourceId=configuration_item['resourceId']
                 )
-
             user_name = resource_information['configurationItems'][0]['resourceName']
             now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
             iam = boto3.client('iam')
             user = iam.get_user(UserName=user_name)
-
             # User has a Password but never used
             if user['User'].get('PasswordLastUsed') is None:
-
               try:
                 login_profile = iam.get_login_profile(UserName=user_name)
               except:
                 return 'NOT_APPLICABLE'
-
               password_create_date = login_profile['LoginProfile'].get('CreateDate')
               date_last_used=date(password_create_date.year, password_create_date.month, password_create_date.day)
-
             else:
               password_last_used=user['User'].get('PasswordLastUsed')
               date_last_used=date(password_last_used.year, password_last_used.month, password_last_used.day)
-
             age_in_days = (now - date_last_used).days
             if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
               return 'NON_COMPLIANT'
             else: return 'COMPLIANT'
-
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
             configuration_item = invoking_event['configurationItem']
             result_token = 'No token found.'
-
             if 'resultToken' in event:
               result_token = event['resultToken']
-
             config = boto3.client('config')
             config.put_evaluations(
-                Evaluations=[
-                    {
-                      'ComplianceResourceType' : configuration_item['resourceType'],
-                      'ComplianceResourceId' : configuration_item['resourceId'],
-                      'ComplianceType' : evaluate_compliance(configuration_item),
-                      'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
-                    },
-                  ],
-                  ResultToken=result_token)
+              Evaluations=[
+                {
+                  'ComplianceResourceType' : configuration_item['resourceType'],
+                  'ComplianceResourceId' : configuration_item['resourceId'],
+                  'ComplianceType' : evaluate_compliance(configuration_item),
+                  'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=result_token
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -449,7 +424,6 @@ Resources:
           from datetime import date
           APPLICABLE_RESOURCES = ['AWS::IAM::User']
           DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
-
           def evaluate_compliance(configuration_item):
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
               return 'NOT_APPLICABLE'
@@ -462,44 +436,39 @@ Resources:
             now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
             iam = boto3.client('iam')
             user = iam.get_user(UserName=user_name)
-
             for access_key in iam.list_access_keys(UserName = user_name)['AccessKeyMetadata']:
               # evaluate active access keys
               if access_key['Status'] == 'Active':
                 access_key_create_date = access_key['CreateDate']
                 access_key_create_date  = date(access_key_create_date.year, access_key_create_date.month, access_key_create_date.day)
-
                 #response = iam.get_access_key_last_used(AccessKeyId = access_key['AccessKeyId'])
                 #if 'LastUsedDate' in response['AccessKeyLastUsed']:
                 #  access_key_last_used_date = response['AccessKeyLastUsed']['LastUsedDate']
                 #  access_key_last_used_date = date(access_key_last_used_date.year, access_key_last_used_date.month, access_key_last_used_date.day)
-
                 age_in_days = 0
                 age_in_days = (now - access_key_create_date).days
                 if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
                   return 'NON_COMPLIANT'
                 else: return 'COMPLIANT'
             return 'NOT_APPLICABLE'
-
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
             configuration_item = invoking_event['configurationItem']
             result_token = 'No token found.'
-
             if 'resultToken' in event:
               result_token = event['resultToken']
-
             config = boto3.client('config')
             config.put_evaluations(
-                Evaluations=[
-                    {
-                        'ComplianceResourceType' : configuration_item['resourceType'],
-                        'ComplianceResourceId' : configuration_item['resourceId'],
-                        'ComplianceType' : evaluate_compliance(configuration_item),
-                        'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
-                    },
-                  ],
-                  ResultToken=result_token)
+              Evaluations=[
+                {
+                  'ComplianceResourceType' : configuration_item['resourceType'],
+                  'ComplianceResourceId' : configuration_item['resourceId'],
+                  'ComplianceType' : evaluate_compliance(configuration_item),
+                  'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=result_token
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -587,18 +556,15 @@ Resources:
             annotation = '-'
             invoking_event = json.loads(event['invokingEvent'])
             result_token = 'No token found.'
-
             if 'resultToken' in event: result_token = event['resultToken']
             client = boto3.client('iam')
             # Determine whether the root account has MFA enabled.
             summary = client.get_account_summary()['SummaryMap']
-
             if 'AccountMFAEnabled' in summary and summary['AccountMFAEnabled'] == 1:
               is_compliant = is_compliant and True
             else:
               is_compliant = is_compliant and False
               annotation = annotation + ' The root account does NOT have MFA enabled.'
-
             # Determine whether the root account uses hardware-based MFA.
             mfa_devices = client.list_virtual_mfa_devices()['VirtualMFADevices']
             for mfa_device in mfa_devices:
@@ -608,7 +574,6 @@ Resources:
                 break
               else:
                 is_compliant = is_compliant and True
-
             # Determine whether the root account has active access keys.
             # The credential report will contain comma-separated values, so transform the users into a list.
             response = client.generate_credential_report()
@@ -624,19 +589,18 @@ Resources:
                   is_compliant = is_compliant and False
                   annotation = annotation + ' The root account HAS active access keys associated with it.'
                 break
-
             config = boto3.client('config')
             config.put_evaluations(
-                Evaluations=[
-                    {
-                             'ComplianceResourceType': 'AWS::::Account',
-                             'ComplianceResourceId': 'Root',
-                             'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                             'Annotation': annotation,
-                             'OrderingTimestamp': datetime.datetime.now(),
-                    },
-                  ],
-                  ResultToken=result_token
+              Evaluations=[
+                {
+                  'ComplianceResourceType': 'AWS::::Account',
+                  'ComplianceResourceId': 'Root',
+                  'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                  'Annotation': annotation,
+                  'OrderingTimestamp': datetime.datetime.now(),
+                },
+              ],
+              ResultToken=result_token
             )
       Description: Evaluates the security properties of the root account - CIS 1.12,
         1.13, 1.14
@@ -703,8 +667,7 @@ Resources:
             global annotation
             annotation=''
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
-                return 'NOT_APPLICABLE'
-
+              return 'NOT_APPLICABLE'
             user_name = configuration_item['resourceName']
             iam = boto3.client('iam')
             # lists all user inline attached policies
@@ -718,7 +681,6 @@ Resources:
             else:
               annotation=annotation + 'The user does not have inline or managed policies attached! '
               return 'COMPLIANT'
-
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
             configuration_item = invoking_event['configurationItem']
@@ -726,16 +688,17 @@ Resources:
             if 'resultToken' in event: result_token = event['resultToken']
             config = boto3.client('config')
             config.put_evaluations(
-                Evaluations=[
-                  {
-                      'ComplianceResourceType': configuration_item['resourceType'],
-                      'ComplianceResourceId': configuration_item['resourceId'],
-                      'ComplianceType': evaluate_compliance(configuration_item),
-                      'Annotation':annotation,
-                      'OrderingTimestamp': configuration_item['configurationItemCaptureTime']
-                  },
-                ],
-                ResultToken=result_token )
+              Evaluations=[
+                {
+                  'ComplianceResourceType': configuration_item['resourceType'],
+                  'ComplianceResourceId': configuration_item['resourceId'],
+                  'ComplianceType': evaluate_compliance(configuration_item),
+                  'Annotation': annotation,
+                  'OrderingTimestamp': configuration_item['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=result_token
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -782,38 +745,30 @@ Resources:
           #==================================================================================================
           import boto3
           import json
-
           def evaluate_compliance(config_item, instance_id):
-              if (config_item['resourceType'] != 'AWS::EC2::Instance'): return 'NOT_APPLICABLE'
-
-              reservations = boto3.client('ec2').describe_instances(InstanceIds=[instance_id])['Reservations']
-
-              if (reservations[0]['Instances'][0]['State']['Name']).upper() == 'TERMINATED':
-                  return 'NOT_APPLICABLE'
-
-              if reservations and 'IamInstanceProfile' in reservations[0]['Instances'][0]: return 'COMPLIANT'
-              else: return 'NON_COMPLIANT'
-
+            if (config_item['resourceType'] != 'AWS::EC2::Instance'): return 'NOT_APPLICABLE'
+            reservations = boto3.client('ec2').describe_instances(InstanceIds=[instance_id])['Reservations']
+            if (reservations[0]['Instances'][0]['State']['Name']).upper() == 'TERMINATED':
+              return 'NOT_APPLICABLE'
+            if reservations and 'IamInstanceProfile' in reservations[0]['Instances'][0]: return 'COMPLIANT'
+            else: return 'NON_COMPLIANT'
           def lambda_handler(event, context):
-
-              invoking_event = json.loads(event['invokingEvent'])
-
-              compliance_value = 'NOT_APPLICABLE'
-
-              instance_id = invoking_event['configurationItem']['resourceId']
-              compliance_value = evaluate_compliance(invoking_event['configurationItem'], instance_id)
-
-              config = boto3.client('config')
-              response = config.put_evaluations(
-                 Evaluations=[
-                     {
-                         'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                         'ComplianceResourceId': instance_id,
-                         'ComplianceType': compliance_value,
-                         'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                     },
-                 ],
-                 ResultToken=event['resultToken'])
+            invoking_event = json.loads(event['invokingEvent'])
+            compliance_value = 'NOT_APPLICABLE'
+            instance_id = invoking_event['configurationItem']['resourceId']
+            compliance_value = evaluate_compliance(invoking_event['configurationItem'], instance_id)
+            config = boto3.client('config')
+            response = config.put_evaluations(
+              Evaluations=[
+                {
+                  'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                  'ComplianceResourceId': instance_id,
+                  'ComplianceType': compliance_value,
+                  'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=event['resultToken']
+            )
       Description: Evaluates whether instances use instance roles
       Handler: index.lambda_handler
       MemorySize: 1024
@@ -873,22 +828,17 @@ Resources:
           import boto3
           import json
           import os
-
           def evaluate_compliance(resource_type):
             return_value = 'COMPLIANT'
             client = boto3.client('iam')
-
             partition = 'aws'
             if (os.environ['AWS_REGION'].find("-gov-") > 0):
               partition = 'aws-us-gov'
-
             policy_arn = 'arn:' + partition + ':iam::aws:policy/AWSSupportAccess'
             print 'policyarn = ', policy_arn
-
             # If GovCloud, dont evaluate as the Managed Policy 'AWSSupportAccess' doesn't exist
             if (policy_arn.find("-gov") > 0):
               return 'NOT_APPLICABLE'
-
             # search for all entities that have a specific policy associated: AWSSupportAccess
             response = client.list_entities_for_policy(PolicyArn=policy_arn)
             if (resource_type) == 'user' and len(response['PolicyUsers']) == 0:
@@ -899,45 +849,42 @@ Resources:
               return_value = 'NOT_APPLICABLE'
             else:
               return_value = 'COMPLIANT'
-
             return return_value
-
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
             config = boto3.client('config')
             userAnnotation = 'Atleast one IAM User has the AWSSupportAccess IAM policy assigned'
             grpAnnotation = 'Atleast one IAM Group has the AWSSupportAccess IAM policy assigned'
             roleAnnotation = 'Atleast one IAM Role has the AWSSupportAccess IAM policy assigned'
-
             userCompliance = evaluate_compliance('user')
             groupCompliance = evaluate_compliance('group')
             roleCompliance = evaluate_compliance('role')
-
             response = config.put_evaluations(
-                Evaluations=[
-                  {
-                    'ComplianceResourceType': 'AWS::IAM::User',
-                    'ComplianceResourceId': 'NA',
-                    'ComplianceType': userCompliance,
-                    'Annotation': userAnnotation,
-                    'OrderingTimestamp': invoking_event['notificationCreationTime']
-                  },
-                  {
-                    'ComplianceResourceType': 'AWS::IAM::Group',
-                    'ComplianceResourceId': 'NA',
-                    'ComplianceType': groupCompliance,
-                    'Annotation': grpAnnotation,
-                    'OrderingTimestamp': invoking_event['notificationCreationTime']
-                  },
-                  {
-                    'ComplianceResourceType': 'AWS::IAM::Role',
-                    'ComplianceResourceId': 'NA',
-                    'ComplianceType': roleCompliance,
-                    'Annotation': roleAnnotation,
-                    'OrderingTimestamp': invoking_event['notificationCreationTime']
-                  }
-                ],
-                ResultToken=event['resultToken'])
+              Evaluations=[
+                {
+                  'ComplianceResourceType': 'AWS::IAM::User',
+                  'ComplianceResourceId': 'NA',
+                  'ComplianceType': userCompliance,
+                  'Annotation': userAnnotation,
+                  'OrderingTimestamp': invoking_event['notificationCreationTime']
+                },
+                {
+                  'ComplianceResourceType': 'AWS::IAM::Group',
+                  'ComplianceResourceId': 'NA',
+                  'ComplianceType': groupCompliance,
+                  'Annotation': grpAnnotation,
+                  'OrderingTimestamp': invoking_event['notificationCreationTime']
+                },
+                {
+                  'ComplianceResourceType': 'AWS::IAM::Role',
+                  'ComplianceResourceId': 'NA',
+                  'ComplianceType': roleCompliance,
+                  'Annotation': roleAnnotation,
+                  'OrderingTimestamp': invoking_event['notificationCreationTime']
+                }
+              ],
+              ResultToken=event['resultToken']
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -996,43 +943,38 @@ Resources:
           import boto3
           import json
           import jmespath
-
           def evaluate_compliance(config_item, policy_arn):
             if (config_item['resourceType'] != 'AWS::IAM::Policy'):
               return 'NOT_APPLICABLE'
-
             return_value = 'COMPLIANT'
-
             client = boto3.client('iam')
             # Get the policy details.
             policy = client.get_policy(PolicyArn = policy_arn)['Policy']
             # Get the latest policy version.
             policy_version = client.get_policy_version(
-                PolicyArn = policy['Arn'],
-                VersionId = policy['DefaultVersionId']
-                )
-
+              PolicyArn = policy['Arn'],
+              VersionId = policy['DefaultVersionId']
+            )
             # search for full admin privileges within the policy statements
             if jmespath.search('PolicyVersion.Document.Statement[?Effect == \'Allow\' && contains(Resource, \'*\') && contains (Action, \'*\')]', policy_version):
               return_value = 'NON_COMPLIANT'
-
             return return_value
-
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
             policy_arn = invoking_event['configurationItem']['ARN']
             compliance_value = evaluate_compliance(invoking_event['configurationItem'], policy_arn)
             config = boto3.client('config')
             response = config.put_evaluations(
-                Evaluations=[
-                    {
-                      'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                      'ComplianceResourceId': invoking_event['configurationItem']['resourceId'],
-                      'ComplianceType': compliance_value,
-                      'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                    },
-                  ],
-                  ResultToken=event['resultToken'])
+              Evaluations=[
+                {
+                  'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                  'ComplianceResourceId': invoking_event['configurationItem']['resourceId'],
+                  'ComplianceType': compliance_value,
+                  'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                },
+              ],
+              ResultToken=event['resultToken']
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1091,77 +1033,63 @@ Resources:
           import boto3
           import datetime
           import time
-
           client = boto3.client('cloudtrail')
-
           def lambda_handler(event, context):
-              is_compliant = True
-              annotation = ''
-              is_multi_region = True
-              is_publicly_accessible = False
-              current_region_trail = {}
-
-              # List all trails, including 'shadow' trails, which are trails in
-              # other regions that could be capturing multi-regional events
-              for trail in client.describe_trails()['trailList']:
-
-                if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
-                    current_region_trail = trail
-                    annotation = ''
-                    is_compliant= True
-                    is_multi_region = current_region_trail['IsMultiRegionTrail']
-
-                    # Enabled in all regions?
-                    if not is_multi_region:
-                        is_compliant = False
-                        annotation = annotation + ' CloudTrail is not enabled in all regions.'
-
-                    # Integration with CloudWatch Logs?
-                    if 'CloudWatchLogsLogGroupArn' in current_region_trail and not current_region_trail['CloudWatchLogsLogGroupArn']:
-
-                        is_compliant = False
-                        annotation = annotation + ' CloudTrail is not integrated with Cloudwatch Logs.'
-
-                    # Check if Trail logging has been turned off
-                    trail_details = client.get_trail_status(Name = current_region_trail['Name'])
-                    if not trail_details['IsLogging']:
-                        is_compliant = False
-                        annotation = annotation + 'CloudTrail trail is not logging any AWS API calls.'
-
-                    # CloudWatch Logs delivered within the last day
-                    if 'LatestCloudWatchLogsDeliveryTime' in trail_details:
-
-                    # Determine whether the number of minutes since the last delivery time exceeds 24 hours.
-                        if ((int(time.time()) - int(trail_details['LatestCloudWatchLogsDeliveryTime'].strftime("%s"))) / 1440) > 24:
-                            is_compliant = False
-                            annotation = annotation + ' The latest CloudTrail log delivery exceeds 24 hours.'
-                    else:
-                        is_compliant = False
-                        annotation = annotation + ' There is no record of CloudTrail log delivery.'
-
-                    # Set up evaluations
-                    result_token = 'No token found.'
-                    if 'resultToken' in event: result_token = event['resultToken']
-
-                    evaluations = [
-                        {
-                        'ComplianceResourceType': 'AWS::CloudTrail::Trail',
-                        'ComplianceResourceId': current_region_trail['Name'],
-                        'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                        'OrderingTimestamp': datetime.datetime.now()
-                        }
-                    ]
-
-                    # Is compliant message
-                    if is_compliant: annotation = 'CloudTrail is enabled in all regions and trails are integrated with CloudWatch Logs!'
-                    if annotation: evaluations[0]['Annotation'] = annotation
-                    config = boto3.client('config')
-
-                    #deliver evaluations
-                    config.put_evaluations(
-                        Evaluations = evaluations,
-                        ResultToken = result_token
-                    )
+            is_compliant = True
+            annotation = ''
+            is_multi_region = True
+            is_publicly_accessible = False
+            current_region_trail = {}
+            # List all trails, including 'shadow' trails, which are trails in
+            # other regions that could be capturing multi-regional events
+            for trail in client.describe_trails()['trailList']:
+              if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
+                current_region_trail = trail
+                annotation = ''
+                is_compliant= True
+                is_multi_region = current_region_trail['IsMultiRegionTrail']
+                # Enabled in all regions?
+                if not is_multi_region:
+                  is_compliant = False
+                  annotation = annotation + ' CloudTrail is not enabled in all regions.'
+                # Integration with CloudWatch Logs?
+                if 'CloudWatchLogsLogGroupArn' in current_region_trail and not current_region_trail['CloudWatchLogsLogGroupArn']:
+                  is_compliant = False
+                  annotation = annotation + ' CloudTrail is not integrated with Cloudwatch Logs.'
+                # Check if Trail logging has been turned off
+                trail_details = client.get_trail_status(Name = current_region_trail['Name'])
+                if not trail_details['IsLogging']:
+                  is_compliant = False
+                  annotation = annotation + 'CloudTrail trail is not logging any AWS API calls.'
+                # CloudWatch Logs delivered within the last day
+                if 'LatestCloudWatchLogsDeliveryTime' in trail_details:
+                  # Determine whether the number of minutes since the last delivery time exceeds 24 hours.
+                  if ((int(time.time()) - int(trail_details['LatestCloudWatchLogsDeliveryTime'].strftime("%s"))) / 1440) > 24:
+                    is_compliant = False
+                    annotation = annotation + ' The latest CloudTrail log delivery exceeds 24 hours.'
+                else:
+                  is_compliant = False
+                  annotation = annotation + ' There is no record of CloudTrail log delivery.'
+                # Set up evaluations
+                result_token = 'No token found.'
+                if 'resultToken' in event: result_token = event['resultToken']
+                evaluations = [
+                  {
+                    'ComplianceResourceType': 'AWS::CloudTrail::Trail',
+                    'ComplianceResourceId': current_region_trail['Name'],
+                    'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                    'OrderingTimestamp': datetime.datetime.now()
+                  }
+                ]
+                # Is compliant message
+                if is_compliant: annotation = 'CloudTrail is enabled in all regions and trails are integrated with CloudWatch Logs!'
+                if annotation: evaluations[0]['Annotation'] = annotation
+                config = boto3.client('config')
+                #deliver evaluations
+                config.put_evaluations(
+                  Evaluations = evaluations,
+                  ResultToken = result_token
+                )
       Description: Evaluates whether CloudTrail has appropriate security properties.
         Meets CIS 2.1, 2.4
       Handler: index.lambda_handler
@@ -1221,19 +1149,14 @@ Resources:
           import datetime
           import time
           from botocore.exceptions import ClientError
-
           def lambda_handler(event, context):
-
             # get the trail for the current region
             client_ct = boto3.client('cloudtrail')
-
             for trail in client_ct.describe_trails(includeShadowTrails = False)['trailList']:
-
               annotation = ''
               is_publicly_accessible = False
               s3_bucket_name = ''
               is_compliant = True
-
               # check if the cloudtrail s3 bucket is publicly accessible and logged
               if trail['S3BucketName']:
                 s3_bucket_name = trail['S3BucketName']
@@ -1243,11 +1166,9 @@ Resources:
                     # verify cloudtrail s3 bucket ACL
                     if grant['Permission'] in ['READ','FULL_CONTROL'] and ('URI' in grant['Grantee'] and ('AuthenticatedUsers' in grant['Grantee']['URI'] or 'AllUsers' in grant['Grantee']['URI'])):
                       is_publicly_accessible = True
-
                   if is_publicly_accessible:
                     is_compliant = False
                     annotation = annotation + ' The CloudTrail S3 bucket \'{}\' is publicly accessible.'.format(s3_bucket_name)
-
                   # verify cloudtrail s3 bucket logging
                   response = client_s.get_bucket_logging(Bucket = s3_bucket_name)
                   if 'LoggingEnabled' not in response:
@@ -1259,26 +1180,23 @@ Resources:
                   annotation = annotation + ' There was an error looking up CloudTrail S3 bucket \'{}\'.'.format(s3_bucket_name)
               else:
                 annotation = annotation + ' CloudTrail is not integrated with S3.'
-
               result_token = 'No token found.'
-
               if 'resultToken' in event: result_token = event['resultToken']
               evaluations = [
-                  {
-                      'ComplianceResourceType': 'AWS::S3::Bucket',
-                      'ComplianceResourceId': s3_bucket_name,
-                      'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                      'OrderingTimestamp': datetime.datetime.now()
-                  }
-                ]
-
+                {
+                  'ComplianceResourceType': 'AWS::S3::Bucket',
+                  'ComplianceResourceId': s3_bucket_name,
+                  'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                  'OrderingTimestamp': datetime.datetime.now()
+                }
+              ]
               if is_compliant: annotation = 'Acces logging is enabled on the CloudTrail S3 bucket \'{}\' and the S3 bucket is not publicly accessible'.format(s3_bucket_name)
               if annotation: evaluations[0]['Annotation'] = annotation
-
               config = boto3.client('config')
               config.put_evaluations(
                 Evaluations = evaluations,
-                ResultToken = result_token)
+                ResultToken = result_token
+              )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1339,45 +1257,38 @@ Resources:
           import boto3
           import datetime
           import time
-
           client_ct = boto3.client('cloudtrail')
           config = boto3.client('config')
-
           def lambda_handler(event, context):
             for trail in client_ct.describe_trails()['trailList']:
               is_compliant = True
               if trail['HomeRegion'] == context.invoked_function_arn.split(':')[3]:
-                  current_region_trail = trail
-                  annotation = ''
-
-                  # evaluate log file validation
-                  if not current_region_trail['LogFileValidationEnabled']:
-                      is_compliant = False
-                      annotation = annotation + ' CloudTrail log file validation is not enabled.'
-
-                  # evaluate log file encryption
-                  if not 'KmsKeyId' in current_region_trail:
-                      is_compliant = False
-                      annotation = annotation + ' CloudTrail log files are not encrypted in S3.'
-
-                  result_token = 'No token found.'
-
-                  if 'resultToken' in event: result_token = event['resultToken']
-                  evaluations = [
-                      {
-                          'ComplianceResourceType': 'AWS::CloudTrail::Trail',
-                          'ComplianceResourceId': current_region_trail['Name'],
-                          'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                          'OrderingTimestamp': datetime.datetime.now()
-                      }
-                  ]
-
-                  if is_compliant: annotation = 'CloudTrail log files are encrypted and validated in S3.'
-                  if annotation: evaluations[0]['Annotation'] = annotation
-
-                  config.put_evaluations(
-                      Evaluations = evaluations,
-                      ResultToken = result_token)
+                current_region_trail = trail
+                annotation = ''
+                # evaluate log file validation
+                if not current_region_trail['LogFileValidationEnabled']:
+                  is_compliant = False
+                  annotation = annotation + ' CloudTrail log file validation is not enabled.'
+                # evaluate log file encryption
+                if not 'KmsKeyId' in current_region_trail:
+                  is_compliant = False
+                  annotation = annotation + ' CloudTrail log files are not encrypted in S3.'
+                result_token = 'No token found.'
+                if 'resultToken' in event: result_token = event['resultToken']
+                evaluations = [
+                  {
+                    'ComplianceResourceType': 'AWS::CloudTrail::Trail',
+                    'ComplianceResourceId': current_region_trail['Name'],
+                    'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                    'OrderingTimestamp': datetime.datetime.now()
+                  }
+                ]
+                if is_compliant: annotation = 'CloudTrail log files are encrypted and validated in S3.'
+                if annotation: evaluations[0]['Annotation'] = annotation
+                config.put_evaluations(
+                  Evaluations = evaluations,
+                  ResultToken = result_token
+                )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1437,7 +1348,6 @@ Resources:
           import boto3
           import json
           import datetime
-
           def getKeyAlias(keyAliases, keyId):
             for key in keyAliases:
               if 'TargetKeyId' in key and key['AliasName'].startswith('alias/aws'):
@@ -1445,9 +1355,7 @@ Resources:
               if 'TargetKeyId' in key:
                 if key['TargetKeyId'] == keyId:
                   return key['AliasName']
-
             return ''
-
           def lambda_handler(event, context):
             is_compliant = True
             result_token = 'No token found.'
@@ -1457,47 +1365,40 @@ Resources:
             evaluations = []
             kms_client = boto3.client('kms')
             config_client = boto3.client('config')
-
             # Get a list of key aliases. This will be used to discard AWS managed keys from rotation consideration.
             aws_managed_keys = []
             keyAliases = kms_client.list_aliases()['Aliases']
-
             for key in keyAliases:
               if 'TargetKeyId' in key and key['AliasName'].startswith('alias/aws'):
                 aws_managed_keys.append(key['TargetKeyId'])
-
             for key in kms_client.list_keys()['Keys']:
-
-                # Do not evaluate AWS-managed keys.
-                if not key['KeyId'] in aws_managed_keys:
-                  try:
-                      is_compliant = kms_client.get_key_rotation_status(KeyId = key['KeyId'])['KeyRotationEnabled']
-                  except:
-                      is_compliant = True
-
-
-                  keyIdentifier = ''
-                  kIdentifier1 =  getKeyAlias(keyAliases, key['KeyId'])
-                  if kIdentifier1 == '' :
-                      keyIdentifier = ' KeyId = ' + key['KeyId']
-                  else:
-                      keyIdentifier = ' Key Alias = ' + kIdentifier1
-
-                  if is_compliant: annotation = 'Key rotation is enabled for the specified CMK.' +  keyIdentifier
-                  else: annotation = 'Key rotation is not enabled for the specified CMK.' + keyIdentifier
-
-                  evaluations.append(
-                    {
-                      'ComplianceResourceType': 'AWS::KMS::Key',
-                      'ComplianceResourceId': key['KeyId'],
-                      'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                      'Annotation': annotation,
-                      'OrderingTimestamp': datetime.datetime.now()
-                    })
-
+              # Do not evaluate AWS-managed keys.
+              if not key['KeyId'] in aws_managed_keys:
+                try:
+                  is_compliant = kms_client.get_key_rotation_status(KeyId = key['KeyId'])['KeyRotationEnabled']
+                except:
+                  is_compliant = True
+                keyIdentifier = ''
+                kIdentifier1 =  getKeyAlias(keyAliases, key['KeyId'])
+                if kIdentifier1 == '' :
+                  keyIdentifier = ' KeyId = ' + key['KeyId']
+                else:
+                  keyIdentifier = ' Key Alias = ' + kIdentifier1
+                if is_compliant: annotation = 'Key rotation is enabled for the specified CMK.' +  keyIdentifier
+                else: annotation = 'Key rotation is not enabled for the specified CMK.' + keyIdentifier
+                evaluations.append(
+                  {
+                    'ComplianceResourceType': 'AWS::KMS::Key',
+                    'ComplianceResourceId': key['KeyId'],
+                    'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                    'Annotation': annotation,
+                    'OrderingTimestamp': datetime.datetime.now()
+                  }
+                )
             response = config_client.put_evaluations(
-                Evaluations = evaluations,
-                ResultToken = event['resultToken'])
+              Evaluations = evaluations,
+              ResultToken = event['resultToken']
+            )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1586,7 +1487,6 @@ Resources:
         ZipFile: |
           import boto3
           import json
-
           def evaluate_compliance(config_item, vpc_id):
             if (config_item['resourceType'] != 'AWS::EC2::VPC'):
               return 'NOT_APPLICABLE'
@@ -1594,22 +1494,20 @@ Resources:
               return 'COMPLIANT'
             else:
               return 'NON_COMPLIANT'
-
           def is_flow_logs_enabled(vpc_id):
               ec2 = boto3.client('ec2')
               # Get the vpc flow logs details
               response = ec2.describe_flow_logs(
-                  Filter=[
-                      {
-                          'Name': 'resource-id',
-                          'Values': [vpc_id,]
-                      },
-                    ],
-                )
+                Filter=[
+                  {
+                    'Name': 'resource-id',
+                    'Values': [vpc_id,]
+                  },
+                ],
+              )
               # evaluate vpc flow logs compliance
               if response['FlowLogs']:
                 return True
-
           def lambda_handler(event, context):
               invoking_event = json.loads(event['invokingEvent'])
               compliance_value = 'NOT_APPLICABLE'
@@ -1617,15 +1515,16 @@ Resources:
               compliance_value = evaluate_compliance(invoking_event['configurationItem'], vpc_id)
               config = boto3.client('config')
               response = config.put_evaluations(
-                  Evaluations=[
-                      {
-                          'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                          'ComplianceResourceId': vpc_id,
-                          'ComplianceType': compliance_value,
-                          'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                      },
-                    ],
-                    ResultToken=event['resultToken'])
+                Evaluations=[
+                  {
+                    'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                    'ComplianceResourceId': vpc_id,
+                    'ComplianceType': compliance_value,
+                    'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                  },
+                ],
+                ResultToken=event['resultToken']
+              )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1691,24 +1590,25 @@ Resources:
             security_group = boto3.client('ec2').describe_security_groups(GroupIds=[security_group_id])['SecurityGroups']
             # evaluate the default security groups compliance
             if security_group[0]['GroupName'] == 'default':
-                  if security_group[0]['IpPermissions']:
-                      annotation = annotation + 'The security group has ingress rules in place.'
-                      is_compliant = False
-                  if security_group[0]['IpPermissionsEgress']:
-                      annotation = annotation + ' The security group has egress rules in place.'
-                      is_compliant = False
-                  evaluations = [
-                        {
-                            'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                            'ComplianceResourceId': security_group_id,
-                            'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                            'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                        }
-                      ]
-                  if annotation: evaluations[0]['Annotation'] = annotation
-                  response = boto3.client('config').put_evaluations(
-                              Evaluations = evaluations,
-                              ResultToken = event['resultToken'])
+              if security_group[0]['IpPermissions']:
+                annotation = annotation + 'The security group has ingress rules in place.'
+                is_compliant = False
+              if security_group[0]['IpPermissionsEgress']:
+                annotation = annotation + ' The security group has egress rules in place.'
+                is_compliant = False
+              evaluations = [
+                {
+                  'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                  'ComplianceResourceId': security_group_id,
+                  'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                  'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                }
+              ]
+              if annotation: evaluations[0]['Annotation'] = annotation
+              response = boto3.client('config').put_evaluations(
+                Evaluations = evaluations,
+                ResultToken = event['resultToken']
+              )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
@@ -1754,41 +1654,32 @@ Resources:
           # Function: EvaluateVpcPeeringRouteTables
           # Purpose:  Evaluates whether VPC route tables are least access
           #==================================================================================================
-
           import boto3
           import json
-
           def lambda_handler(event, context):
-
-              is_compliant = True
-              invoking_event = json.loads(event['invokingEvent'])
-              annotation = ''
-
-              route_table_id = invoking_event['configurationItem']['resourceId']
-
-              #print (json.dumps(boto3.client('ec2').describe_route_tables(RouteTableIds=[route_table_id])))
-
-              for route_table in boto3.client('ec2').describe_route_tables(RouteTableIds=[route_table_id])['RouteTables']:
-                  for route in route_table['Routes']:
-                      if 'VpcPeeringConnectionId' in route:
-                          if int(str(route['DestinationCidrBlock']).split("/", 1)[1]) < 24:
-                              is_compliant = False
-                              annotation = 'VPC peered route table has a large CIDR block destination.'
-
-                          evaluations = [
-                              {
-                              'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                              'ComplianceResourceId': route_table_id,
-                              'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                              'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                              }
-                          ]
-
-                          if annotation: evaluations[0]['Annotation'] = annotation
-
-                          response = boto3.client('config').put_evaluations(
-                          Evaluations = evaluations,
-                          ResultToken = event['resultToken'])
+            is_compliant = True
+            invoking_event = json.loads(event['invokingEvent'])
+            annotation = ''
+            route_table_id = invoking_event['configurationItem']['resourceId']
+            #print (json.dumps(boto3.client('ec2').describe_route_tables(RouteTableIds=[route_table_id])))
+            for route_table in boto3.client('ec2').describe_route_tables(RouteTableIds=[route_table_id])['RouteTables']:
+              for route in route_table['Routes']:
+                if 'VpcPeeringConnectionId' in route:
+                  if int(str(route['DestinationCidrBlock']).split("/", 1)[1]) < 24:
+                    is_compliant = False
+                    annotation = 'VPC peered route table has a large CIDR block destination.'
+                  evaluations = [
+                    {
+                      'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                      'ComplianceResourceId': route_table_id,
+                      'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                      'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                    }
+                  ]
+                  if annotation: evaluations[0]['Annotation'] = annotation
+                  response = boto3.client('config').put_evaluations(
+                  Evaluations = evaluations,
+                  ResultToken = event['resultToken'])
       Description: Evaluates whether VPC peered route tables are least access
       Handler: index.lambda_handler
       MemorySize: 1024
@@ -2210,23 +2101,19 @@ Resources:
           # Function: process-cloudwatch-event
           # Purpose:  Processes CloudWatch Event before publishing to SNS.
           #==================================================================================================
-
           import boto3
           import json
-
           SNS_TOPIC_ARN = '${AlarmNotificationTopic}'
-
           #==================================================================================================
           # Function handler
           #==================================================================================================
           def lambda_handler(event, context):
-
-              response = boto3.client('sns').publish(
-                  TopicArn = SNS_TOPIC_ARN,
-                  Message = json.dumps(event, indent=4),
-                  Subject = 'NOTIFICATION {0}:{1}'.format(event['detail']['eventSource'], event['detail']['eventName']),
-                  MessageStructure = 'raw'
-              )
+            response = boto3.client('sns').publish(
+              TopicArn = SNS_TOPIC_ARN,
+              Message = json.dumps(event, indent=4),
+              Subject = 'NOTIFICATION {0}:{1}'.format(event['detail']['eventSource'], event['detail']['eventName']),
+              MessageStructure = 'raw'
+            )
       Description: Formats a given CloudWatch Event to be published to an SNS topic
       Handler: index.lambda_handler
       MemorySize: 1024
