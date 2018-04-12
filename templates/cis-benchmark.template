@@ -593,7 +593,7 @@ Resources:
             config.put_evaluations(
               Evaluations=[
                 {
-                  'ComplianceResourceType': 'AWS::::Account',
+                  'ComplianceResourceType': 'AWS::Account',
                   'ComplianceResourceId': 'Root',
                   'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
                   'Annotation': annotation,
@@ -1737,8 +1737,11 @@ Resources:
     - ResourceForGetCloudWatchLogName
     Properties:
       LogGroupName: !GetAtt ResourceForGetCloudWatchLogName.LogName
-      FilterPattern: '{ ($.errorCode = "*UnauthorizedOperation") || ($.errorCode =
-        "AccessDenied*") }'
+      FilterPattern: |-
+        {
+          ($.errorCode = "*UnauthorizedOperation") ||
+          ($.errorCode = "AccessDenied*")
+        }
       MetricTransformations:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
@@ -1768,9 +1771,13 @@ Resources:
     - ResourceForGetCloudWatchLogName
     Properties:
       LogGroupName: !GetAtt ResourceForGetCloudWatchLogName.LogName
-      FilterPattern: '{ ($.eventName = "ConsoleLogin") && ($.additionalEventData.MFAUsed
-        != "Yes") && ($.responseElements.ConsoleLogin != "Failure") && ($.additionalEventData.SamlProviderArn
-        NOT EXISTS) }'
+      FilterPattern: |-
+        {
+          ($.eventName = "ConsoleLogin") &&
+          ($.additionalEventData.MFAUsed != "Yes") &&
+          ($.responseElements.ConsoleLogin != "Failure") &&
+          ($.additionalEventData.SamlProviderArn NOT EXISTS)
+        }
       MetricTransformations:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
@@ -1801,9 +1808,10 @@ Resources:
     Properties:
       LogGroupName: !GetAtt ResourceForGetCloudWatchLogName.LogName
       FilterPattern: |-
-        {   $.userIdentity.type = "Root" &&
-            $.userIdentity.invokedBy NOT EXISTS &&
-            $.eventType != "AwsServiceEvent"
+        {
+          ($.userIdentity.type = "Root") &&
+          ($.userIdentity.invokedBy NOT EXISTS) &&
+          ($.eventType != "AwsServiceEvent")
         }
       MetricTransformations:
       - MetricValue: '1'
@@ -1888,8 +1896,10 @@ Resources:
     Properties:
       LogGroupName: !GetAtt ResourceForGetCloudWatchLogName.LogName
       FilterPattern: |-
-        { ($.eventName = ConsoleLogin) &&
-          ($.errorMessage = "Failed authentication") }
+        {
+          ($.eventName = ConsoleLogin) &&
+          ($.errorMessage = "Failed authentication")
+        }
       MetricTransformations:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
@@ -1921,7 +1931,11 @@ Resources:
     - ResourceForGetCloudWatchLogName
     Properties:
       LogGroupName: !GetAtt ResourceForGetCloudWatchLogName.LogName
-      FilterPattern: '{($.eventSource = kms.amazonaws.com) && (($.eventName=DisableKey)||($.eventName=ScheduleKeyDeletion))}'
+      FilterPattern: |-
+        {
+          ($.eventSource = kms.amazonaws.com) &&
+          (($.eventName=DisableKey) || ($.eventName=ScheduleKeyDeletion))
+        }
       MetricTransformations:
       - MetricValue: '1'
         MetricNamespace: CloudTrailMetrics
