@@ -667,7 +667,7 @@ Resources:
     - EvaluateRootAccountLambdaInvokePermission
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-RootAccoutMustHaveMfaEnabled
+      ConfigRuleName: CIS-RootAccountMustHaveMfaEnabled
       Description: CIS 1.12 - Ensure no root account access key exists (Scored) ,
         CIS 1.13 - Ensure  MFA is enabled for the 'root' account (Scored) , CIS 1.14
         - Ensure hardware MFA is enabled for the 'root' account (Scored)
