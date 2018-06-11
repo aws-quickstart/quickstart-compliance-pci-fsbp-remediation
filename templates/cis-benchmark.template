@@ -641,7 +641,7 @@ Resources:
             config.put_evaluations(
               Evaluations=[
                 {
-                  'ComplianceResourceType': 'AWS::Account',
+                  'ComplianceResourceType': 'AWS::::Account',
                   'ComplianceResourceId': 'Root',
                   'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
                   'Annotation': annotation,
