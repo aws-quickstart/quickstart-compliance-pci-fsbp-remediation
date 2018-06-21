@@ -2202,19 +2202,30 @@ Resources:
           eventSource:
           - ec2.amazonaws.com
           eventName:
+          - AcceptVpcPeeringConnection
+          - AttachClassicLinkVpc
           - AttachInternetGateway
           - AssociateRouteTable
           - CreateCustomerGateway
           - CreateInternetGateway
           - CreateRoute
           - CreateRouteTable
+          - CreateVpc
+          - CreateVpcPeeringConnection
           - DeleteCustomerGateway
           - DeleteInternetGateway
           - DeleteRoute
           - DeleteRouteTable
           - DeleteDhcpOptions
+          - DeleteVpc
+          - DeleteVpcPeeringConnection
+          - DetachClassicLinkVpc
           - DetachInternetGateway
+          - DisableVpcClassicLink
           - DisassociateRouteTable
+          - EnableVpcClassicLink
+          - ModifyVpcAttribute
+          - RejectVpcPeeringConnection
           - ReplaceRoute
           - ReplaceRouteTableAssociation
       State: ENABLED
