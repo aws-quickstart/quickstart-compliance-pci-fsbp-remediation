@@ -337,7 +337,7 @@ Resources:
     - MasterConfigRole
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      FunctionName: CIS-DisableUnusedCredentials
+      FunctionName: CIS-RotateUserPasswords
       Description: Evaluates whether users with password enabled have credentials
         unused for 90 days or greater
       Code:
@@ -408,7 +408,7 @@ Resources:
     - EvaluateUnusedCredentialsLambdaInvokePermission
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
-      ConfigRuleName: CIS-DisableUnusedCredentials
+      ConfigRuleName: CIS-RotateUserPasswords
       Description: CIS 1.3 - Ensure credentials unused for 90 days or greater are
         disabled (Scored)
       Scope:
