@@ -675,7 +675,8 @@ Resources:
         Owner: CUSTOM_LAMBDA
         SourceDetails:
         - EventSource: aws.config
-          MessageType: ConfigurationItemChangeNotification
+          MessageType: ScheduledNotification
+          MaximumExecutionFrequency: One_Hour
         SourceIdentifier:
           !GetAtt
           - FunctionForEvaluateRootAccountRule
