@@ -783,7 +783,7 @@ Resources:
           - Arn
 
 #===================================================================================================
-# CIS 1.21  Ensure IAM instance roles are used for AWS resource access from instances
+# CIS 1.19  Ensure IAM instance roles are used for AWS resource access from instances
 #===================================================================================================
   FunctionForInstanceRoleUseRule:
     Type: AWS::Lambda::Function
@@ -847,7 +847,7 @@ Resources:
     - ConfigPermissionToCallInstanceRoleUseLambda
     Properties:
       ConfigRuleName: CIS-InstancesMustUseIamRoles
-      Description: CIS 1.21  Ensure IAM instance roles are used for AWS resource access
+      Description: CIS 1.19  Ensure IAM instance roles are used for AWS resource access
         from instances
       Scope:
         ComplianceResourceTypes:
