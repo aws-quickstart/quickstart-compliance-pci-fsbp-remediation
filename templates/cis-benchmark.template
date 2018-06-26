@@ -861,7 +861,7 @@ Resources:
         SourceIdentifier: !GetAtt FunctionForInstanceRoleUseRule.Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 1.22  Ensure a support role has been created to manage incidents with AWS Support (Scored)
+# CIS AWS Foundations Benchmark - 1.20  Ensure a support role has been created to manage incidents with AWS Support (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateAwsSupportAccessPolicyLambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -962,7 +962,7 @@ Resources:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
       ConfigRuleName: CIS-AwsSupportRoleExists
-      Description: CIS 1.22 - Ensure a support role has been created to manage incidents
+      Description: CIS 1.20 - Ensure a support role has been created to manage incidents
         with AWS Support (Scored)
       Scope:
         ComplianceResourceTypes:
@@ -980,7 +980,7 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 1.24  Ensure IAM policies that allow full "*:*" administrative privileges are not created (Scored)
+# CIS AWS Foundations Benchmark - 1.22  Ensure IAM policies that allow full "*:*" administrative privileges are not created (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateFullAdminPrivilegesPoliciesLambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -1056,7 +1056,7 @@ Resources:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
       ConfigRuleName: CIS-EvaluateFullAdminPrivilegesPolicies
-      Description: CIS 1.24 - Ensure IAM policies that allow full '*:*' administrative
+      Description: CIS 1.22 - Ensure IAM policies that allow full '*:*' administrative
         privileges are not created (Scored)
       Scope:
         ComplianceResourceTypes:
@@ -1517,45 +1517,7 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.1   Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
-# --------------------------------------------------------------------------------------------------------------------------------------------------------
-  ConfigRuleForEvaluateSecurityGroupsSsh:
-    Type: AWS::Config::ConfigRule
-    DependsOn:
-    - ResourceForEvaluateCISBenchmarkPreconditions
-    Properties:
-      ConfigRuleName: CIS-SecurityGroupsMustRestrictSshTraffic
-      Description: CIS 4.1 - Ensure no security groups allow ingress from 0.0.0.0/0
-        to port 22 (Scored)
-      Scope:
-        ComplianceResourceTypes:
-        - AWS::EC2::SecurityGroup
-      Source:
-        Owner: AWS
-        SourceIdentifier: INCOMING_SSH_DISABLED
-
-# --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.2   Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
-# --------------------------------------------------------------------------------------------------------------------------------------------------------
-  ConfigRuleForEvaluateSecurityGroupsRdp:
-    Type: AWS::Config::ConfigRule
-    DependsOn:
-    - ResourceForEvaluateCISBenchmarkPreconditions
-    Properties:
-      ConfigRuleName: CIS-SecurityGroupsMustDisallowTcpTraffic
-      Description: CIS 4.2 - Ensure no security groups allow ingress from 0.0.0.0/0
-        to port 3389 (Scored)
-      InputParameters:
-        blockedPort1: '3389'
-      Scope:
-        ComplianceResourceTypes:
-        - AWS::EC2::SecurityGroup
-      Source:
-        Owner: AWS
-        SourceIdentifier: RESTRICTED_INCOMING_TRAFFIC
-
-# --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.3   Ensure VPC flow logging is enabled in all VPCs (Scored)
+# CIS AWS Foundations Benchmark - 2.9   Ensure VPC flow logging is enabled in all VPCs (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateVpcFlowLogsLambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -1638,7 +1600,7 @@ Resources:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
       ConfigRuleName: CIS-EvaluateVpcFlowLogs
-      Description: CIS 4.3 - Ensure VPC flow logging is enabled in all VPCs (Scored)
+      Description: CIS 2.9 - Ensure VPC flow logging is enabled in all VPCs (Scored)
       Scope:
         ComplianceResourceTypes:
         - AWS::EC2::VPC
@@ -1653,7 +1615,45 @@ Resources:
           - Arn
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# CIS AWS Foundations Benchmark - 4.4   Ensure the default security group of every VPC restricts all traffic (Scored)
+# CIS AWS Foundations Benchmark - 4.1   Ensure no security groups allow ingress from 0.0.0.0/0 to port 22 (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+  ConfigRuleForEvaluateSecurityGroupsSsh:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - ResourceForEvaluateCISBenchmarkPreconditions
+    Properties:
+      ConfigRuleName: CIS-SecurityGroupsMustRestrictSshTraffic
+      Description: CIS 4.1 - Ensure no security groups allow ingress from 0.0.0.0/0
+        to port 22 (Scored)
+      Scope:
+        ComplianceResourceTypes:
+        - AWS::EC2::SecurityGroup
+      Source:
+        Owner: AWS
+        SourceIdentifier: INCOMING_SSH_DISABLED
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.2   Ensure no security groups allow ingress from 0.0.0.0/0 to port 3389 (Scored)
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+  ConfigRuleForEvaluateSecurityGroupsRdp:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - ResourceForEvaluateCISBenchmarkPreconditions
+    Properties:
+      ConfigRuleName: CIS-SecurityGroupsMustDisallowTcpTraffic
+      Description: CIS 4.2 - Ensure no security groups allow ingress from 0.0.0.0/0
+        to port 3389 (Scored)
+      InputParameters:
+        blockedPort1: '3389'
+      Scope:
+        ComplianceResourceTypes:
+        - AWS::EC2::SecurityGroup
+      Source:
+        Owner: AWS
+        SourceIdentifier: RESTRICTED_INCOMING_TRAFFIC
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 4.3   Ensure the default security group of every VPC restricts all traffic (Scored)
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateDefaultSecurityGroupLambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -1726,7 +1726,7 @@ Resources:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
       ConfigRuleName: CIS-VpcDefaultSecurityGroupsMustRestrictAllTraffic
-      Description: CIS 4.4 - Ensure the default security group of every VPC restricts
+      Description: CIS 4.3 - Ensure the default security group of every VPC restricts
         all traffic (Scored)
       Scope:
         ComplianceResourceTypes:
@@ -1742,7 +1742,7 @@ Resources:
           - Arn
 
 #====================================================================================================
-# CIS 4.5   Ensure routing tables for VPC peering are "least access"
+# CIS 4.4   Ensure routing tables for VPC peering are "least access"
 #====================================================================================================
   FunctionForVpcPeeringRouteTablesRule:
     Type: AWS::Lambda::Function
@@ -1806,7 +1806,7 @@ Resources:
     - ConfigPermissionToCallVpcPeeringRouteTablesLambda
     Properties:
       ConfigRuleName: CIS-VpcPeeringRouteTablesMustBeLeastAccess
-      Description: Evaluates whether VPC peered route tables are least access
+      Description: CIS 4.4 - Evaluates whether VPC peered route tables are least access
       Scope:
         ComplianceResourceTypes:
         - AWS::EC2::RouteTable
