@@ -118,6 +118,7 @@ Resources:
             Action:
             - s3:GetBucketAcl
             - s3:GetBucketLogging
+            - s3:GetBucketPolicy
             Resource: '*'
 
 #==================================================================================================
