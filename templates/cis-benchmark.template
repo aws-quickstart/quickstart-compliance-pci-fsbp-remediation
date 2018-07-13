@@ -474,10 +474,6 @@ Resources:
               if access_key['Status'] == 'Active':
                 access_key_create_date = access_key['CreateDate']
                 access_key_create_date  = date(access_key_create_date.year, access_key_create_date.month, access_key_create_date.day)
-                #response = iam.get_access_key_last_used(AccessKeyId = access_key['AccessKeyId'])
-                #if 'LastUsedDate' in response['AccessKeyLastUsed']:
-                #  access_key_last_used_date = response['AccessKeyLastUsed']['LastUsedDate']
-                #  access_key_last_used_date = date(access_key_last_used_date.year, access_key_last_used_date.month, access_key_last_used_date.day)
                 age_in_days = 0
                 age_in_days = (now - access_key_create_date).days
                 if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
@@ -669,8 +665,8 @@ Resources:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
       ConfigRuleName: CIS-RootAccountMustHaveMfaEnabled
-      Description: CIS 1.12 - Ensure no root account access key exists (Scored) ,
-        CIS 1.13 - Ensure  MFA is enabled for the 'root' account (Scored) , CIS 1.14
+      Description: CIS 1.12 - Ensure no root account access key exists (Scored),
+        CIS 1.13 - Ensure  MFA is enabled for the 'root' account (Scored), CIS 1.14
         - Ensure hardware MFA is enabled for the 'root' account (Scored)
       Source:
         Owner: CUSTOM_LAMBDA
