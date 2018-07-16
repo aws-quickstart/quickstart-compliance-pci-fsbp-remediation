@@ -1899,6 +1899,7 @@ Resources:
         MetricName: ConsoleSigninWithoutMFA
 
 # ------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - 1.1   Avoid the use of the "root" account (Scored)
 # CIS AWS Foundations Benchmark - 3.3   Ensure a log metric filter and alarm exist for usage of "root" account  (Scored)
 # ------------------------------------------------------------------------------------------------------------------------------------
   RootAccountLoginsAlarm:
