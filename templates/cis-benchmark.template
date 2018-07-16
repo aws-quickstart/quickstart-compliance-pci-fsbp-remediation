@@ -50,6 +50,7 @@ Conditions:
 Resources:
 #===============================================================================================================================
 # Resources for EvaluateCisBenchmarkingPreconditions
+# Creates IAM role for AWS Config, grants KMS and S3 read only permissions
 #===============================================================================================================================
   MasterConfigRole:
     Type: AWS::IAM::Role
