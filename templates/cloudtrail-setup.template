@@ -136,6 +136,8 @@ Resources:
         DestinationBucketName: !Ref rArchiveLogsBucket
         LogFilePrefix: cloudtraillogs
   BucketPolicy:
+    DependsOn:
+    - cTrailS3Bucket
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket:
@@ -202,6 +204,7 @@ Resources:
   cloudTrail:
     DependsOn:
     - BucketPolicy
+    - cTrailS3Bucket
     Type: AWS::CloudTrail::Trail
     Properties:
       S3BucketName:
