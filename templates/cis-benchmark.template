@@ -1234,25 +1234,40 @@ Resources:
               if trail['S3BucketName']:
                 s3_bucket_name = trail['S3BucketName']
                 client_s=boto3.client('s3')
+                annotation = 'CloudTrail S3 bucket \'{}\': '.format(s3_bucket_name)
                 try:
                   for grant in client_s.get_bucket_acl(Bucket = s3_bucket_name)['Grants']:
                     # verify cloudtrail s3 bucket ACL
-                    if grant['Permission'] in ['READ','FULL_CONTROL'] and ('URI' in grant['Grantee'] and ('AuthenticatedUsers' in grant['Grantee']['URI'] or 'AllUsers' in grant['Grantee']['URI'])):
+                    if grant['Permission'] in ['READ','FULL_CONTROL','WRITE_ACP','READ_ACP','WRITE'] and ('URI' in grant['Grantee'] and ('AuthenticatedUsers' in grant['Grantee']['URI'] or 'AllUsers' in grant['Grantee']['URI'])):
                       is_publicly_accessible = True
                   if is_publicly_accessible:
                     is_compliant = False
-                    annotation = annotation + ' The CloudTrail S3 bucket \'{}\' is publicly accessible.'.format(s3_bucket_name)
+                    annotation = annotation + ' is publicly accessible by using bucket ACLs;'
                   # verify cloudtrail s3 bucket logging
                   response = client_s.get_bucket_logging(Bucket = s3_bucket_name)
                   if 'LoggingEnabled' not in response:
                     is_compliant=False
-                    annotation = annotation + ' The CloudTrail S3 bucket \'{}\' does not have logging enabled.'.format(s3_bucket_name)
+                    annotation = annotation + ' does not have logging enabled;'
+                # verify cloudtrail s3 bucket policy
+                is_compliant_policy = True
+                bucket_policy = client_s.get_bucket_policy(Bucket=s3_bucket_name)['Policy']
+                bucket_policy_statements = json.loads(bucket_policy)['Statement']
+                for statement in bucket_policy_statements:
+                    if statement['Effect'] in ['Allow'] and statement['Principal'] in ['*']:
+                        is_compliant_policy = False
+                    elif statement['Effect'] in ['Allow'] and 'AWS' in statement['Principal'] and statement['Principal']['AWS'] in ['*']:
+                        is_compliant_policy = False
+                if not is_compliant_policy:
+                    annotation = annotation + ' is publicly accessible by using bucket policies;'
+                    is_compliant = False
                 except Exception as ex:
-                  print ex
-                  is_compliant = False
-                  annotation = annotation + ' There was an error looking up CloudTrail S3 bucket \'{}\'.'.format(s3_bucket_name)
-              else:
-                annotation = annotation + ' CloudTrail is not integrated with S3.'
+                    if '(NoSuchBucketPolicy)' in str(ex):
+                        annotation = annotation + ' does not have a bucket policy;'
+                    else:
+                        is_compliant = False
+                        annotation = annotation + ' There was an error looking up CloudTrail S3 bucket;'
+                    else:
+                annotation = annotation + ' CloudTrail is not integrated with S3;'
               result_token = 'No token found.'
               if 'resultToken' in event: result_token = event['resultToken']
               evaluations = [
@@ -1292,6 +1307,7 @@ Resources:
       Scope:
         ComplianceResourceTypes:
         - AWS::CloudTrail::Trail
+        - AWS::S3::Bucket
       Source:
         Owner: CUSTOM_LAMBDA
         SourceDetails:
