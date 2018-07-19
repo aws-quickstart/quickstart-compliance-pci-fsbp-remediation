@@ -10,5 +10,10 @@
     {
         "ParameterKey": "ConfigureConfig",
         "ParameterValue": "Yes"
+    },
+    {
+        "ParameterKey":"QSS3BucketName",
+        "ParameterValue":"$[taskcat_autobucket]"
+    
     }
 ]
