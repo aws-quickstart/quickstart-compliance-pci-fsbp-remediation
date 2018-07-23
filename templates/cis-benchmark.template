@@ -1882,6 +1882,7 @@ Resources:
     DependsOn:
     - ResourceForEvaluateCISBenchmarkPreconditions
     - ResourceForGetCloudWatchLogName
+    - UnauthorizedApiCallsAlarm
     Properties:
       AlarmName: CIS-Console Signin Without MFA
       AlarmDescription: Alarm if there is a Management Console sign-in without MFA
@@ -1923,6 +1924,7 @@ Resources:
     DependsOn:
     - ResourceForEvaluateCISBenchmarkPreconditions
     - ResourceForGetCloudWatchLogName
+    - NoMfaConsoleLoginsAlarm
     Properties:
       AlarmName: CIS-IAM Root Activity
       AlarmDescription: Alarm if a 'root' user uses the account
@@ -2022,6 +2024,7 @@ Resources:
     DependsOn:
     - ResourceForEvaluateCISBenchmarkPreconditions
     - ResourceForGetCloudWatchLogName
+    - RootAccountLoginsAlarm
     Properties:
       AlarmName: CIS-Console Login Failures
       AlarmDescription: Alarm if there are AWS Management Console authentication failures
@@ -2061,6 +2064,7 @@ Resources:
     DependsOn:
     - ResourceForEvaluateCISBenchmarkPreconditions
     - ResourceForGetCloudWatchLogName
+    - FailedConsoleLoginsAlarm
     Properties:
       AlarmName: CIS-KMS Key Disabled or Scheduled for Deletion
       AlarmDescription: Alarm if customer created CMKs get disabled or scheduled for
