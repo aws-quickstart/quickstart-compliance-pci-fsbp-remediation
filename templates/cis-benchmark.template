@@ -257,6 +257,8 @@ Resources:
           def evaluate_compliance(configuration_item):
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
               return 'NOT_APPLICABLE'
+            if configuration_item['configurationItemStatus'] == "ResourceDeleted":
+              return 'NOT_APPLICABLE'
             user_name = configuration_item['configuration']['userName']
             client = boto3.client('iam')
             mfa = client.list_mfa_devices(UserName=user_name)
@@ -352,6 +354,8 @@ Resources:
           DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
           def evaluate_compliance(configuration_item):
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
+              return 'NOT_APPLICABLE'
+            if configuration_item['configurationItemStatus'] == "ResourceDeleted":
               return 'NOT_APPLICABLE'
             config = boto3.client('config')
             resource_information = config.get_resource_config_history(
@@ -460,6 +464,8 @@ Resources:
           DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
           def evaluate_compliance(configuration_item):
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
+              return 'NOT_APPLICABLE'
+            if configuration_item['configurationItemStatus'] == "ResourceDeleted":
               return 'NOT_APPLICABLE'
             config = boto3.client('config')
             resource_information = config.get_resource_config_history(
@@ -713,24 +719,26 @@ Resources:
           import json
           import boto3
           APPLICABLE_RESOURCES = ['AWS::IAM::User']
-          annotation = ''
+          annotation = ' '
           def evaluate_compliance(configuration_item):
             global annotation
-            annotation=''
+            annotation = ' '
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
+              return 'NOT_APPLICABLE'
+            if configuration_item['configurationItemStatus'] == "ResourceDeleted":
               return 'NOT_APPLICABLE'
             user_name = configuration_item['resourceName']
             iam = boto3.client('iam')
             # lists all user inline attached policies
             if iam.list_user_policies(UserName=user_name)['PolicyNames']:
-              annotation = annotation + 'The user has inline policies attached! '
+              annotation = 'The user has inline policies attached! '
               return 'NON_COMPLIANT'
             # lists all user managed attached policies
             elif iam.list_attached_user_policies(UserName=user_name)['AttachedPolicies']:
-              annotation=annotation + 'The user has managed policies attached! '
+              annotation = 'The user has managed policies attached! '
               return 'NON_COMPLIANT'
             else:
-              annotation=annotation + 'The user does not have inline or managed policies attached! '
+              annotation= 'The user does not have inline or managed policies attached! '
               return 'COMPLIANT'
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
@@ -802,6 +810,7 @@ Resources:
           import json
           def evaluate_compliance(config_item, instance_id):
             if (config_item['resourceType'] != 'AWS::EC2::Instance'): return 'NOT_APPLICABLE'
+            if (config_item['configurationItemStatus'] == "ResourceDeleted"): return 'NOT_APPLICABLE'
             reservations = boto3.client('ec2').describe_instances(InstanceIds=[instance_id])['Reservations']
             if (reservations[0]['Instances'][0]['State']['Name']).upper() == 'TERMINATED':
               return 'NOT_APPLICABLE'
@@ -1007,8 +1016,6 @@ Resources:
           import json
           import jmespath
           def evaluate_compliance(config_item, policy_arn):
-            if (config_item['resourceType'] != 'AWS::IAM::Policy'):
-              return 'NOT_APPLICABLE'
             return_value = 'COMPLIANT'
             client = boto3.client('iam')
             # Get the policy details.
@@ -1024,8 +1031,12 @@ Resources:
             return return_value
           def lambda_handler(event, context):
             invoking_event = json.loads(event['invokingEvent'])
-            policy_arn = invoking_event['configurationItem']['ARN']
-            compliance_value = evaluate_compliance(invoking_event['configurationItem'], policy_arn)
+            compliance_value = 'COMPLIANT'
+            if (invoking_event['configurationItem']['configurationItemStatus'] == "ResourceDeleted") or (invoking_event['configurationItem']['resourceType'] != 'AWS::IAM::Policy'):
+              compliance_value = 'NOT_APPLICABLE'
+            else:
+              policy_arn = invoking_event['configurationItem']['ARN']
+              compliance_value = evaluate_compliance(invoking_event['configurationItem'], policy_arn)
             config = boto3.client('config')
             response = config.put_evaluations(
               Evaluations=[
@@ -1249,24 +1260,24 @@ Resources:
                     is_compliant=False
                     annotation = annotation + ' does not have logging enabled;'
                 # verify cloudtrail s3 bucket policy
-                is_compliant_policy = True
-                bucket_policy = client_s.get_bucket_policy(Bucket=s3_bucket_name)['Policy']
-                bucket_policy_statements = json.loads(bucket_policy)['Statement']
-                for statement in bucket_policy_statements:
+                  is_compliant_policy = True
+                  bucket_policy = client_s.get_bucket_policy(Bucket=s3_bucket_name)['Policy']
+                  bucket_policy_statements = json.loads(bucket_policy)['Statement']
+                  for statement in bucket_policy_statements:
                     if statement['Effect'] in ['Allow'] and statement['Principal'] in ['*']:
-                        is_compliant_policy = False
+                      is_compliant_policy = False
                     elif statement['Effect'] in ['Allow'] and 'AWS' in statement['Principal'] and statement['Principal']['AWS'] in ['*']:
-                        is_compliant_policy = False
-                if not is_compliant_policy:
+                      is_compliant_policy = False
+                  if not is_compliant_policy:
                     annotation = annotation + ' is publicly accessible by using bucket policies;'
                     is_compliant = False
                 except Exception as ex:
-                    if '(NoSuchBucketPolicy)' in str(ex):
-                        annotation = annotation + ' does not have a bucket policy;'
-                    else:
-                        is_compliant = False
-                        annotation = annotation + ' There was an error looking up CloudTrail S3 bucket;'
-                    else:
+                  if '(NoSuchBucketPolicy)' in str(ex):
+                    annotation = annotation + ' does not have a bucket policy;'
+                  else:
+                    is_compliant = False
+                    annotation = annotation + ' There was an error looking up CloudTrail S3 bucket;'
+              else:
                 annotation = annotation + ' CloudTrail is not integrated with S3;'
               result_token = 'No token found.'
               if 'resultToken' in event: result_token = event['resultToken']
@@ -1560,6 +1571,8 @@ Resources:
           import boto3
           import json
           def evaluate_compliance(config_item, vpc_id):
+            if config_item['configurationItemStatus'] == "ResourceDeleted": 
+              return 'NOT_APPLICABLE'
             if (config_item['resourceType'] != 'AWS::EC2::VPC'):
               return 'NOT_APPLICABLE'
             elif is_flow_logs_enabled(vpc_id):
