@@ -1799,18 +1799,18 @@ Resources:
                   if int(str(route['DestinationCidrBlock']).split("/", 1)[1]) < 24:
                     is_compliant = False
                     annotation = 'VPC peered route table has a large CIDR block destination.'
-                  evaluations = [
-                    {
-                      'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
-                      'ComplianceResourceId': route_table_id,
-                      'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
-                      'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
-                    }
-                  ]
-                  if annotation: evaluations[0]['Annotation'] = annotation
-                  response = boto3.client('config').put_evaluations(
-                  Evaluations = evaluations,
-                  ResultToken = event['resultToken'])
+              evaluations = [
+                {
+                  'ComplianceResourceType': invoking_event['configurationItem']['resourceType'],
+                  'ComplianceResourceId': route_table_id,
+                  'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                  'OrderingTimestamp': invoking_event['configurationItem']['configurationItemCaptureTime']
+                }
+              ]
+              if annotation: evaluations[0]['Annotation'] = annotation
+              response = boto3.client('config').put_evaluations(
+              Evaluations = evaluations,
+              ResultToken = event['resultToken'])
       Description: Evaluates whether VPC peered route tables are least access
       Handler: index.lambda_handler
       MemorySize: 1024
