@@ -574,7 +574,6 @@ Resources:
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
   EvaluateRootAccountLambdaInvokePermission:
     Type: AWS::Lambda::Permission
-    Condition: IsLevel2
     DependsOn:
     - ResourceForEvaluateCISBenchmarkPreconditions
     Properties:
@@ -586,7 +585,6 @@ Resources:
       Principal: config.amazonaws.com
   FunctionForEvaluateRootAccountRule:
     Type: AWS::Lambda::Function
-    Condition: IsLevel2
     DependsOn:
     - MasterConfigRole
     - ResourceForEvaluateCISBenchmarkPreconditions
@@ -666,7 +664,6 @@ Resources:
       Timeout: 10
   ConfigRuleForEvaluateRootAccount:
     Type: AWS::Config::ConfigRule
-    Condition: IsLevel2
     DependsOn:
     - EvaluateRootAccountLambdaInvokePermission
     - ResourceForEvaluateCISBenchmarkPreconditions
@@ -1571,7 +1568,7 @@ Resources:
           import boto3
           import json
           def evaluate_compliance(config_item, vpc_id):
-            if config_item['configurationItemStatus'] == "ResourceDeleted": 
+            if config_item['configurationItemStatus'] == "ResourceDeleted":
               return 'NOT_APPLICABLE'
             if (config_item['resourceType'] != 'AWS::EC2::VPC'):
               return 'NOT_APPLICABLE'
