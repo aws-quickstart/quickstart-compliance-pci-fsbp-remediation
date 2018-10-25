@@ -114,6 +114,11 @@ Resources:
   configS3Bucket:
     DeletionPolicy: Retain
     Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
   DeliveryChannel1:
     Type: AWS::Config::DeliveryChannel
     Properties:
