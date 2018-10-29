@@ -2333,6 +2333,15 @@ Resources:
           # Function handler
           #==================================================================================================
           def lambda_handler(event, context):
+              source = event['source']
+              if source == 'aws.config':
+                  response = boto3.client('sns').publish(
+                    TopicArn = SNS_TOPIC_ARN,
+                    Message = json.dumps(event, indent=4),
+                    Subject = 'NOTIFICATION {0} : {1}'.format(event['detail-type'], event['detail']['configRuleName']),
+                    MessageStructure = 'raw'
+                )
+            else:
             response = boto3.client('sns').publish(
               TopicArn = SNS_TOPIC_ARN,
               Message = json.dumps(event, indent=4),
