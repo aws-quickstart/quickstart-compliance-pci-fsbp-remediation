@@ -117,8 +117,8 @@ Resources:
     Properties:
       BucketEncryption:
         ServerSideEncryptionConfiguration:
-        - ServerSideEncryptionByDefault:
-          SSEAlgorithm: AES256
+          - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
   DeliveryChannel1:
     Type: AWS::Config::DeliveryChannel
     Properties:
