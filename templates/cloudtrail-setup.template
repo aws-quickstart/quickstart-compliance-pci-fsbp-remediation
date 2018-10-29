@@ -91,6 +91,10 @@ Resources:
             StorageClass: STANDARD_IA
       VersioningConfiguration:
         Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
   rArchiveLogsBucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: rArchiveLogsBucket
@@ -135,6 +139,10 @@ Resources:
       LoggingConfiguration:
         DestinationBucketName: !Ref rArchiveLogsBucket
         LogFilePrefix: cloudtraillogs
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
   BucketPolicy:
     DependsOn:
     - cTrailS3Bucket
