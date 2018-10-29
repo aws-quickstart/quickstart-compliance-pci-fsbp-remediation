@@ -2274,11 +2274,11 @@ Resources:
       Description: Publishes formatted Config Rules Compliance Changes events to an SNS topic
       EventPattern:
         detail-type:
-          - Config Rules Compliance Change
+        - Config Rules Compliance Change
         detail:
-          eventSource:
+          source:
           - aws.config
-          eventName:
+          configRuleName:
           - CIS-UsersMustHaveMfaEnabled
           - CIS-RotateUserPasswords
           - CIS-RotateAccessKeys
@@ -2297,10 +2297,10 @@ Resources:
           - CIS-CloudTrailBucketMustBeSecure
           - CIS-VpcPeeringRouteTablesMustBeLeastAccess
           - CIS-CloudTrailLogsMustBeValidatedAndEncrypted
-        State: ENABLED
-        Targets:
-          - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
-            Id: TargetFunctionV1
+      State: ENABLED
+      Targets:
+      - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
+        Id: TargetFunctionV1
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 # CIS AWS Foundations Benchmark - Alarm Notification Topic - NotificationEmailAddressForCloudWatchAlarms
 # Any reporting / alerts to end user should be via an SNS Topic – the subscriber is the provided email address
