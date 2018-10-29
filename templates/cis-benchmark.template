@@ -2263,7 +2263,44 @@ Resources:
       - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
         Id: TargetFunctionV1
 
-
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+# CIS AWS Foundations Benchmark - CloudWatch Event rule for Config Compliance changes
+# All reporting of changes to compliance status to Config rules is handled by this CloudWatch Events rule
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+  ConfigRulesComplianceChangeCloudWatchEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: CIS-DetectConfigRulesComplianceChanges
+      Description: Publishes formatted Config Rules Compliance Changes events to an SNS topic
+      EventPattern:
+        detail-type:
+          - Config Rules Compliance Change
+        detail:
+          source:
+          - aws.config
+          configRuleName:
+          - CIS-UsersMustHaveMfaEnabled
+          - CIS-RotateUserPasswords
+          - CIS-RotateAccessKeys
+          - CIS-KmsCustomerKeysMustBeRotated
+          - CIS-SecurityGroupsMustRestrictSshTraffic
+          - CIS-VpcDefaultSecurityGroupsMustRestrictAllTraffic
+          - CIS-SecurityGroupsMustDisallowTcpTraffic
+          - CIS-IamPasswordPolicyMustMeetRequirements
+          - CIS-CloudTrailMustBeActive
+          - CIS-EvaluateVpcFlowLogs
+          - CIS-RootAccountMustHaveMfaEnabled
+          - CIS-EvaluateFullAdminPrivilegesPolicies
+          - CIS-InstancesMustUseIamRoles
+          - CIS-UsersMustNotHaveAssociatedPolicies
+          - CIS-AwsSupportRoleExists
+          - CIS-CloudTrailBucketMustBeSecure
+          - CIS-VpcPeeringRouteTablesMustBeLeastAccess
+          - CIS-CloudTrailLogsMustBeValidatedAndEncrypted
+        State: ENABLED
+        Targets:
+          - Arn: !GetAtt FunctionToFormatCloudWatchEvent.Arn
+            Id: TargetFunctionV1
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 # CIS AWS Foundations Benchmark - Alarm Notification Topic - NotificationEmailAddressForCloudWatchAlarms
 # Any reporting / alerts to end user should be via an SNS Topic – the subscriber is the provided email address
@@ -2328,7 +2365,7 @@ Resources:
           #==================================================================================================
           import boto3
           import json
-          SNS_TOPIC_ARN = '${AlarmNotificationTopic}'
+          pSNS_TOPIC_ARN = '${AlarmNotificationTopic}'
           #==================================================================================================
           # Function handler
           #==================================================================================================
