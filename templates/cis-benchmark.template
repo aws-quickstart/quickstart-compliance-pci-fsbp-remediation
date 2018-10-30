@@ -2275,9 +2275,9 @@ Resources:
       EventPattern:
         detail-type:
         - Config Rules Compliance Change
+        source:
+        - aws.config
         detail:
-          source:
-          - aws.config
           configRuleName:
           - CIS-UsersMustHaveMfaEnabled
           - CIS-RotateUserPasswords
