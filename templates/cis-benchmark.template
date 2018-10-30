@@ -2365,7 +2365,7 @@ Resources:
           #==================================================================================================
           import boto3
           import json
-          pSNS_TOPIC_ARN = '${AlarmNotificationTopic}'
+          SNS_TOPIC_ARN = '${AlarmNotificationTopic}'
           #==================================================================================================
           # Function handler
           #==================================================================================================
@@ -2378,13 +2378,13 @@ Resources:
                     Subject = 'NOTIFICATION {0} : {1}'.format(event['detail-type'], event['detail']['configRuleName']),
                     MessageStructure = 'raw'
                 )
-            else:
-            response = boto3.client('sns').publish(
-              TopicArn = SNS_TOPIC_ARN,
-              Message = json.dumps(event, indent=4),
-              Subject = 'NOTIFICATION {0}:{1}'.format(event['detail']['eventSource'], event['detail']['eventName']),
-              MessageStructure = 'raw'
-            )
+              else:
+                response = boto3.client('sns').publish(
+                  TopicArn = SNS_TOPIC_ARN,
+                  Message = json.dumps(event, indent=4),
+                  Subject = 'NOTIFICATION {0}:{1}'.format(event['detail']['eventSource'], event['detail']['eventName']),
+                  MessageStructure = 'raw'
+                )
       Description: Formats a given CloudWatch Event to be published to an SNS topic
       Handler: index.lambda_handler
       MemorySize: 1024
