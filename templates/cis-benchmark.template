@@ -456,55 +456,66 @@ Resources:
         or greater
       Code:
         ZipFile: |
-          import boto3
-          import json
-          import datetime
-          from datetime import date
-          APPLICABLE_RESOURCES = ['AWS::IAM::User']
-          DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
-          def evaluate_compliance(configuration_item):
-            if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
-              return 'NOT_APPLICABLE'
-            if configuration_item['configurationItemStatus'] == "ResourceDeleted":
-              return 'NOT_APPLICABLE'
-            config = boto3.client('config')
-            resource_information = config.get_resource_config_history(
-                resourceType=configuration_item['resourceType'],
-                resourceId=configuration_item['resourceId']
-              )
-            user_name = resource_information['configurationItems'][0]['resourceName']
-            now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
-            iam = boto3.client('iam')
-            user = iam.get_user(UserName=user_name)
-            for access_key in iam.list_access_keys(UserName = user_name)['AccessKeyMetadata']:
-              # evaluate active access keys
-              if access_key['Status'] == 'Active':
-                access_key_create_date = access_key['CreateDate']
-                access_key_create_date  = date(access_key_create_date.year, access_key_create_date.month, access_key_create_date.day)
-                age_in_days = 0
-                age_in_days = (now - access_key_create_date).days
-                if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
-                  return 'NON_COMPLIANT'
-                else: return 'COMPLIANT'
-            return 'NOT_APPLICABLE'
-          def lambda_handler(event, context):
-            invoking_event = json.loads(event['invokingEvent'])
-            configuration_item = invoking_event['configurationItem']
-            result_token = 'No token found.'
-            if 'resultToken' in event:
-              result_token = event['resultToken']
-            config = boto3.client('config')
-            config.put_evaluations(
-              Evaluations=[
-                {
-                  'ComplianceResourceType' : configuration_item['resourceType'],
-                  'ComplianceResourceId' : configuration_item['resourceId'],
-                  'ComplianceType' : evaluate_compliance(configuration_item),
-                  'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
-                },
-              ],
-              ResultToken=result_token
-            )
+            import boto3
+            import json
+            import datetime
+            from datetime import date
+            APPLICABLE_RESOURCES = ['AWS::IAM::User']
+            DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
+            annotation = ' '
+            ### COMPLIANCE EVALUATION
+            def evaluate_compliance(configuration_item):
+                global annotation
+                if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
+                    return 'NOT_APPLICABLE'
+                if configuration_item['configurationItemStatus'] == "ResourceDeleted":
+                    return 'NOT_APPLICABLE'
+                config = boto3.client('config')
+                resource_information = config.get_resource_config_history(
+                    resourceType=configuration_item['resourceType'],
+                    resourceId=configuration_item['resourceId']
+                    )
+                user_name = resource_information['configurationItems'][0]['resourceName']
+                now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
+                iam = boto3.client('iam')
+                user = iam.get_user(UserName=user_name)
+                compliance = 'NOT_APPLICABLE'
+                for access_key in iam.list_access_keys(UserName = user_name)['AccessKeyMetadata']:
+                # evaluate active access keys
+                    if access_key['Status'] == 'Active':
+                        id = access_key['AccessKeyId']
+                        access_key_create_date = access_key['CreateDate']
+                        access_key_create_date  = date(access_key_create_date.year, access_key_create_date.month, access_key_create_date.day)
+                        age_in_days = 0
+                        age_in_days = (now - access_key_create_date).days
+                        if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
+                            compliance = 'NON_COMPLIANT'
+                            annotation = annotation + '\n Access Key with ID: ' + id + ' is NON_COMPLIANT'
+                        else:
+                            annotation = annotation + '\n Access Key with ID: ' + id + ' is COMPLIANT'
+                            compliance = 'COMPLIANT'
+                            return compliance
+            ### LAMBDA HANDLER
+            def lambda_handler(event, contxt):
+                global annotation
+                invoking_event = json.loads(event['invokingEvent'])
+                configuration_item = invoking_event['configurationItem']
+                result_token = 'No token found.'
+                if 'resultToken' in event:
+                    result_token = event['resultToken']
+                config = boto3.client('config')
+                config.put_evaluations(
+                    Evaluations=[
+                        {
+                        'ComplianceResourceType' : configuration_item['resourceType'],
+                        'ComplianceResourceId' : configuration_item['resourceId'],
+                        'ComplianceType' : evaluate_compliance(configuration_item),
+                        'Annotation': annotation,
+                        'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
+                        },
+                    ],
+                    ResultToken=result_token
+                )
       Handler: index.lambda_handler
       MemorySize: 1024
       Role:
