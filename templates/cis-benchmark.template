@@ -494,7 +494,7 @@ Resources:
                         else:
                             annotation = annotation + '\n Access Key with ID: ' + id + ' is COMPLIANT'
                             compliance = 'COMPLIANT'
-                            return compliance
+                return compliance
             ### LAMBDA HANDLER
             def lambda_handler(event, contxt):
                 global annotation
