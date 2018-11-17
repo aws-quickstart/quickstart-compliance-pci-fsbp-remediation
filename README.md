@@ -16,6 +16,7 @@ This Quick Start was built by AWS solutions architects and compliance experts in
 ![Quick Start architecture for CIS AWS Foundations Benchmark](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/quickstart-architecture-for-cis-benchmark-on-aws.png)
 
 For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/wPK3M).
+Additionally, there is also a [video](https://www.youtube.com/watch?v=01VFDHmeaDs&feature=youtu.be) taking you through the deployment step-by-step as well as looking at some of the controls in more details.
 
 To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
 If you'd like to submit code for this Quick Start, please review the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/).
