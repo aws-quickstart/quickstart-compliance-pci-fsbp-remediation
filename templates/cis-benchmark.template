@@ -352,12 +352,15 @@ Resources:
           from datetime import date
           APPLICABLE_RESOURCES = ['AWS::IAM::User']
           DEFAULT_AGE_THRESHOLD_IN_DAYS = 90
+          annotation = ' '
           def evaluate_compliance(configuration_item):
             if configuration_item['resourceType'] not in APPLICABLE_RESOURCES:
               return 'NOT_APPLICABLE'
             if configuration_item['configurationItemStatus'] == "ResourceDeleted":
               return 'NOT_APPLICABLE'
             config = boto3.client('config')
+            age_in_days = 0
+            global annotation
             resource_information = config.get_resource_config_history(
                 resourceType=configuration_item['resourceType'],
                 resourceId=configuration_item['resourceId']
@@ -366,6 +369,7 @@ Resources:
             now = date(datetime.date.today().year, datetime.date.today().month, datetime.date.today().day)
             iam = boto3.client('iam')
             user = iam.get_user(UserName=user_name)
+            annotation = ' '
             # User has a Password but never used
             if user['User'].get('PasswordLastUsed') is None:
               try:
@@ -374,10 +378,25 @@ Resources:
                 return 'NOT_APPLICABLE'
               password_create_date = login_profile['LoginProfile'].get('CreateDate')
               date_last_used=date(password_create_date.year, password_create_date.month, password_create_date.day)
+              age_in_days = (now - date_last_used).days
+              annotation = annotation + 'Login Profile was created {0} days ago; password was never used.'.format(age_in_days)
             else:
-              password_last_used=user['User'].get('PasswordLastUsed')
-              date_last_used=date(password_last_used.year, password_last_used.month, password_last_used.day)
-            age_in_days = (now - date_last_used).days
+              try:
+                password_last_used=user['User'].get('PasswordLastUsed')
+                date_last_used=date(password_last_used.year, password_last_used.month, password_last_used.day)
+                #user should also have a login profile for console access
+                login_profile = iam.get_login_profile(UserName=user_name)
+                password_create_date = login_profile['LoginProfile'].get('CreateDate')
+                date_last_used_from_profile=date(password_create_date.year, password_create_date.month, password_create_date.day)
+                if date_last_used_from_profile > date_last_used:
+                  #password from the login profile is most recent - means that console access has been disable and re-enabled 
+                  age_in_days=(now - date_last_used_from_profile).days
+                  annotation = annotation + 'Login Profile was created {0} days ago; the new password was never used.'.format(age_in_days)
+                else:
+                  age_in_days = (now - date_last_used).days
+                  annotation = annotation + 'Password was last used {0} days ago.'.format(age_in_days)
+              except:
+                return 'NOT_APPLICABLE'
             if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
               return 'NON_COMPLIANT'
             else: return 'COMPLIANT'
@@ -385,6 +404,7 @@ Resources:
             invoking_event = json.loads(event['invokingEvent'])
             configuration_item = invoking_event['configurationItem']
             result_token = 'No token found.'
+            global annotation
             if 'resultToken' in event:
               result_token = event['resultToken']
             config = boto3.client('config')
@@ -394,6 +414,7 @@ Resources:
                   'ComplianceResourceType' : configuration_item['resourceType'],
                   'ComplianceResourceId' : configuration_item['resourceId'],
                   'ComplianceType' : evaluate_compliance(configuration_item),
+                  'Annotation': annotation,
                   'OrderingTimestamp' : configuration_item['configurationItemCaptureTime']
                 },
               ],
@@ -480,6 +501,7 @@ Resources:
                 iam = boto3.client('iam')
                 user = iam.get_user(UserName=user_name)
                 compliance = 'NOT_APPLICABLE'
+                annotation = ' '
                 for access_key in iam.list_access_keys(UserName = user_name)['AccessKeyMetadata']:
                 # evaluate active access keys
                     if access_key['Status'] == 'Active':
@@ -490,9 +512,9 @@ Resources:
                         age_in_days = (now - access_key_create_date).days
                         if age_in_days > DEFAULT_AGE_THRESHOLD_IN_DAYS:
                             compliance = 'NON_COMPLIANT'
-                            annotation = annotation + '\n Access Key with ID: ' + id + ' is NON_COMPLIANT'
+                            annotation = annotation + '\n Access Key with ID: ' + id + ' is NON_COMPLIANT - age in days: {0}'.format(age_in_days)
                         else:
-                            annotation = annotation + '\n Access Key with ID: ' + id + ' is COMPLIANT'
+                            annotation = annotation + '\n Access Key with ID: ' + id + ' is COMPLIANT - age in days: {0}'.format(age_in_days)
                             compliance = 'COMPLIANT'
                 return compliance
             ### LAMBDA HANDLER
