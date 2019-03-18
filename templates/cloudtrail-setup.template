@@ -218,6 +218,7 @@ Resources:
       S3BucketName:
         Ref: cTrailS3Bucket
       IsLogging: true
+      IsMultiRegionTrail: true
       EnableLogFileValidation: true
       IncludeGlobalServiceEvents: true
       CloudWatchLogsLogGroupArn: !GetAtt TrailLogGroup.Arn
