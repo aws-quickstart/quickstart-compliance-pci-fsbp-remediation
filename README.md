@@ -18,7 +18,7 @@ The Quick Start for CIS provides CloudFormation templates that provide real time
 ## Solution Design
 
 
-![Solution Design](https://github.com/kmahajan11/quickstart-compliance-cis-benchmark/blob/master/assets/CIS_Benchmark_Architecture.png)
+![Solution Design](https://github.com/kmahajan11/quickstart-compliance-cis-benchmark/blob/develop/assets/CIS_Benchmark_Architecture.png)
 
 ## How To Install
 
