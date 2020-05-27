@@ -34,7 +34,3 @@ The Quick Start for CIS provides CloudFormation templates that provide real time
 * Provisions CloudWatch Log Metric Filters and corresponding CloudWatch Alarms for each of the required CIS Benchmarks. Installs independently of templates 1 and 2.  Provide email as input for SNS notification. Installs in approx 2-3 mins. 
 
 
-## Author
-
-Kanishk Mahajan; kanishk.mahajan@gmail.com
-
