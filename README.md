@@ -33,4 +33,7 @@ The Quick Start for CIS provides CloudFormation templates that provide real time
 3. **Template 3 of 3:** aws-cis-cloudwatchlogmetricfilters.yml
 * Provisions CloudWatch Log Metric Filters and corresponding CloudWatch Alarms for each of the required CIS Benchmarks. Installs independently of templates 1 and 2.  Provide email as input for SNS notification. Installs in approx 2-3 mins. 
 
+## Troubleshooting
+
+For feedback, suggestions, or corrections, please email me at kanishk.mahajan@accenture.com
 
