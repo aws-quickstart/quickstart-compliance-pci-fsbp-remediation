@@ -35,5 +35,5 @@ The Quick Start for CIS provides CloudFormation templates that provide real time
 
 ## Troubleshooting
 
-For feedback, suggestions, or corrections, please email me at kanishk.mahajan@accenture.com
+For feedback, suggestions, or corrections, please email me at kmmahaj@amazon.com
 
