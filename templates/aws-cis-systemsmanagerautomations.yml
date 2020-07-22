@@ -316,7 +316,6 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/IAMFullAccess
         - arn:aws:iam::aws:policy/AdministratorAccess
 
 # Cloud Watch Role
