@@ -218,7 +218,7 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSSupportAccess
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AWSSupportAccess'
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------

@@ -13,36 +13,17 @@
 Outputs:
   FlowLogsRoleArn:
     Description: Arn for FlowsLogsRole
-    Value: 
-      Fn::Join:
-        - ''
-        - - 'arn:aws:iam::'
-          - Ref: AWS::AccountId
-          - ':role/'
-          - !Ref FlowLogsRole
+    Value: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${FlowLogsRole}'  
     Export: # added to export
       Name: FlowLogsRoleArn
   AutomationAssumeRoleArn:
     Description: Arn for AutomationAssumeRole
-    Value:
-      Fn::Join:
-        - ''
-        - - 'arn:aws:iam::'
-          - Ref: AWS::AccountId
-          - ':role/'
-          - !Ref AutomationAssumeRole
+    Value: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}'
     Export: # added to export
       Name: AutomationAssumeRoleArn
   CloudTrailLogGroupArn:
     Description: Arn for CloudTrail CloudWatch Logs
-    Value:
-      Fn::Join:
-          - ''
-          - - 'arn:aws:logs:'
-            - Ref: AWS::Region
-            - ':'
-            - Ref: AWS::AccountId
-            - !Sub ':log-group:${CloudTrailLogGroup}:*'
+    Value: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${CloudTrailLogGroup}:*"
     Export: # added to export
       Name: CloudTrailLogGroupArn
   S3LoggingBucketFullName:
@@ -52,14 +33,7 @@ Outputs:
       Name: S3LoggingBucketFullName
   FlowLogsCloudWatchLogGroupArn:
     Description: Arn for FlowLogs CloudWatchLogs
-    Value:
-      Fn::Join:
-          - ''
-          - - 'arn:aws:logs:'
-            - Ref: AWS::Region
-            - ':'
-            - Ref: AWS::AccountId
-            - !Sub ':log-group:${FlowLogsCloudWatchLogs}'
+    Value: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FlowLogsCloudWatchLogs}"
     Export: # added to export
       Name: FlowLogsCloudWatchLogGroupArn
   FlowLogsCloudWatchLogs:
@@ -84,26 +58,12 @@ Outputs:
       Name: CISCloudTrail
   CloudWatchRoleArn:
     Description: Arn for CloudTrail CloudWatch IAM Role 
-    Value:
-      Fn::Join:
-        - ''
-        - - 'arn:aws:iam::'
-          - Ref: AWS::AccountId
-          - ':role/'
-          - !Ref CloudWatchRole
+    Value: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${CloudWatchRole}"
     Export: # added to export
       Name: CloudWatchRoleArn
   KMSKeyArn:
     Description: Arn for KMS CMK
-    Value:
-      Fn::Join:
-        - ''
-        - - 'arn:aws:kms:'
-          - Ref: AWS::Region
-          - ':'
-          - Ref: AWS::AccountId
-          - ':key/'
-          - !Ref KmsKeyId
+    Value: !Sub "arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${KmsKeyId}"
     Export: # added to export
       Name: KMSKeyArn
 
@@ -130,8 +90,8 @@ Resources:
               - "s3:*"
             Effect: "Allow"
             Resource:
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}/*
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}/*
             Principal:
               AWS:
               - !Ref AWS::AccountId
@@ -140,8 +100,8 @@ Resources:
               - "s3:*"
             Effect: "Allow"
             Resource:
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}/*
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}/*
             Principal:
               Service:
               - cloudtrail.amazonaws.com
@@ -150,8 +110,8 @@ Resources:
             Principal: "*"
             Action: "*"
             Resource:
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}
-              - !Sub arn:aws:s3:::${CISS3CloudTrailBucket}/*
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${CISS3CloudTrailBucket}/*
             Condition:
               Bool:
                 aws:SecureTransport: 'false'
@@ -195,10 +155,16 @@ Resources:
           -
             Action:
               - "s3:*"
+              - s3:PutObject
+              - s3:PutBucketLogging
+              - s3:PutBucketVersioning
+              - s3:GetObject
+              - s3:GetBucketLocation
+              - s3:ListBucket
             Effect: "Allow"
             Resource:
-              - !Sub arn:aws:s3:::${S3LoggingBucket}
-              - !Sub arn:aws:s3:::${S3LoggingBucket}/*
+              - !Sub arn:${AWS::Partition}:s3:::${S3LoggingBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${S3LoggingBucket}/*
             Principal:
               AWS:
               - !Ref AWS::AccountId
@@ -207,8 +173,8 @@ Resources:
             Principal: "*"
             Action: "*"
             Resource:
-              - !Sub arn:aws:s3:::${S3LoggingBucket}
-              - !Sub arn:aws:s3:::${S3LoggingBucket}/*
+              - !Sub arn:${AWS::Partition}:s3:::${S3LoggingBucket}
+              - !Sub arn:${AWS::Partition}:s3:::${S3LoggingBucket}/*
             Condition:
               Bool:
                 aws:SecureTransport: 'false'
@@ -280,7 +246,6 @@ Resources:
             - logs:DescribeLogGroups
             - logs:DescribeLogStreams
             - iam:PassRole
-            - ec2:*
             Resource: '*'
           - Effect: Allow
             Action:
@@ -316,7 +281,7 @@ Resources:
               - 'sts:AssumeRole'
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AdministratorAccess
+        - arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess
 
 # Cloud Watch Role
   CloudWatchRole:
@@ -341,7 +306,6 @@ Resources:
             - logs:DescribeLogGroups
             - logs:DescribeLogStreams
             - iam:PassRole
-            - ec2:*
             Resource: '*'
           - Effect: Allow
             Action:
@@ -371,15 +335,9 @@ Resources:
           - Sid: Enable IAM User Permissions
             Effect: Allow
             Principal:
-              AWS:
-                'Fn::Join':
-                  - ''
-                  - - 'arn:aws:iam::'
-                    - Ref: 'AWS::AccountId'
-                    - ':root'
+              AWS: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:root"
             Action: 'kms:*'
             Resource: '*'
-
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 # CIS AWS Foundations Benchmark - 2.7 – Ensure CloudTrail logs are encrypted at rest using AWS KMS CMKs
@@ -396,55 +354,22 @@ Resources:
       Name: Custom-CloudTrailEncryptionCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
           CloudTrailLogGroupArn:
             type: String
-            default:
-              Fn::Join:
-                  - ''
-                  - - 'arn:aws:logs:'
-                    - Ref: AWS::Region
-                    - ':'
-                    - Ref: AWS::AccountId
-                    - !Sub ':log-group:${CloudTrailLogGroup}:*'
+            default: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${CloudTrailLogGroup}:*"
           CloudWatchRoleArn:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref CloudWatchRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${CloudWatchRole}"
           TrailName:
             type: String
           KMSKeyArn:
             type: String
-            default:
-              Fn::Join:
-                  - ''
-                  - - 'arn:aws:kms:'
-                    - Ref: AWS::Region
-                    - ':'
-                    - Ref: AWS::AccountId
-                    - ':key/'
-                    - !Ref KmsKeyId
+            default: !Sub "arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${KmsKeyId}"
         mainSteps:
           - name: EncryptCloudTrail
             action: 'aws:executeScript'
@@ -469,25 +394,13 @@ Resources:
       Name: Custom-CMKBackingKeyRotationCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           KMSKeyArn:
             type: String
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: rotatebackingkey
             action: 'aws:executeScript'
@@ -510,42 +423,17 @@ Resources:
       Content:
         description: CIS 2.4 – Ensure CloudTrail trails are integrated with Amazon CloudWatch Logs
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
           CloudTrailLogGroupArn:
             type: String
-            default:
-              Fn::Join:
-                  - ''
-                  - - 'arn:aws:logs:'
-                    - Ref: AWS::Region
-                    - ':'
-                    - Ref: AWS::AccountId
-                    - !Sub ':log-group:${CloudTrailLogGroup}:*'
+            default: !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${CloudTrailLogGroup}:*"
           CloudWatchRoleArn:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref CloudWatchRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${CloudWatchRole}"
           TrailName:
             type: String
         mainSteps:
@@ -571,23 +459,11 @@ Resources:
       Name: Custom-IAMPasswordUpdateCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: updatepasswordpolicy
             action: 'aws:executeScript'
@@ -622,26 +498,14 @@ Resources:
       Name: Custom-IAMKeyRotate90DaysCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           username:
             type: String
             default: 'cisadmin'
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: rotateiam90days
             action: 'aws:executeScript'
@@ -689,26 +553,14 @@ Resources:
       Name: Custom-DeactivateRootIAMAccessKeyCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           username:
             type: String
             default: 'root'
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: deactivaterootiamaccesskey
             action: 'aws:executeScript'
@@ -743,13 +595,7 @@ Resources:
       Name: Custom-IAMUserPolicyDetachCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           username:
             type: String
@@ -759,13 +605,7 @@ Resources:
             default: '0123'
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: detachiamuserpolicy
             action: 'aws:executeScript'
@@ -848,26 +688,14 @@ Resources:
       Name: Custom-IAMFullAdminPolicyDetachCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           username:
             type: String
             default: 'cisadmin'
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: detachiamfulladminpolicy
             action: 'aws:executeScript'
@@ -913,42 +741,17 @@ Resources:
       Name: Custom-LogFileValidationCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
           CloudTrailLogGroupArn:
             type: String
-            default:
-              Fn::Join:
-                  - ''
-                  - - 'arn:aws:logs:'
-                    - Ref: AWS::Region
-                    - ':'
-                    - Ref: AWS::AccountId
-                    - !Sub ':log-group:${CloudTrailLogGroup}:*'
+            default: !Sub "arn:${AWS::Partition}:${AWS::Region}:${AWS::AccountId}:log-group:${CloudTrailLogGroup}:*"
           CloudWatchRoleArn:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref CloudWatchRole
+            default: !Sub "arn${AWS::Partition}:iam::${AWS::AccountId}:role/${CloudWatchRole}"
           TrailName:
             type: String
         mainSteps:
@@ -974,33 +777,14 @@ Resources:
       Name: Custom-EnableVPCFlowLogsCF
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           CloudWatchLogGroupArn:
             type: String
-            default:
-              Fn::Join:
-                  - ''
-                  - - 'arn:aws:logs:'
-                    - Ref: AWS::Region
-                    - ':'
-                    - Ref: AWS::AccountId
-                    - !Sub ':log-group:${FlowLogsCloudWatchLogs}'
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:log-group:${FlowLogsCloudWatchLogs}"
           FlowLogRoleArn:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref FlowLogsRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${FlowLogsRole}"
           CloudWatchLogGroupName:
             type: String
             default: !Ref FlowLogsCloudWatchLogs
@@ -1008,13 +792,7 @@ Resources:
             type: String
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: EnableFlowLogs
             action: 'aws:executeScript'
@@ -1039,13 +817,7 @@ Resources:
       Name: Custom-RestrictSecurityGroup
       Content:
         schemaVersion: '0.3'
-        assumeRole:
-          Fn::Join:
-            - ''
-            - - 'arn:aws:iam::'
-              - Ref: AWS::AccountId
-              - ':role/'
-              - !Ref AutomationAssumeRole
+        assumeRole: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         parameters:
           groupId:
             type: String
@@ -1054,13 +826,7 @@ Resources:
             default: '0.0.0.0/0'
           AutomationAssumeRole:
             type: String
-            default:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:iam::'
-                  - Ref: AWS::AccountId
-                  - ':role/'
-                  - !Ref AutomationAssumeRole
+            default: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${AutomationAssumeRole}"
         mainSteps:
           - name: RestrictSecurityGroup
             action: 'aws:executeScript'
