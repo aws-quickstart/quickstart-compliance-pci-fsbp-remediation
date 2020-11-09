@@ -1,30 +1,19 @@
-Deploying this Quick Start for a new virtual private cloud (VPC) with
-*default parameters* builds the following _{partner-product-name}_ environment in the
-AWS Cloud.
+Deploying this Quick Start builds the following environment in the AWS Cloud:
 
-// Replace this example diagram with your own. Send us your source PowerPoint file. Be sure to follow our guidelines here : http://(we should include these points on our contributors giude)
-[#architecture1]
-.Quick Start architecture for _{partner-product-name}_ on AWS
-[link=images/architecture_diagram.png]
-image::../images/architecture_diagram.png[Architecture,width=648,height=439]
+image:../{imagesdir}/image2.png[Figure 1: Quick Start architecture for Remediations of CIS Benchmark using AWS Security Hub,width=682,height=302]
 
-As shown in Figure 1, the Quick Start sets up the following:
+*Figure 1: Quick Start architecture for Remediations of CIS Benchmark using AWS Security Hub*
 
-* A highly available architecture that spans two Availability Zones.*
-* A VPC configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
+image:../{imagesdir}/image3.png[Figure 2: Quick Start architecture for Cloud Watch Log Metric Filters based notifications,width=682,height=331]
 
-In the public subnets:
+*Figure 2: Quick Start architecture for Cloud Watch Log Metric Filters based notifications*
 
-* Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-* A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to EC2 instances in public and private subnets.*
+The Quick Start provisions the following in the AWS Cloud:
 
-In the private subnets:
-// Add bullet points for any additional components that are included in the deployment. Make sure that the additional components are also represented in the architecture diagram.
-* <describe any additional components>.
-
-*The template that deploys the Quick Start into an existing VPC skips
-the components marked by asterisks and prompts you for your existing VPC
-configuration.
+* AWS Security Hub Custom Actions
+* AWS CloudWatch Events Rules where each rule consists of 1) an AWS Security Hub Custom Action as source 2) a custom action ID that represents the Security Hub Action Target Resource ARN and 3) a target that consists of a Lambda function to process the Security Hub Finding
+* Lambda functions that process the findings using the standard findings format provided by Security Hub (AWS Security Finding Format (ASFF)) and packages the finding as input parameters for the associated AWS Systems Manager Automation Document.
+* AWS Systems Manager Automation Documents that provide remediations for the Security Hub Finding based on the rules defined by the CIS Benchmarks
+* AWS CloudWatch Logs Metric Filters that match AWS CloudTrail events as specified by the CIS Benchmarks
+* AWS CloudWatch Alarms that are set based on CloudWatch metrics that are established when CloudWatch Logs uses metric filters that match on CloudTrail log events as specified by the CIS Benchmarks
+* AWS SNS topic that receives a notification event each time a CloudWatch metric threshold is exceeded

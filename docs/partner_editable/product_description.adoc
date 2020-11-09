@@ -1,5 +1,12 @@
 // Replace the content in <>
-// Briefly describe the software. Use consistent and clear branding. 
+// Briefly describe the software. Use consistent and clear branding.
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-<Describe how the software works on AWS.>
+This Quick Start reference deployment guide provides step-by-step instructions for quickly and easily deploying automated remediations based on AWS Security Hub findings on the AWS Cloud. It is intended for users who want to use AWS CloudFormation templates to automate the deployment and configuration of AWS Security Hub based automated remediations for the CIS Benchmarks on the AWS Cloud.
+
+The CIS (Center of Internet Benchmarks) for AWS are the only industry standard, objective, consensus-driven security guideline for AWS. AWS Security Hub supports the CIS AWS Foundations standard and has been awarded CIS Security Software Certification for the following CIS Benchmarks:
+
+- CIS Benchmark for CIS Amazon Web Services Foundations Benchmark, v1.2.0, Level 1
+- CIS Benchmark for CIS Amazon Web Services Foundations Benchmark, v1.2.0, Level 2
+
+The AWS Security Hub service offers automated detection of findings of configuration noncompliance with the CIS Benchmarks. The CIS Quick Starts leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for each these CIS security policy violations.

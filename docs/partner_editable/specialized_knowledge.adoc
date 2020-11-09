@@ -1,6 +1,14 @@
-// Replace the content in <>
-// Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
+=== Security Hub
 
-This Quick Start assumes familiarity with <knowledge expectations>.
+Security Hub uses service-linked AWS Config rules. *Because of this, you should ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed.* You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.
 
+The AWS CloudFormation templates for this Quick Start automate the provisioning of all configuration parameters that are needed for the remediation of the CIS Benchmarks. These include IAM roles, CloudWatch Log Groups, S3 buckets and a KMS Key that are required for implementing various remediation scenarios for the CIS Benchmarks.
 
+This provides a seamless install and deployment experience as outlined in the next section.
+
+WARNING: Automated Remediations of the following CIS Benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
+
+- CIS 1.3 - Ensure credentials unused for 90 days or greater are disabled
+- CIS 1.4 – Ensure access keys are rotated every 90 days or less
+- CIS 1.11 – Ensure IAM password policy expires passwords within 90 days or less
+- CIS 1.12 - Ensure no root account access key exists

@@ -3,21 +3,27 @@
 
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
+After you enable the CIS Benchmark, AWS Security Hub begins to run the checks within 2 hours.
+After the initial check, the schedule for each control may be either periodic or change-triggered.
+- Periodic checks run automatically within 12 hours after the most recent run. You cannot change the periodicity.
+- Change-triggered checks run when the associated resource changes state. Even if the resource does not change state, the updated at time for change-triggered checks is refreshed every 18 hours. This helps to indicate that the control is still enabled.
 
-== Post deployment steps
-// If Post-deployment steps are required, add them here. If not, remove the heading
+Let’s test a remediation deployed by the CIS Quick Start deployment by using a resource change-triggered check. In order to test an automated remediation, we will perform a misconfiguration that triggers a Security Hub Finding on a resource change-triggered check. Specifically, we will look at CIS 4.1 – Ensure no security groups allow ingress from `0.0.0.0/0` to port `22`.
+
+. Perform Misconfiguration: Navigate to the EC2 console and then Security Groups in the EC2 Console, select a group and edit inbound rules by adding an SSH rule (port `22`) to IP address `0.0.0.0/0` and click on Save. Make a note of the Security Group ARN.
+. To view the resource change-triggered check, navigate to Security Hub and click on Findings to locate the finding that corresponds to the misconfiguration above
+
+[arabic, start=3]
+. To remediate a finding, select the check box next to the finding and click Actions. From the drop-down menu on actions select the action you would like to use to remediate based on the Security Group Identifier noted earlier. In this case select the “CIS41” action based on the CIS Finding
+. As per the flow of the solution approach for the CIS Quick Start, you should see a message saying that findings were successfully sent to CloudWatch Events
+. To further validate the flow of the solution approach for the CIS Quickstart, navigate to Systems Manager and click on Automation. You should see a successful automation execution that corresponds to the security group related remediation.
+. To confirm the remediation was successful, navigate back to the EC2 Console, and then Security Groups and you will notice that the inbound rule change we made earlier by adding an SSH rule and IP address `0.0.0.0/0` has been removed in accordance with the remediation required by CIS 4.1.
+
 
 == Best practices for using {partner-product-name} on AWS
-// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-_Add any best practices for using the software._
+AWS categorizes each AWS Security Hub service action into one of five access levels based on what each action does: List, Read, Write, Permissions management, or Tagging. Use specific managed IAM policies for different types of Security Hub users to allow a large group of users to access List and Read Security Hub actions and allow only a small group of users to access the Security Hub Write actions. With Security Hub, findings generated from integrated providers (both third-party services and AWS services) are ingested using a standard findings format. It is encouraged to integrate partner products to both generate and receive findings from Security Hub or integrate them as subscribers to the SNS topic ( in lieu of the default email notification) configured for the aws-cis-cloudwatchlogmetricfilters.yml template.
 
 == Security
-// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
-_Add any security-related information._
-
-== Other useful information
-//Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
-
-_Add any other details that will help the customer use the software on AWS._
+The CIS Quick Start follows security best practices and guidelines for AWS Security Hub and all associated AWS services as documented https://docs.aws.amazon.com/securityhub/latest/userguide/security.html[here.]
