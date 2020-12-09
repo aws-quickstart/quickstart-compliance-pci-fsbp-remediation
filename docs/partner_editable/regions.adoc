@@ -1,2 +1,5 @@
-- _us-east-1 (N. Virginia)_ (EXAMPLE)
-- _us-east-2 (Ohio)_ (EXAMPLE)
+https://aws.amazon.com/about-aws/global-infrastructure/[Regions]
+
+Also, if you’re planning to deploy an architecture with three Availability Zones, choose an AWS Region that supports three zones.
+
+//Full list: https://docs.aws.amazon.com/general/latest/gr/rande.html

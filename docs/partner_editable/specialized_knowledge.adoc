@@ -1,3 +1,10 @@
+// Replace the content in <>
+// Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
+
+This deployment guide also requires a moderate level of familiarity with AWS services. If you’re new to AWS, visit the https://aws.amazon.com/getting-started/[Getting Started Resource Center] and the https://aws.amazon.com/training/[AWS Training and Certification website] for materials and programs that can help you develop the skills to design, deploy, and operate your infrastructure and applications on the AWS Cloud. For more information about the AWS services that are used in this Quick Start, see the link:#additional_resources[Additional resources] section.
+
+
+=======
 === Security Hub
 
 Security Hub uses service-linked AWS Config rules. *Because of this, you should ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed.* You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.

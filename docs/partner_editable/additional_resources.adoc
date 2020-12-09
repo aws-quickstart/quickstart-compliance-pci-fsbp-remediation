@@ -1,0 +1,14 @@
+=== Additional Resources
+
+[start=1]
+AWS Resources::
+* link:https://aws.amazon.com/getting-started/[Getting Started Resource Center]
+* link:https://docs.aws.amazon.com/general/latest/gr/[AWS General Reference]
+* link:https://docs.aws.amazon.com/general/latest/gr/glos-chap.html[AWS Glossary]
+
+[start=1]
+AWS Services::
+* link:https://docs.aws.amazon.com/securityhub/index.html[AWS Security Hub]
+* link:https://aws.amazon.com/systems-manager/[AWS Systems Manager]
+* link:https://aws.amazon.com/cloudformation/[AWS CloudFormation]
+

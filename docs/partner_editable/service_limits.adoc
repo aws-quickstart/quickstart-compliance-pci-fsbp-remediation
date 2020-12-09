@@ -3,12 +3,11 @@
 |Resource |This deployment uses
 
 // Space needed to maintain table headers
-|VPCs |<n>
-|Elastic IP addresses |<n>
-|AWS Identity and Access Management (IAM) security groups |<n>
-|IAM roles |<n>
-|Auto Scaling groups |<n>
-|Application Load Balancers |<n>
-|Network Load Balancers |<n>
-|<type> instances |<n>
+|AWS Security Hub Compliance Checks |2
+|AWS Systems Manager Automation Documents |10
+|AWS Identity and Access Management (IAM) roles |3
+|AWS CloudTrail Trail |1
+|AWS CloudWatch Logs |1
+|Amazon S3 Bucket |2
+
 |===

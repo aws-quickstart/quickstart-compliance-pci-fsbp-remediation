@@ -3,15 +3,16 @@
 
 . Sign in to your AWS account at https://aws.amazon.com with an IAM user role that has the necessary permissions. For details, see link:#_planning_the_deployment[Planning the deployment] earlier in this guide.
 . Make sure that your AWS account is configured correctly, as discussed in the link:#_technical_requirements[Technical requirements] section.
+. Use the Region selector in the navigation bar to choose the AWS Region where you want to deploy the Quick Start Cloud Formation templates
 
 // Optional based on Marketplace listing. Not to be edited
 ifdef::marketplace_subscription[]
-=== Subscribe to the {partner-product-name} AMI
+=== Subscribe to the {partner-product-short-name} AMI
 
-This Quick Start requires a subscription to the AMI for {partner-product-name} in AWS Marketplace.
+This Quick Start requires a subscription to the AMI for {partner-product-short-name} in AWS Marketplace.
 
 . Sign in to your AWS account.
-. {marketplace_listing_url}[Open the page for the {partner-product-name} AMI in AWS Marketplace], and then choose *Continue to Subscribe*.
+. {marketplace_listing_url}[Open the page for the {partner-product-short-name} AMI in AWS Marketplace], and then choose *Continue to Subscribe*.
 . Review the terms and conditions for software usage, and then choose *Accept Terms*. +
   A confirmation page loads, and an email confirmation is sent to the account owner. For detailed subscription instructions, see the https://aws.amazon.com/marketplace/help/200799470[AWS Marketplace documentation^].
 
@@ -23,30 +24,34 @@ endif::marketplace_subscription[]
 
 NOTE: You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
 
-. Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see link:#_deployment_options[deployment options] earlier in this guide.
+[start=1]
+For PCI-DSS Controls::
+. The Quick Start is packaged into 2 CloudFormation templates:
+.. aws-security-hub-pci-remediations-template1.yml
+.. aws-security-hub-pci-remediations-template2.yml
+. Template Deployment Order: *The aws-security-hub-pci-remediations-template1.yml template must be deployed before the aws-security-hub-pci-remediations-template2.yml template*. The aws-security-hub-pci-remediations-template1.yml template provisions the AWS Systems Manager automation documents that are leveraged by the aws-security-hub-pci-remediations-template2.yml template to remediate the Security Hub Findings.
+. Follow the steps below to deploy each template
+.. Check the Region that’s displayed in the upper-right corner of the navigation bar and change it if necessary. The template is launched in the US East (N.Virginia) Region by default.
+.. On the Select Template page, keep the default setting for the template URL, and then choose Next.
+.. On the Specify Details page, provide the stack name. The aws-security-hub-pci-remediations-template1.yml template takes no input parameters. For the aws-security-hub-pci-remediations-template2.yml specify an "Email Address" as a parameter. This is used for notifications for PCI.CW.1.  Review and choose Next.
+.. On the Options page, you can specify tags (key-value pairs) for resources in your stack and set advanced options. When you’re done, choose Next.
+.. On the Review page, review and confirm the template settings. Under Capabilities, select the two check boxes to acknowledge that the template will create IAM resources and that it might require the capability to auto-expand macros.
+.. Choose Create to deploy the stack.
+.. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment of the template is complete.
+.. Use the URLs displayed in the Outputs tab for the stack to view the resources that were created.
 
-[cols=",]
-|===
-|http://qs_launch_link[Deploy {partner-product-name} into a new VPC on AWS^] 
-|http://qs_launch_link[Deploy {partner-product-name} into an existing VPC on AWS^]
-|===
-
-WARNING: If you’re deploying {partner-product-name} into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html[shared subnets^]. These subnets require https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html[NAT gateways^] in their route tables, to allow the instances to download packages and software without exposing them to the internet.
-
-Also, make sure that the domain name option in the DHCP options is configured as explained in the http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html[Amazon VPC documentation^]. You provide your VPC settings when you launch the Quick Start.
-
-Each deployment takes about {deployment_time} to complete.
-
-[start=2]
-. Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-name} will be built. The template is launched in the {default_deployment_region} Region by default.
-
-// *Note:* This deployment includes Amazon EFS, which isn’t currently supported in all AWS Regions. For a current list of supported Regions, see the https://docs.aws.amazon.com/general/latest/gr/elasticfilesystem.html[endpoints and quotas webpage].
-
-[start=3]
-. On the *Create stack* page, keep the default setting for the template URL, and then choose *Next*.
-. On the *Specify stack details* page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary.
-
-// In the following tables, parameters are listed by category and described separately for the two deployment options:
-
-// * Parameters for deploying {partner-product-name} into a new VPC
-// * Parameters for deploying {partner-product-name} into an existing VPC
+[start=1]
+For Foundational Security Best Practices Controls::
+. The Quick Start is packaged into 2 CloudFormation templates:
+.. aws-security-hub-fsbp-remediations-template1.yml
+.. aws-security-hub-fsbp-remediations-template2.yml
+. Template Deployment Order: *The aws-security-hub-fsbp-remediations-template1.yml template must be deployed before the aws-security-hub-fsbp-remediations-template2.yml template*. The aws-security-hub-fsbp-remediations-template1.yml template provisions the AWS Systems Manager automation documents that are leveraged by the aws-security-hub-fsbp-remediations-template2.yml template to remediate the Security Hub Findings.
+. Follow the steps below to deploy each template
+.. Check the Region that’s displayed in the upper-right corner of the navigation bar and change it if necessary. The template is launched in the US East (N.Virginia) Region by default.
+.. On the Select Template page, keep the default setting for the template URL, and then choose Next.
+.. On the Specify Details page, provide the stack name. The template takes no input parameters. Review and choose Next.
+.. On the Options page, you can specify tags (key-value pairs) for resources in your stack and set advanced options. When you’re done, choose Next.
+.. On the Review page, review and confirm the template settings. Under Capabilities, select the two check boxes to acknowledge that the template will create IAM resources and that it might require the capability to auto-expand macros.
+.. Choose Create to deploy the stack.
+.. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment of the template is complete.
+.. Use the URLs displayed in the Outputs tab for the stack to view the resources that were created.

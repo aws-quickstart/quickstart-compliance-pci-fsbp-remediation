@@ -1,19 +1,15 @@
-Deploying this Quick Start builds the following environment in the AWS Cloud:
+Deploying this Quick Start builds the following environment in the AWS Cloud.
 
-image:../{imagesdir}/image2.png[Figure 1: Quick Start architecture for Remediations of CIS Benchmark using AWS Security Hub,width=682,height=302]
+// The example diagram has been replaced with the Security Hub Architecture diagram for the Quickstart
+:xrefstyle: short
+[#architecture1]
+. Quick Start architecture for Remediations of PCI and Foundational Security Benchmarks using AWS Security Hub
+[link=images/architecture_diagram.png]
+image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
 
-*Figure 1: Quick Start architecture for Remediations of CIS Benchmark using AWS Security Hub*
+As shown in <<architecture1>>, the Quick Start sets up the following:
 
-image:../{imagesdir}/image3.png[Figure 2: Quick Start architecture for Cloud Watch Log Metric Filters based notifications,width=682,height=331]
-
-*Figure 2: Quick Start architecture for Cloud Watch Log Metric Filters based notifications*
-
-The Quick Start provisions the following in the AWS Cloud:
-
-* AWS Security Hub Custom Actions
-* AWS CloudWatch Events Rules where each rule consists of 1) an AWS Security Hub Custom Action as source 2) a custom action ID that represents the Security Hub Action Target Resource ARN and 3) a target that consists of a Lambda function to process the Security Hub Finding
-* Lambda functions that process the findings using the standard findings format provided by Security Hub (AWS Security Finding Format (ASFF)) and packages the finding as input parameters for the associated AWS Systems Manager Automation Document.
-* AWS Systems Manager Automation Documents that provide remediations for the Security Hub Finding based on the rules defined by the CIS Benchmarks
-* AWS CloudWatch Logs Metric Filters that match AWS CloudTrail events as specified by the CIS Benchmarks
-* AWS CloudWatch Alarms that are set based on CloudWatch metrics that are established when CloudWatch Logs uses metric filters that match on CloudTrail log events as specified by the CIS Benchmarks
-* AWS SNS topic that receives a notification event each time a CloudWatch metric threshold is exceeded
+* AWS Security Hub Custom Actions.
+* AWS CloudWatch Events Rules where each rule consists of 1) an AWS Security Hub Custom Action as source 2) a custom action ID that represents the Security Hub Action Target Resource ARN and 3) a target that consists of a Lambda function to process the Security Hub Finding.
+* AWS Lambda functions that process the findings using the standard findings format provided by Security Hub (AWS Security Finding Format (ASFF)). Each Lambda function invokes the associated AWS Systems Manager Automation Document with the finding.
+* AWS Systems Manager Automation Documents that provide remediations for the AWS Security Hub Finding 

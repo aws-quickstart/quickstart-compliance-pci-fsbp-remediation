@@ -1,13 +1,12 @@
-// // If no preperation is required, remove all content from here
-//
-// ==== Prepare your AWS account
-//
-// _Describe any setup required in the AWS account prior to template launch_
-//
-// ==== Prepare your {partner-company-name} account
-//
-// _Describe any setup required in the partner portal/account prior to template launch_
-//
-// ==== Prepare for the deployment
-//
-// _Describe any preparation required to complete the product build, such as obtaining licenses or placing files in S3_
+// If no preparation is required, remove all content from here
+
+==== Prepare your AWS account
+
+The AWS CloudFormation templates automate the provisioning of all configuration parameters that are needed for the remediation of the PCI and Foundational Security Benchmarks that are covered in this Quick Start. These include IAM roles, CloudWatch Log Groups, S3 buckets and a KMS Key that are required for implementing various remediation scenarios for the PCI and Foundational Security Best Practices Controls.
+
+The Quickstart requires the following prerequisites:
+
+[start=1]
+. To run most of these checks, Security Hub uses service-linked AWS Config rules. Because of this, you should ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.
+
+. The Quickstart provisions a KMS CMK (Customer Managed Key) to remediate the PCI.CloudTrail.1 control: "CloudTrail logs should be encrypted at rest using AWS KMS CMK". The key policy for this kms key needs to be updated with the specific AWS Account ID where the Quickstart is deployed so that the kms key has permissions to encrypt/decrypt AWS CloudTrail logs in that account. Navigate to the AWS KMS console and search for a kms key with an alias of "PCI-CMK" and follow the steps link:https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-kms-key-policy-for-cloudtrail.html#create-kms-key-policy-for-cloudtrail-policy-sections[here] to update the kms key policy to encrypt/decrypt cloudtrail logs in your account.
