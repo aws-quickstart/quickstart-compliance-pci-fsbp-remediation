@@ -5,11 +5,15 @@
 
 
 ==== Introduction
+
 Customers require compliance with established security and regulatory controls when migrating workloads to AWS but face numerous common challenges. It is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remediation workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual, error prone, results in a high MTTR (Mean Time To Remediation) for customers thus increasing risk and operational costs.
+
 
 AWS provides an Operational Best Practices for PCI DSS 3.2.1 that provide a sample mapping between the Payment Card Data Security Standard (PCI DSS) 3.2.1 and AWS Security Hub checks. The AWS Foundational Security Best Practices standard is a set of controls that detect when your deployed accounts and resources deviate from AWS security best practices.
 
+
 The AWS Security Hub service provides checks that offer automated detection of findings of configuration noncompliance with PCI and Foundational Security Best Practices Controls. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for these PCI and Foundational Security Best Practices policy violations detected by AWS Security Hub.
+
 
 The solution uses http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents] to automate the deployment and configuration of AWS Security Hub based remediations for PCI DSS 3.2.1 and Foundational Security Best Practices Controls on AWS.
 
@@ -71,7 +75,7 @@ Foundational Security Best Practices::
 * [SSM.1] EC2 instances should be managed by AWS Systems Manager
 
 
-.Additionally coverage for remediations for the following Foundational Security Best Practices Controls is also provided by this quickstart due to the coverage for remediations for PCI Controls:
+Additionally coverage for remediations for the following Foundational Security Best Practices Controls is also provided by this Quick Start due to the coverage for remediations for PCI Controls::
 * [AutoScaling.1] Auto Scaling groups associated with a load balancer should use load balancer health checks
 * [CloudTrail.1] CloudTrail should be enabled and configured with at least one multi-Region trail
 * [CloudTrail.2] CloudTrail should have encryption at-rest enabled

@@ -5,6 +5,7 @@ Deploying this Quick Start builds the following environment in the AWS Cloud.
 [#architecture1]
 . Quick Start architecture for Remediations of PCI and Foundational Security Benchmarks using AWS Security Hub
 [link=images/architecture_diagram.png]
+
 image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
@@ -12,4 +13,4 @@ As shown in <<architecture1>>, the Quick Start sets up the following:
 * AWS Security Hub Custom Actions.
 * AWS CloudWatch Events Rules where each rule consists of 1) an AWS Security Hub Custom Action as source 2) a custom action ID that represents the Security Hub Action Target Resource ARN and 3) a target that consists of a Lambda function to process the Security Hub Finding.
 * AWS Lambda functions that process the findings using the standard findings format provided by Security Hub (AWS Security Finding Format (ASFF)). Each Lambda function invokes the associated AWS Systems Manager Automation Document with the finding.
-* AWS Systems Manager Automation Documents that provide remediations for the AWS Security Hub Finding 
+* AWS Systems Manager Automation Documents that provide remediations for the AWS Security Hub Finding

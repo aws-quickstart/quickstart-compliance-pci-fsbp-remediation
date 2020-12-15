@@ -17,7 +17,7 @@ Let’s test a remediation deployed by the Quick Start deployment by using a res
 . To further validate the flow of the solution approach for the Quickstart, navigate to Systems Manager and click on Automation. You should see a successful automation execution that corresponds to the security group related remediation.
 . To confirm the remediation was successful, navigate back to the EC2 Console, and then Security Groups and you will notice that the inbound rule change we made earlier by adding an SSH rule and IP address 0.0.0.0/0 has been removed in accordance with the remediation required by PCI EC2.2
 
-== Best practices for using PCI and Foundational Security Best Practices Quickstart on AWS
+== Best practices for using {partner-product-name} on AWS
 AWS categorizes each AWS Security Hub service action into one of five access levels based on what each action does: List, Read, Write, Permissions management, or Tagging. Use specific managed IAM policies for different types of Security Hub users to allow a large group of users to access List and Read Security Hub actions and allow only a small group of users to access the Security Hub Write actions.  With Security Hub, findings generated from integrated providers (both third-party services and AWS services) are ingested using a standard findings format.
 
 == Security
