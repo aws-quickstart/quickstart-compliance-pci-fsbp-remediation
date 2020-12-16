@@ -7,3 +7,4 @@
 :deployment_time: 20 minutes
 :default_deployment_region: us-east-1
 :partner-product-name: PCI and Foundational Security Best Practice Controls using AWS Security Hub
+:no_parameters:

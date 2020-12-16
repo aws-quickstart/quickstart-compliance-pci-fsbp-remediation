@@ -378,44 +378,6 @@ Resources:
                   print("SSM automation execution error")
                   raise
 
-  S3RemediationLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Policies:
-      - PolicyName: S3RemediationLambdaPolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - cloudwatch:PutMetricData
-            Resource: '*'
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: '*'
-          - Effect: Allow
-            Action:
-            - ssm:StartAutomationExecution
-            - s3:GetBucketAcl
-            - s3:GetBucketPolicy
-            - s3:PutBucketAcl
-            - s3:PutBucketPolicy
-            - s3:PutBucketPublicAccessBlock
-            - iam:PassRole
-            - securityhub:UpdateFindings
-            Resource: '*'
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-        - Effect: Allow
-          Principal: { Service: lambda.amazonaws.com }
-          Action:
-          - sts:AssumeRole
-
-
 #PCI CW.1
   RootAccountLoginsAlarm:
     Type: AWS::CloudWatch::Alarm
