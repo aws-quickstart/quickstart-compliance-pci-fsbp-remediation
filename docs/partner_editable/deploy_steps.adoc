@@ -24,16 +24,18 @@ endif::marketplace_subscription[]
 
 NOTE: You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
 
+WARNING: This reference architecture contains automatic remediations for PCI-DSS Controls and Foundational Security Best Practices. These remediations may make changes to your AWS Account. We do not recommend the use of this reference in a production environment without appropriate evaluation.
 [start=1]
 For PCI-DSS Controls::
-. The Quick Start is packaged into 2 CloudFormation templates:
-.. aws-security-hub-pci-remediations-template1.yml
-.. aws-security-hub-pci-remediations-template2.yml
-. Template Deployment Order: *The aws-security-hub-pci-remediations-template1.yml template must be deployed before the aws-security-hub-pci-remediations-template2.yml template*. The aws-security-hub-pci-remediations-template1.yml template provisions the AWS Systems Manager automation documents that are leveraged by the aws-security-hub-pci-remediations-template2.yml template to remediate the Security Hub Findings.
+. The Quick Start is packaged into 2 CloudFormation templates.
+- *The first PCI remediation template must be deployed before the second*.
+- The first PCI remediation template provisions the AWS Systems Manager automation documents that are leveraged by the second template to remediate the Security Hub Findings.
+- https://first_pci_launch_link[Launch the first PCI Remediation template]
+- https://second_fsbp_launch_link[Launch the second PCI Remediation template]
 . Follow the steps below to deploy each template
 .. Check the Region that’s displayed in the upper-right corner of the navigation bar and change it if necessary. The template is launched in the US East (N.Virginia) Region by default.
 .. On the Select Template page, keep the default setting for the template URL, and then choose Next.
-.. On the Specify Details page, provide the stack name. The aws-security-hub-pci-remediations-template1.yml template takes no input parameters. For the aws-security-hub-pci-remediations-template2.yml specify an "Email Address" as a parameter. This is used for notifications for PCI.CW.1.  Review and choose Next.
+.. On the Specify Details page, provide the stack name. The first template takes no input parameters. For the second, specify an "Email Address" as a parameter. This is used for notifications for PCI.CW.1.  Review and choose Next.
 .. On the Options page, you can specify tags (key-value pairs) for resources in your stack and set advanced options. When you’re done, choose Next.
 .. On the Review page, review and confirm the template settings. Under Capabilities, select the two check boxes to acknowledge that the template will create IAM resources and that it might require the capability to auto-expand macros.
 .. Choose Create to deploy the stack.
@@ -42,10 +44,11 @@ For PCI-DSS Controls::
 
 [start=1]
 For Foundational Security Best Practices Controls::
-. The Quick Start is packaged into 2 CloudFormation templates:
-.. aws-security-hub-fsbp-remediations-template1.yml
-.. aws-security-hub-fsbp-remediations-template2.yml
-. Template Deployment Order: *The aws-security-hub-fsbp-remediations-template1.yml template must be deployed before the aws-security-hub-fsbp-remediations-template2.yml template*. The aws-security-hub-fsbp-remediations-template1.yml template provisions the AWS Systems Manager automation documents that are leveraged by the aws-security-hub-fsbp-remediations-template2.yml template to remediate the Security Hub Findings.
+. The Quick Start is packaged into 2 CloudFormation templates.
+- *The first FSBP remediation template must be deployed before the second*.
+- The first FSBP remediation template provisions the AWS Systems Manager automation documents that are leveraged by the second template to remediate the Security Hub Findings.
+- https://first_fsbp_template_link[Launch the first FSBP Remediation template]
+- https://second_fsbp_template_link[Launch the second FSBP Remediation template]
 . Follow the steps below to deploy each template
 .. Check the Region that’s displayed in the upper-right corner of the navigation bar and change it if necessary. The template is launched in the US East (N.Virginia) Region by default.
 .. On the Select Template page, keep the default setting for the template URL, and then choose Next.
