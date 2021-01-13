@@ -3,9 +3,8 @@ Deploying this Quick Start builds the following environment in the AWS Cloud.
 // The example diagram has been replaced with the Security Hub Architecture diagram for the Quickstart
 :xrefstyle: short
 [#architecture1]
-. Quick Start architecture for Remediations of PCI and Foundational Security Benchmarks using AWS Security Hub
+.Quick Start architecture for Remediations of PCI and Foundational Security Benchmarks using AWS Security Hub
 [link=images/architecture_diagram.png]
-
 image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:

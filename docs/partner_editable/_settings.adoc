@@ -1,9 +1,9 @@
 // Do not change this first attribute. Do change the others.
 :quickstart-team-name: AWS Quick Start team
 :quickstart-project-name: quickstart-compliance-pci
-:doc-month: December
-:doc-year: 2020
-:quickstart-contributors: Kanishk Mahajan, Andrew Glenn - AWS
+:doc-month: January
+:doc-year: 2021
+:quickstart-contributors: Kanishk Mahajan and Andrew Glenn, AWS Quick Start team
 :deployment_time: 20 minutes
 :default_deployment_region: us-east-1
 :partner-product-name: PCI and Foundational Security Best Practice Controls using AWS Security Hub
