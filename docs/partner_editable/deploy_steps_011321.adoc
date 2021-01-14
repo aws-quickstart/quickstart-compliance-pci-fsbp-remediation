@@ -24,7 +24,7 @@ endif::marketplace_subscription[]
 
 NOTE: You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
 
-WARNING: This reference architecture contains automatic remediations for PCI-DSS Controls and Foundational Security Best Practices. These remediations may make changes to your AWS account. We do not recommend using this reference architecture in a production environment before appropriate evaluation and testing.
+WARNING: This reference architecture contains automatic remediations for PCI DSS Controls and Foundational Security Best Practices. These remediations may make changes to your AWS account. We do not recommend using this reference architecture in a production environment before appropriate evaluation and testing.
 [start=1]
 PCI-DSS Controls::
 . The Quick Start is packaged into 2 CloudFormation templates.

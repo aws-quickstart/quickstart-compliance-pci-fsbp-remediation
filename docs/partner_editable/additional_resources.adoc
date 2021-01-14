@@ -1,9 +1,16 @@
 === Additional Resources
 
+General AWS::
 * link:https://aws.amazon.com/getting-started/[Getting Started with AWS]
 * link:https://docs.aws.amazon.com/general/latest/gr/[AWS General Reference]
 * link:https://docs.aws.amazon.com/general/latest/gr/glos-chap.html[AWS glossary]
+
+AWS Services used in this Quick Start::
 * link:https://docs.aws.amazon.com/securityhub/index.html[AWS Security Hub Documentation]
+** link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS)]
+** link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices Standard]
+* link:https://docs.aws.amazon.com/lambda/latest/dg/welcome.html[What is AWS Lambda?]
+* link:https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html[What Is Amazon CloudWatch Events?]
 * link:https://aws.amazon.com/systems-manager/[AWS Systems Manager]
 * link:https://aws.amazon.com/cloudformation/[AWS CloudFormation]
 

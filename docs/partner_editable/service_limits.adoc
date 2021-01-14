@@ -3,11 +3,11 @@
 |Resource |This deployment uses
 
 // Space needed to maintain table headers
-|AWS Security Hub Compliance Checks |2
-|AWS Systems Manager Automation Documents |10
+|AWS Security Hub compliance checks |2
+|AWS Systems Manager Automation documents |10
 |AWS Identity and Access Management (IAM) roles |3
-|AWS CloudTrail Trail |1
-|AWS CloudWatch Logs |1
-|Amazon S3 Bucket |2
+|AWS CloudTrail trails |1
+|AWS CloudWatch logs |1
+|Amazon S3 buckets |2
 
 |===

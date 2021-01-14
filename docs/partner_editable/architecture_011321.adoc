@@ -9,9 +9,9 @@ image::../images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-* AWS Security Hub to compile findings of automated and continuous checks run against the rules in the Payment Card Industry Data Security Standard (PCI-DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send benchmark findings as AWS CloudWatch Events to AWS CloudWatch. 
-* AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers a AWS Lambda function.
-* AWS Lambda functions to invoke the appropriate AWS Systems Manager automation document based on the custom action.  
-* AWS Systems Manager to perform the procedures in the automation document to remediate the initial finding.
+* AWS Security Hub to compile findings of automated and continuous checks run against the rules in the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send findings of deviations from best practices as AWS CloudWatch Events to AWS CloudWatch. 
+* AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers an AWS Lambda function.
+* AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook based on the custom action.  
+* AWS Systems Manager to perform the actions defined in the runbook to remediate the initial finding.
 
-NOTE: This guide contains instructions for deploying the Payment Card Industry Data Security Standard (PCI-DSS) and Foundational Security Best Practices standards in Security Hub. Each standard is packaged in two templates. For more information, see the link:#launch_the_quick_start[Launch the Quick Start] section.
+NOTE: This guide contains instructions for deploying the Payment Card Industry Data Security Standard (PCI DSS) and Foundational Security Best Practices standards in Security Hub. Each standard is packaged in two templates. For more information, see the link:#launch_the_quick_start[Launch the Quick Start] section.

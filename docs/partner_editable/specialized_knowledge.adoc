@@ -1,17 +1,15 @@
 // Replace the content in <>
 // Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
 
-This deployment guide also requires a moderate level of familiarity with AWS services. If you’re new to AWS, visit the https://aws.amazon.com/getting-started/[Getting Started Resource Center] and the https://aws.amazon.com/training/[AWS Training and Certification website] for materials and programs that can help you develop the skills to design, deploy, and operate your infrastructure and applications on the AWS Cloud. For more information about the AWS services that are used in this Quick Start, see the link:#additional_resources[Additional resources] section.
+This deployment guide also requires a moderate level of familiarity with AWS services. If you’re new to AWS, visit the https://aws.amazon.com/getting-started/[Getting Started Resource Center] and the https://aws.amazon.com/training/[AWS Training and Certification website] for help developing skills to design, deploy, and operate your infrastructure and applications on the AWS Cloud. For more information about the AWS services that are used in this Quick Start, see the link:#additional_resources[Additional resources] section.
 
 === Security Hub
 
-Security Hub uses service-linked AWS Config rules. *Because of this, you should ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed.* You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.
+Security Hub uses service-linked https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html[AWS Config rules]. Make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing].
 
-The AWS CloudFormation templates for this Quick Start automate the provisioning of all configuration parameters that are needed for the remediation of the CIS Benchmarks. These include IAM roles, CloudWatch Log Groups, S3 buckets and a KMS Key that are required for implementing various remediation scenarios for the CIS Benchmarks.
+AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch Log Groups, S3 buckets, and an AWS Key Management Service key.
 
-This provides a seamless install and deployment experience as outlined in the next section.
-
-WARNING: Automated Remediations of the following CIS Benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
+WARNING: Automated remediations of the following CIS benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
 
 - CIS 1.3 - Ensure credentials unused for 90 days or greater are disabled
 - CIS 1.4 – Ensure access keys are rotated every 90 days or less
