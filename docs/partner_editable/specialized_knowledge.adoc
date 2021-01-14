@@ -5,9 +5,7 @@ This deployment guide also requires a moderate level of familiarity with AWS ser
 
 === Security Hub
 
-Security Hub uses service-linked https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html[AWS Config rules]. Make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing].
-
-AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch Log Groups, S3 buckets, and an AWS Key Management Service key.
+NOTE: AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch log groups, S3 buckets, and an AWS Key Management Service key.
 
 WARNING: Automated remediations of the following CIS benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
 

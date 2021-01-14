@@ -4,7 +4,7 @@
 
 // Space needed to maintain table headers
 |AWS Security Hub compliance checks |2
-|AWS Systems Manager Automation documents |10
+|AWS Systems Manager runbooks |10
 |AWS Identity and Access Management (IAM) roles |3
 |AWS CloudTrail trails |1
 |AWS CloudWatch logs |1

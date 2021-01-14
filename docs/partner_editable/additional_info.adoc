@@ -3,7 +3,7 @@
 
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
-After you enable the PCI or Foundational Security Best Practices controls, AWS Security Hub begins to run the checks within 2 hours. After the initial check, the schedule for each control may be either periodic or change-triggered.
+After you enable the PCI DSS or Foundational Security Best Practices controls, AWS Security Hub begins to run checks within 2 hours. After the initial check, the schedule for each control may be either periodic or change-triggered.
 
 * Periodic checks run automatically within 12 hours after the most recent run. You cannot change the interval.
 * Change-triggered checks run when the associated resource changes state. Even if the resource does not change state, the updated at time for change-triggered checks is refreshed every 18 hours. This helps to indicate that the control is still enabled.
@@ -21,4 +21,4 @@ Let’s test a remediation deployed by the Quick Start deployment by using a res
 AWS categorizes each AWS Security Hub service action into one of five access levels: List, Read, Write, Permissions management, or Tagging. Use specific managed IAM policies for different types of Security Hub users to allow a large group of users to access List and Read Security Hub actions and allow only a small group of users to access the Security Hub Write actions.  With Security Hub, findings generated from integrated providers (both third-party services and AWS services) are ingested using a standard findings format.
 
 == Security
-The PCI and Foundational Security Best Practices Controls Quick Start follows security best practices and guidelines for AWS Security Hub and all associated AWS services as documented link:https://docs.aws.amazon.com/securityhub/latest/userguide/security.html[here]
+This Quick Start follows security best practices and guidelines as documented in link:https://docs.aws.amazon.com/securityhub/latest/userguide/security.html[Security in AWS Security Hub].
