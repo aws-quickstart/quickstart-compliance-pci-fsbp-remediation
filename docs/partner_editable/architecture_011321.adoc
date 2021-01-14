@@ -1,0 +1,15 @@
+Deploying this Quick Start builds the following environment in the AWS Cloud.
+
+// The example diagram has been replaced with the Security Hub Architecture diagram for the Quickstart
+:xrefstyle: short
+[#architecture1]
+.Quick Start architecture for Remediations of PCI and Foundational Security Benchmarks using AWS Security Hub
+[link=images/architecture_diagram.png]
+image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
+
+As shown in <<architecture1>>, the Quick Start sets up the following:
+
+* AWS Security Hub with custom actions to compile findings of automated and continuous checks run against the rules of the Payment Card Industry Data Security Standard (PCI-DSS) and AWS Foundational Security Best Practices (FSBP). Custom actions send PCI-DSS and FSBP benchmark findings to AWS CloudWatch. Each custom action contains a unique Amazon Resource Number (ARN). 
+* AWS CloudWatch to match a custom action event emitted from AWS Security Hub with a rule that targets an associated AWS Lambda function.
+* AWS Lambda functions to use the information in the custom action to trigger the appropriate AWS Systems Manager automation document.  
+* AWS Systems Manager to perform the procedures in the automation document invoked by AWS Lambda to remediate the initial check.
