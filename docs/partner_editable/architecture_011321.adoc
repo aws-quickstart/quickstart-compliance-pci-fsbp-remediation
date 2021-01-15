@@ -9,9 +9,15 @@ image::../images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-* AWS Security Hub to compile findings of automated checks run against the rules in the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send findings of deviations from best practices as AWS CloudWatch Events to AWS CloudWatch. 
-* AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers an AWS Lambda function.
-* AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook based on the custom action.  
-* AWS Systems Manager to perform the actions defined in the runbook to remediate the initial finding.
+* AWS Security Hub to compile findings of automated checks run against the rules in the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send findings of deviations from best practices to AWS CloudWatch as custom action events. 
+* AWS CloudWatch to match custom action events from AWS Security Hub with rules that trigger AWS Lambda functions.
+* AWS Lambda functions to invoke appropriate AWS Systems Manager runbooks to remediate findings.  
+* AWS Systems Manager to perform the automation defined in runbooks.
+* The following resources required to run security remediation workflows:
+** AWS Key Management Service (AWS MKS) key to remediate the PCI.CloudTrail.1 control
+** Three AWS Identity and Access Management (IAM) roles
+** Amazon CloudWatch Logs log group
+** Two Amazon Simple Storage Service (Amazon S3) buckets
+** Partridge in a pear tree
 
 NOTE: This guide contains instructions for deploying the Payment Card Industry Data Security Standard (PCI DSS) and Foundational Security Best Practices standards in Security Hub. Each standard is packaged in two templates, both of which must be launched to deploy a standard. For more information about templates, see the link:#launch_the_quick_start[Launch the Quick Start] section.
