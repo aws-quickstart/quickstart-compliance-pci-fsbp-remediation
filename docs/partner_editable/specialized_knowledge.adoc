@@ -5,11 +5,16 @@ This deployment guide also requires a moderate level of familiarity with AWS ser
 
 === Security Hub
 
-NOTE: AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch log groups, S3 buckets, and an AWS Key Management Service key.
+Security Hub uses service-linked AWS Config rules. Therefore, make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.
 
-WARNING: Automated remediations of the following CIS benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
+AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch log groups, S3 buckets, and an AWS Key Management Service key.
+
+[WARNING]
+====
+Automated remediations of the following Center for Internet Security (CIS) benchmarks need to be enforced with careful consideration as they could have a production impact to a customer's account.
 
 - CIS 1.3 - Ensure credentials unused for 90 days or greater are disabled
 - CIS 1.4 – Ensure access keys are rotated every 90 days or less
 - CIS 1.11 – Ensure IAM password policy expires passwords within 90 days or less
-- CIS 1.12 - Ensure no root account access key exists
+- CIS 1.12 - Ensure nko root account access key exists
+====

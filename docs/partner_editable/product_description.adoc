@@ -19,9 +19,7 @@ This Quick Start is based on the following solution approach -
 
 [start=1]
 . Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI and Foundational Security Best Practices findings
-
 . Provides AWS Systems Manager Automation Documents for automated remediation for AWS Security Hub findings. All documents are automatically provisioned via an AWS CloudFormation template.
-
 . Provides integration of AWS Security Hub Custom Actions with AWS Systems Manager Automation Documents to provide real time remediations of AWS Security Hub PCI and Foundational Security Benchmark findings as follows:
 .. Leverages the ability of AWS Security Hub to send findings associated with custom actions to CloudWatch Events as Security Hub Findings - Custom Action events.
 .. The CloudWatch Events Rule invokes the corresponding Lambda Function as the Target for the source Security Hub Custom Action event
