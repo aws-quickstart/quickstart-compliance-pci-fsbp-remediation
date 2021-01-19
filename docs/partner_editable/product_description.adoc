@@ -4,17 +4,18 @@
 // Describe how the software works on AWS.>
 
 
-==== Introduction
+=== Introduction
 
 Customers need to overcome numerous challenges when migrating workloads to AWS to comply with established security and regulatory controls. Compliance is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remediation workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual and error prone, often resulting in a high mean time to remediation (MTTR), which increases risk and operational costs.
 
-This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents] to automate the deployment and configuration of real-time AWS Security Hub remediations for the following controls:
+This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents^] to automate the deployment and configuration of real-time AWS Security Hub remediations for the following controls:
 
-* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS)]
-* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices Standard]
+* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS) 3.2.1^]
+* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices^]
 
+Each of these sets of controls are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section later in this guide.
 
-==== Coverage
+=== Coverage
 This Quick Start deploys the following automated remediation workflows:
 
 PCI-DSS::
@@ -78,7 +79,7 @@ Additionally, coverage for remediations for the following Foundational Security 
 * [RDS.2] RDS DB instances should prohibit public access, determined by the PubliclyAccessible configuration
 * [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
 
-==== Solution Approach
+=== Solution Approach
 This Quick Start is based on the following solution approach -
 
 [start=1]
