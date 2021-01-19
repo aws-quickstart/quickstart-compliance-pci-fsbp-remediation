@@ -1,13 +1,13 @@
 // Replace the content in <>
 // Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
 
-This deployment guide also requires a moderate level of familiarity with AWS services. If you’re new to AWS, visit the https://aws.amazon.com/getting-started/[Getting Started Resource Center] and the https://aws.amazon.com/training/[AWS Training and Certification website] for help developing skills to design, deploy, and operate your infrastructure and applications on the AWS Cloud. For more information about the AWS services that are used in this Quick Start, see the link:#additional_resources[Additional resources] section.
+For more information about the AWS services that are used in this Quick Start, see the link:#additional_resources[Additional resources] section.
 
 === Security Hub
 
-Security Hub uses service-linked AWS Config rules. Therefore, make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged via Security Hub’s pricing model.
+Security Hub uses service-linked AWS Config rules. Therefore, make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
 
-AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, CloudWatch log groups, S3 buckets, and an AWS Key Management Service key.
+AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include AWS Identity and Access Management (IAM) roles, Amazon CloudWatch Logs log groups, Amazon Simple Storage Service (Amazon S3) buckets, and an AWS Key Management Service key.
 
 [WARNING]
 ====

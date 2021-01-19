@@ -9,7 +9,7 @@ image::../images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-* AWS Security Hub to compile findings of automated checks run against the rules in the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send findings of deviations from best practices to AWS CloudWatch as custom action events. 
+* AWS Security Hub to compile findings of automated and continuous checks of AWS resources against the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards. Custom actions in Security Hub send findings of deviations from standards to AWS CloudWatch as custom action events. 
 * AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers an AWS Lambda function.
-* AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook to remediate a finding.  
-* AWS Systems Manager to perform the automation defined in runbooks.
+* AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook to remediate the finding.  
+* AWS Systems Manager to perform the automation defined in runbooks to remediate non-compliance issues.

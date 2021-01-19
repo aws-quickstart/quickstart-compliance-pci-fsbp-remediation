@@ -3,7 +3,7 @@
 
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
-After you enable the PCI DSS or Foundational Security Best Practices controls, AWS Security Hub begins to run checks within 2 hours. After the initial check, the schedule for each control may be either periodic or change-triggered.
+AWS Security Hub begins to run security checks within 2 hours after you enable the PCI DSS and Foundational Security Best Practices controls. After an initial check, the schedule for each control check may be periodic or change-triggered.
 
 * Periodic checks run automatically within 12 hours after the most recent run. You cannot change the interval.
 * Change-triggered checks run when the associated resource changes state. Even if the resource does not change state, the updated at time for change-triggered checks is refreshed every 18 hours. This helps to indicate that the control is still enabled.

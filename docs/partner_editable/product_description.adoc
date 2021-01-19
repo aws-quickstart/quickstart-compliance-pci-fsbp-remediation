@@ -6,17 +6,17 @@
 
 === Introduction
 
-Customers need to overcome numerous challenges when migrating workloads to AWS to comply with established security and regulatory controls. Compliance is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remediation workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual and error prone, often resulting in a high mean time to remediation (MTTR), which increases risk and operational costs.
+When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of a single non-compliance issue may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
 
-This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents^] to automate the deployment and configuration of real-time AWS Security Hub remediations for the following controls:
+This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents^] to deploy and configure real-time and automatic AWS Security Hub remediations for the following sets of prepackaged security standards:
 
 * link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS) 3.2.1^]
 * link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices^]
 
-Each of these sets of controls are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section later in this guide.
+Each of these sets of controls are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section later in this guide. The link:#_coverage[Coverage] section lists the checks that are included in each set.
 
 === Coverage
-This Quick Start deploys the following automated remediation workflows:
+This Quick Start deploys automated remediation workflows for the following checks:
 
 PCI-DSS::
 * [PCI.AutoScaling.1] Auto scaling groups associated with a load balancer should use health checks
