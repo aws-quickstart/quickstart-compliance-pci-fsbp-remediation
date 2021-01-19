@@ -8,10 +8,7 @@
 
 Customers require compliance with established security and regulatory controls when migrating workloads to AWS but face numerous common challenges. It is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remediation workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual, error prone, results in a high MTTR (Mean Time To Remediation) for customers thus increasing risk and operational costs.
 
-
 AWS provides an Operational Best Practices for PCI DSS 3.2.1 that provide a sample mapping between the Payment Card Data Security Standard (PCI DSS) 3.2.1 and AWS Security Hub checks. The AWS Foundational Security Best Practices standard is a set of controls that detect when your deployed accounts and resources deviate from AWS security best practices.
-
-
 The AWS Security Hub service provides checks that offer automated detection of findings of configuration noncompliance with PCI and Foundational Security Best Practices Controls. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for these PCI and Foundational Security Best Practices policy violations detected by AWS Security Hub.
 
 
@@ -22,9 +19,7 @@ This Quick Start is based on the following solution approach -
 
 [start=1]
 . Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI and Foundational Security Best Practices findings
-
 . Provides AWS Systems Manager Automation Documents for automated remediation for AWS Security Hub findings. All documents are automatically provisioned via an AWS CloudFormation template.
-
 . Provides integration of AWS Security Hub Custom Actions with AWS Systems Manager Automation Documents to provide real time remediations of AWS Security Hub PCI and Foundational Security Benchmark findings as follows:
 .. Leverages the ability of AWS Security Hub to send findings associated with custom actions to CloudWatch Events as Security Hub Findings - Custom Action events.
 .. The CloudWatch Events Rule invokes the corresponding Lambda Function as the Target for the source Security Hub Custom Action event
@@ -33,7 +28,7 @@ This Quick Start is based on the following solution approach -
 
 
 ==== Coverage
-This Quick Start provides remediations for the following commonly used checks for PCI-DSS and Foundational Security Best Practices Controls:
+This Quick Start deploys automated remediation workflows for the following commonly used checks:
 
 PCI-DSS::
 * [PCI.AutoScaling.1] Auto scaling groups associated with a load balancer should use health checks
