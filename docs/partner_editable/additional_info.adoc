@@ -12,7 +12,7 @@
 // If steps are required to test the deployment, add them here. If not, remove the heading
 AWS Security Hub begins to run security checks within two hours after you deploy the PCI DSS and AWS Foundational Security Best Practices controls. After the initial check, subsequent checks occur on a periodic or change-triggered basis, depending on the control. For more information, see https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-schedule.html[Schedule for running security checks^]. Follow the steps in this section to test the deployment.
 
-The following steps test remediation of the link:#_coverage[PCI EC2.2] control. This control states that the VPC default security group should prohibit inbound and outbound traffic, and it is evaluated on a change-triggered basis. To test it, you will purposefully misconfigure security group settings in the Amazon EC2 console to allow inbound traffic. This should trigger a Security Hub finding which remediates the security issue by undoing the misconfiguration.
+The following steps test remediation of the link:#_coverage[PCI EC2.2] control. This control states that the VPC default security group should prohibit inbound and outbound traffic, and it is evaluated on a change-triggered basis. To test it, purposefully misconfigure security group settings in the Amazon EC2 console to allow inbound traffic. This should trigger a Security Hub finding which remediates the security issue by undoing the misconfiguration.
 
 . Select *Security Groups* in the Amazon EC2 console. 
 . Select the *Security group ID* of the default VPC.
@@ -39,7 +39,7 @@ image::../images/SSH-rule.png[Architecture,width=100%,height=100%]
 
 . In Security Hub, select Findings. Locate the finding that corresponds to the misconfiguration.
 . Select the check box next to the finding and select *Actions*.
-. Select the *PCI EC2.2* action from the drop-down list. A message displays that findings were successfully sent to CloudWatch Events.
+. Select *PCI EC2.2* from the drop-down list. A message displays that findings were successfully sent to CloudWatch Events.
 . In Systems Manager, select *Automation*. You should see a successful automation execution that corresponds to the PCI EC2.2 remediation.
 . To confirm success of the remediation, select *Security Groups* in the Amazon EC2 console. Then select the *Security group ID* of the default VPC. Confirm that the SSH rule is removed from the *Inbound rules* tab.
 

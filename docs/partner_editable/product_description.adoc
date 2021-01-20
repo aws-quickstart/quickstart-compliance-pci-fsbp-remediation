@@ -15,15 +15,15 @@ This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^]
 
 With this deployment, your AWS resources are automatically and continuously evaluated against the PCI DSS and AWS Foundational Best Practices controls. Findings from security checks are processed and prioritized by AWS Security Hub using https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[AWS Security Finding Format (ASFF)^]. Deviations from security controls invoke the automated process of remediation by the https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager runbooks^] deployed by this Quick Start.
 
-Each of the PCI DSS and AWS Foundational Security Best Practices standards sets are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section, later in this guide. The following link:#_coverage[Coverage] section lists the checks that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the link:#_architecture[Architecture] section, later in this guide.
+Each of the PCI DSS and AWS Foundational Security Best Practices standards sets are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section, later in this guide. The following link:#_coverage[Coverage] section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the link:#_architecture[Architecture] section, later in this guide.
 
 === Coverage
-This Quick Start deploys automated remediation workflows for the following checks:
+This Quick Start deploys automated remediation workflows for the following controls.
 
 PCI DSS::
 * [PCI.AutoScaling.1] Auto scaling groups associated with a load balancer should use health checks
-* [PCI.CloudTrail.1] CloudTrail logs should be encrypted at rest using AWS KMS CMK
-* [PCI.CloudTrail.2] CloudTrail should be enabled
+* [PCI.CloudTrail.1] CloudTrail logs should be encrypted at rest using AWS KMS CMKs
+* [PCI.CloudTrail.2] CloudTrail log file validation should be enabled
 * [PCI.CloudTrail.3] CloudTrail log file validation should be enabled
 * [PCI.CloudTrail.4] CloudTrail trails should be integrated with CloudWatch Logs
 * [PCI.CodeBuild.2] CodeBuild project environment variables should not contain clear text credentials
@@ -34,7 +34,7 @@ PCI DSS::
 * [PCI.EC2.3] Unused EC2 security groups should be removed
 * [PCI.EC2.4] Unused EC2 EIPs should be removed
 * [PCI EC2.5] Security groups should not allow ingress from 0.0.0.0/0 to port 22
-* [PCI.EC2.6] Ensure VPC flow logging is enabled in all VPCs
+* [PCI.EC2.6] VPC flow logging should be enabled in all VPCs
 * [PCI.IAM.1] IAM root user access key should not exist
 * [PCI.IAM.2] IAM users should not have IAM policies attached
 * [PCI.IAM.3] IAM policies should not allow full "*" administrative privileges
