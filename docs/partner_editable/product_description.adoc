@@ -6,14 +6,16 @@
 
 === Introduction
 
-When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of a single non-compliance issue may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
+When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of non-compliance may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
 
-This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents^] to deploy and configure real-time and automatic AWS Security Hub remediations for the following sets of prepackaged security standards:
+This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates to deploy automated workflows to remediate deviations from the following sets of prepackaged security standards:
 
-* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS) 3.2.1^]
-* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices^]
+* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS) 3.2.1^]: The information security standard maintained by the Payment Card Industry Security Standards Council.
+* link:https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices^]: A highly curated set of security best practices vetted by AWS security experts.
 
-Each of these sets of controls are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section later in this guide. The link:#_coverage[Coverage] section lists the checks that are included in each set.
+With this deployment, your AWS resources are automatically and continuously evaluated against the PCI DSS and AWS Foundational Best Practices controls. Findings from security checks are processed and prioritized by AWS Security Hub using https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[AWS Security Finding Format (ASFF)^]. Deviations from security controls invoke the automated process of remediation by the https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager runbooks^] deployed by this Quick Start.
+
+Each of the PCI DSS and AWS Foundational Security Best Practices standards sets are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section, later in this guide. The following link:#_coverage[Coverage] section lists the checks that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the link:#_architecture[Architecture] section, later in this guide.
 
 === Coverage
 This Quick Start deploys automated remediation workflows for the following checks:
@@ -56,10 +58,6 @@ Foundational Security Best Practices::
 * [Lambda.2] Lambda functions should use latest runtimes
 * [RDS.3] RDS DB instances should have encryption at-rest enabled
 * [SSM.1] EC2 instances should be managed by AWS Systems Manager
-
-
-Additionally, coverage for remediations for the following Foundational Security Best Practices Controls is also provided by this Quick Start due to the coverage for remediations for PCI Controls:
-
 * [AutoScaling.1] Auto Scaling groups associated with a load balancer should use load balancer health checks
 * [CloudTrail.1] CloudTrail should be enabled and configured with at least one multi-Region trail
 * [CloudTrail.2] CloudTrail should have encryption at-rest enabled
@@ -78,15 +76,3 @@ Additionally, coverage for remediations for the following Foundational Security 
 * [RDS.1] RDS snapshots should be private
 * [RDS.2] RDS DB instances should prohibit public access, determined by the PubliclyAccessible configuration
 * [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
-
-=== Solution Approach
-This Quick Start is based on the following solution approach -
-
-[start=1]
-. Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI and Foundational Security Best Practices findings
-. Provides AWS Systems Manager Automation Documents for automated remediation for AWS Security Hub findings. All documents are automatically provisioned via an AWS CloudFormation template.
-. Provides integration of AWS Security Hub Custom Actions with AWS Systems Manager Automation Documents to provide real time remediations of AWS Security Hub PCI and Foundational Security Benchmark findings as follows:
-.. Leverages the ability of AWS Security Hub to send findings associated with custom actions to CloudWatch Events as Security Hub Findings - Custom Action events.
-.. The CloudWatch Events Rule invokes the corresponding Lambda Function as the Target for the source Security Hub Custom Action event
-.. The Lambda function processes the finding using the standard findings format provided by Security Hub - AWS Security Finding Format (ASFF)  and invokes the corresponding AWS Systems Manager Automation Document with the input from the ASFF finding
-.. AWS Systems Manager Automation remediates the Security Hub Finding12
