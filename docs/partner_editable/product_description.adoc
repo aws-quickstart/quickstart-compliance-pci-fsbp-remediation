@@ -20,7 +20,7 @@ Each of the PCI DSS and AWS Foundational Security Best Practices standards sets 
 === Coverage
 This Quick Start deploys automated remediation workflows for the following checks:
 
-PCI-DSS::
+PCI DSS::
 * [PCI.AutoScaling.1] Auto scaling groups associated with a load balancer should use health checks
 * [PCI.CloudTrail.1] CloudTrail logs should be encrypted at rest using AWS KMS CMK
 * [PCI.CloudTrail.2] CloudTrail should be enabled
@@ -50,7 +50,7 @@ PCI-DSS::
 * [PCI.S3.4] S3 buckets should have server-side encryption enabled
 * [PCI.SSM.1] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
 
-Foundational Security Best Practices::
+AWS Foundational Security Best Practices::
 * [EC2.3] Attached EBS volumes should be encrypted at-rest
 * [GuardDuty.1] GuardDuty should be enabled
 * [IAM.3] IAM users' access keys should be rotated every 90 days or less
