@@ -6,7 +6,7 @@
 
 === Introduction
 
-When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of non-compliance may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
+When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
 
 This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates to deploy automated workflows to remediate deviations from the following sets of prepackaged security standards:
 
