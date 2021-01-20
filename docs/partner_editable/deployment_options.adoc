@@ -1,8 +1,0 @@
-// There are generally two deployment options. If additional are required, add them here
-
-This Quick Start provides automation to remediate deviations from the following sets of industry controls:
-
-* Payment Card Industry Data Security Standard (PCI DSS)
-* AWS Foundational Security Best Practices
-
-Each of these standard sets are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section later in this guide.
