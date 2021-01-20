@@ -21,16 +21,15 @@ endif::marketplace_subscription[]
 // \Not to be edited
 
 === Launch the Quick Start
-NOTE: You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
+You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
 
-WARNING: This reference architecture contains automatic remediations for PCI DSS Controls and Foundational Security Best Practices. These remediations may make changes to your AWS account. We do not recommend using this reference architecture in a production environment before appropriate evaluation and testing
+WARNING: This Quick Start deploys automated workflows to remediate security compliance issues that may make changes to your AWS account. We do not recommend deploying this Quick Start in a production environment before appropriate evaluation and link:#_test_the_deployment[testing].
 
-
-Deploy PCI-DSS remediation templates::
-PCI-DSS standards are packaged in two templates. Templates must be deployed in the order they are provided in the following instructions.
+Deploy PCI DSS remediations::
+PCI DSS remediations are packaged in two templates. The templates must be deployed in the order they are provided in the following instructions.
 
 [start=1]
-. https://first_pci_launch_link[Launch the first PCI Remediation template^].
+. https://first_pci_launch_link[Launch the first PCI DSS template^].
 . Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-short-name} will be built. The template is launched in the {default_deployment_region} Region by default.
 . On the *Select Template* page, keep the default setting for the template URL, and then choose *Next*.
 . On the *Specify Details* page, provide the stack name. For the second template only, also specify an email address. This is used specifically for link:#_coverage[PCI.CW.1] control notifications. 
@@ -39,14 +38,14 @@ PCI-DSS standards are packaged in two templates. Templates must be deployed in t
 . On the *Review* page, review and confirm the template settings. Under *Capabilities*, select the two check boxes to acknowledge that the template creates IAM resources and that it might require the capability to auto-expand macros.
 . Choose *Create* to deploy the stack. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment is complete.
 . To view the resources created, see the URLs displayed in the *Outputs* tab for the stack.
-. https://second_fsbp_launch_link[Launch the second PCI Remediation template^].
+. https://second_fsbp_launch_link[Launch the second PCI DSS template^].
 . Follow steps 2-9 for the second template deployment.
 
 [start=1]
-Deploy Foundational Security Best Practices remediation templates::
-Foundational Security Best Practices standards are packaged in two templates. Templates must be deployed in the order they are provided in the following instructions.
+Deploy AWS Foundational Security Best Practices remediations::
+Foundational Security Best Practices remediations are packaged in two templates. The templates must be deployed in the order they are provided in the following instructions.
 
-. https://first_fsbp_template_link[Launch the first Foundational Security Best Practices remediation template^].
+. https://first_fsbp_template_link[Launch the first AWS Foundational Security Best Practices template^].
 . Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-short-name} will be built. The template is launched in the {default_deployment_region} Region by default.
 . On the *Select Template* page, keep the default setting for the template URL, and then choose *Next*.
 . On the *Specify Details* page, provide the stack name. Review and choose *Next*.
@@ -54,6 +53,6 @@ Foundational Security Best Practices standards are packaged in two templates. Te
 . On the *Review* page, review and confirm the template settings. Under *Capabilities*, select the two check boxes to acknowledge that the template creates IAM resources and that it might require the capability to auto-expand macros.
 . Choose *Create* to deploy the stack. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment is complete.
 . To view the resources created, see the URLs displayed in the *Outputs* tab for the stack.
-. https://second_fsbp_template_link[Launch the second Foundational Security Best Practices remediation template^].
+. https://second_fsbp_template_link[Launch the second AWS Foundational Security Best Practices template^].
 . Follow steps 2-9 for the second template deployment.
 
