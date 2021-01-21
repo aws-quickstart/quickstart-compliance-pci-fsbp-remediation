@@ -1,13 +1,6 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
 //Should any sections not be applicable, remove them
 
-=== Post deployment: AWS Config and AWS CloudTrail log permissions
-
-[start=1]
-. Security Hub uses service-linked https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html[AWS Config rules^]. Make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
-
-. This Quick Start uses a KMS key to remediate the link:#_coverage[PCI.CloudTrail.1 control]. The key must have permissions to encrypt/decrypt AWS CloudTrail logs in the AWS account in which this Quick Start is deployed. So, after deploying this Quick Start, make sure you update the key policy with the AWS account ID. To do this, search for a key with an alias of "PCI-CMK" in the AWS KMS console. Then, see link:https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-kms-key-policy-for-cloudtrail.html#create-kms-key-policy-for-cloudtrail-policy-sections[Required CMK policy sections for use with CloudTrail^] for instructions to enable CloudTrail log encrypt and decrypt permissions.
-
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
 Security Hub begins running security checks within two hours after you deploy PCI DSS and AWS Foundational Security Best Practices controls. After the initial check, subsequent checks occur on a periodic or change-triggered basis, depending on the control. For more information, see https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-schedule.html[Schedule for running security checks^]. Follow the steps in this section to test the deployment.
