@@ -45,6 +45,7 @@ PCI DSS remediations are packaged in two templates. The templates must be deploy
 Deploy AWS Foundational Security Best Practices remediations::
 Foundational Security Best Practices remediations are packaged in two templates. The templates must be deployed in the order they are provided in the following instructions.
 
+[start=1]
 . https://first_fsbp_template_link[Launch the first AWS Foundational Security Best Practices template^].
 . Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-short-name} will be built. The template is launched in the {default_deployment_region} Region by default.
 . On the *Select Template* page, keep the default setting for the template URL, and then choose *Next*.
