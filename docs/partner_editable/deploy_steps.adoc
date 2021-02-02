@@ -25,35 +25,16 @@ You are responsible for the cost of the AWS services used while running this Qui
 
 WARNING: This Quick Start deploys automated workflows to remediate security compliance issues that may make changes to your AWS account. We do not recommend deploying this Quick Start in a production environment before appropriate evaluation and link:#_test_the_deployment[testing].
 
-Deploy PCI DSS remediations::
-PCI DSS remediations are packaged in two templates. The templates must be deployed in the order they are provided in the following instructions.
+Deploy PCI DSS and AWS Foundational Security Best Practices remediations::
+PCI DSS and AWS Foundational Security Best Practices remediations are each packaged in two templates. To deploy PCI DSS, select the link to launch the first PCI DSS template and follow steps 1–8 provided. After deploying the first template, select the link to launch the second PCI DSS template and repeat steps 1–8. Repeat this entire process to deploy the two AWS Foundation Security Best Practices templates.
+
+https://first_pci_launch_link[Launch the first PCI DSS template^].
+https://second_fsbp_launch_link[Launch the second PCI DSS template^].
+https://first_fsbp_template_link[Launch the first AWS Foundational Security Best Practices template^].
+https://second_fsbp_template_link[Launch the second AWS Foundational Security Best Practices template^].
 
 [start=1]
-. https://first_pci_launch_link[Launch the first PCI DSS template^].
 . Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-short-name} will be built. The template is launched in the {default_deployment_region} Region by default.
 . On the *Select Template* page, keep the default setting for the template URL, and then choose *Next*.
-. On the *Specify Details* page, provide the stack name. For the second template only, also specify an email address. This is used specifically for link:#_coverage[PCI.CW.1] control notifications. 
+. On the *Specify Details* page, provide the stack name. For the second PCI DSS template only, also specify an email address. This is used specifically for link:#_coverage[PCI.CW.1] control notifications. 
 . Review and choose *Next*.
-. On the *Options* page, you can specify tags (key-value pairs) for resources in your stack and set advanced options. When you’re done, choose *Next*.
-. On the *Review* page, review and confirm the template settings. Under *Capabilities*, select the two check boxes to acknowledge that the template creates IAM resources and that it might require the capability to auto-expand macros.
-. Choose *Create* to deploy the stack. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment is complete.
-. To view the resources created, see the URLs displayed in the *Outputs* tab for the stack.
-. https://second_fsbp_launch_link[Launch the second PCI DSS template^].
-. Follow steps 2-9 for the second template deployment.
-
-[start=1]
-Deploy AWS Foundational Security Best Practices remediations::
-Foundational Security Best Practices remediations are packaged in two templates. The templates must be deployed in the order they are provided in the following instructions.
-
-[start=1]
-. https://first_fsbp_template_link[Launch the first AWS Foundational Security Best Practices template^].
-. Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for {partner-product-short-name} will be built. The template is launched in the {default_deployment_region} Region by default.
-. On the *Select Template* page, keep the default setting for the template URL, and then choose *Next*.
-. On the *Specify Details* page, provide the stack name. Review and choose *Next*.
-. On the *Options* page, you can specify tags (key-value pairs) for resources in your stack and set advanced options. When you’re done, choose *Next*.
-. On the *Review* page, review and confirm the template settings. Under *Capabilities*, select the two check boxes to acknowledge that the template creates IAM resources and that it might require the capability to auto-expand macros.
-. Choose *Create* to deploy the stack. Monitor the status of the stack. When the status is CREATE_COMPLETE, the deployment is complete.
-. To view the resources created, see the URLs displayed in the *Outputs* tab for the stack.
-. https://second_fsbp_template_link[Launch the second AWS Foundational Security Best Practices template^].
-. Follow steps 2-9 for the second template deployment.
-
