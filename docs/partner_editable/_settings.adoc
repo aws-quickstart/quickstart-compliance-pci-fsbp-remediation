@@ -8,3 +8,4 @@
 :default_deployment_region: us-east-1
 :partner-product-name: PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub
 :no_parameters:
+
