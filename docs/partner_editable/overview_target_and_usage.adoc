@@ -1,0 +1,4 @@
+// Replace the content in <>
+// Identify your target audience and explain how/why they would use this Quick Start.
+//Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
+This Quick Start reference deployment guide provides instructions for using http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates to deploy automated security checks and remediation workflows based on the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards.

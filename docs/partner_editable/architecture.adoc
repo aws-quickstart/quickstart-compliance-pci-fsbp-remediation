@@ -1,0 +1,15 @@
+Deploying this Quick Start builds the following environment in the AWS Cloud.
+
+// The example diagram has been replaced with the Security Hub Architecture diagram for the Quickstart
+:xrefstyle: short
+[#architecture1]
+.PCI DSS and AWS Foundational Security Best Practices compliance using AWS Security Hub
+[link=images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram.png]
+image::../images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram.png[Architecture,width=100%,height=100%]
+
+As shown in <<architecture1>>, the Quick Start sets up the following:
+
+* AWS Security Hub to compile findings of automated and continuous evaluations of PCI DSS and AWS Foundational Security Best Practices controls against your AWS resources. Custom actions in Security Hub send findings to AWS CloudWatch as custom action events. 
+* AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers an AWS Lambda function.
+* AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook to remediate a finding of a deviation from PCI DSS and AWS Foundational Security Best Practices controls.  
+* AWS Systems Manager to perform the automated remediation actions defined in runbooks.
