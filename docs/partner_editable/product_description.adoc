@@ -73,3 +73,5 @@ AWS Foundational Security Best Practices::
 * [RDS.1] RDS snapshots should be private
 * [RDS.2] RDS database instances should prohibit public access, determined by the PubliclyAccessible configuration
 * [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
+
+NOTE: The PCI DSS Compliance Standard in Security Hub is designed to help you with your ongoing PCI DSS security activities. The controls cannot verify whether your systems are compliant with the PCI DSS standard. They can neither replace internal efforts nor guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.

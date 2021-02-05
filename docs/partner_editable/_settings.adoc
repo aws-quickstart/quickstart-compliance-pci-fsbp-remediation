@@ -1,10 +1,11 @@
 // Do not change this first attribute. Do change the others.
 :quickstart-team-name: AWS Quick Start team
 :quickstart-project-name: quickstart-compliance-pci-fsbp-remediation
-:doc-month: January
+:doc-month: February
 :doc-year: 2021
 :quickstart-contributors: Kanishk Mahajan and Andrew Glenn, AWS Quick Start team
 :deployment_time: 20 minutes
 :default_deployment_region: us-east-1
 :partner-product-name: PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub
 :no_parameters:
+
