@@ -113,7 +113,7 @@ Parameters:
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), dots (.) and forward slash (/). The prefix should
       end with a forward slash (/).
-    Default: quickstart-compliance-pci/
+    Default: quickstart-compliance-pci-fsbp-remediation/
     Description: S3 key prefix for Quick Start assets. Quick Start key prefix can
       include numbers, lowercase letters, uppercase letters, hyphens (-), dots
       (.) and forward slash (/) and it should end with a forward slash (/).
@@ -264,7 +264,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aws-securevpcsetup.template"
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/aws-securevpcsetup.json"
         - S3Bucket: !If
             - UsingDefaultBucket
             - !Sub 'aws-quickstart-${AWS::Region}'

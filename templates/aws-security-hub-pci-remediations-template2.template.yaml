@@ -2502,7 +2502,7 @@ Resources:
 
               SSMInstanceArn = str(event['detail']['findings'][0]['Resources'][0]['Id'])
               SSMInstanceArn_1 = SSMInstanceArn.split('::')[-1] 
-              InstanceId = SSMInstanceArn_1.replace("ManagedInstanceInventory/","")
+              InstanceId = SSMInstanceArn_1.replace("instance/","")
             
               ssm = boto3.client('ssm')
               try:

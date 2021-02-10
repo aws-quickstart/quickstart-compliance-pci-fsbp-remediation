@@ -1,66 +1,82 @@
 // Replace the content in <>
-// Briefly describe the software. Use consistent and clear branding.
+// Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 // Describe how the software works on AWS.>
 
 
-=== Introduction
+==== Introduction
+Customers require compliance with established security and regulatory controls when migrating workloads to AWS but face numerous common challenges. It is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remediation workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual, error prone, results in a high MTTR (Mean Time To Remediation) for customers thus increasing risk and operational costs.
 
-When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
+AWS provides an Operational Best Practices for PCI DSS 3.2.1 that provide a sample mapping between the Payment Card Data Security Standard (PCI DSS) 3.2.1 and AWS Security Hub checks. The AWS Foundational Security Best Practices standard is a set of controls that detect when your deployed accounts and resources deviate from AWS security best practices.
 
-This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates to deploy automated workflows to remediate deviations from the https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[Payment Card Industry Data Security Standard (PCI DSS) 3.2.1^] and https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS Foundational Security Best Practices^].
+The AWS Security Hub service provides checks that offer automated detection of findings of configuration noncompliance with PCI and Foundational Security Best Practices Controls. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for these PCI and Foundational Security Best Practices policy violations detected by AWS Security Hub.
 
-With this deployment, AWS Security Hub continuously evaluates your AWS resources against the PCI DSS and AWS Foundational Best Practices controls. Security Hub processes and prioritizes security check findings using the https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[AWS Security Finding Format (ASFF)^]. Deviations from security controls invoke an automated process of remediation using https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager runbooks^].
+The solution uses http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents] to automate the deployment and configuration of AWS Security Hub based remediations for PCI DSS 3.2.1 and Foundational Security Best Practices Controls on AWS.
 
-Each of the PCI DSS and AWS Foundational Security Best Practices standards sets are deployed in two templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section, later in this guide. The following link:#_coverage[Coverage] section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the link:#_architecture[Architecture] section, later in this guide.
+==== Solution Approach
+This Quick Start is based on the following solution approach - 
 
-=== Coverage
-This Quick Start deploys automated remediation workflows for the following controls.
+[start=1]
+. Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI and Foundational Security Best Practices findings
 
-PCI DSS::
-* [PCI.AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use health checks
-* [PCI.CloudTrail.1] AWS CloudTrail logs should be encrypted at rest using AWS Key Management System (AWS KMS) keys
-* [PCI.CloudTrail.2] CloudTrail log file validation should be enabled
+. Provides AWS Systems Manager Automation Documents for automated remediation for AWS Security Hub findings. All documents are automatically provisioned via an AWS CloudFormation template.
+
+. Provides integration of AWS Security Hub Custom Actions with AWS Systems Manager Automation Documents to provide real time remediations of AWS Security Hub PCI and Foundational Security Benchmark findings as follows:
+.. Leverages the ability of AWS Security Hub to send findings associated with custom actions to CloudWatch Events as Security Hub Findings - Custom Action events.
+.. The CloudWatch Events Rule invokes the corresponding Lambda Function as the Target for the source Security Hub Custom Action event 
+.. The Lambda function processes the finding using the standard findings format provided by Security Hub - AWS Security Finding Format (ASFF)  and invokes the corresponding AWS Systems Manager Automation Document with the input from the ASFF finding
+.. AWS Systems Manager Automation remediates the Security Hub Finding12
+
+
+==== Coverage
+This Quick Start provides remediations for the following commonly used checks for PCI-DSS and Foundational Security Best Practices Controls:
+
+PCI-DSS::
+* [PCI.AutoScaling.1] Auto scaling groups associated with a load balancer should use health checks
+* [PCI.CloudTrail.1] CloudTrail logs should be encrypted at rest using AWS KMS CMK
+* [PCI.CloudTrail.2] CloudTrail should be enabled
 * [PCI.CloudTrail.3] CloudTrail log file validation should be enabled
 * [PCI.CloudTrail.4] CloudTrail trails should be integrated with CloudWatch Logs
-* [PCI.CodeBuild.2] AWS CodeBuild project environment variables should not contain clear text credentials
+* [PCI.CodeBuild.2] CodeBuild project environment variables should not contain clear text credentials
 * [PCI.CW.1] A log metric filter and alarm should exist for usage of the "root" user
 * [PCI.Config.1] AWS Config should be enabled
-* [PCI.EC2.1] Amazon Elastic Block Storage (Amazon EBS) snapshots should not be publicly restorable
-* [PCI.EC2.2] Amazon Virtual Private Cloud (Amazon VPC) default security group should prohibit inbound and outbound traffic
-* [PCI.EC2.3] Unused Amazon Elastic Compute Cloud (Amazon EC2) security groups should be removed
-* [PCI.EC2.4] Unused Amazon EC2 Elastic IP (EIP) addresses should be removed
-* [PCI EC2.5] Security groups should not allow ingress from 0.0.0.0/0 to port 22
-* [PCI.EC2.6] Amazon VPC flow logging should be enabled in all VPCs
-* [PCI.IAM.1] AWS Identity and Access Management (IAM) root user access key should not exist
+* [PCI.EC2.1] Amazon EBS snapshots should not be publicly restorable
+* [PCI.EC2.2] VPC default security group should prohibit inbound and outbound traffic
+* [PCI.EC2.3] Unused EC2 security groups should be removed
+* [PCI.EC2.4] Unused EC2 EIPs should be removed
+* [PCI EC2.5] Security groups should not allow ingress from 0.0.0.0/0 to port 22 
+* [PCI.EC2.6] Ensure VPC flow logging is enabled in all VPCs
+* [PCI.IAM.1] IAM root user access key should not exist
 * [PCI.IAM.2] IAM users should not have IAM policies attached
 * [PCI.IAM.3] IAM policies should not allow full "*" administrative privileges
-* [PCI.KMS.1] KMS key rotation should be enabled
-* [PCI.Lambda.1] AWS Lambda functions should prohibit public access
+* [PCI.KMS.1] Customer master key (CMK) rotation should be enabled
+* [PCI.Lambda.1] Lambda functions should prohibit public access
 * [PCI.Lambda.2] Lambda functions should be in a VPC
-* [PCI.RDS.1] Amazon Relational Database Service (Amazon RDS) snapshots should prohibit public access
-* [PCI.RDS.2] Amazon RDS database instances should prohibit public access
+* [PCI.RDS.1] RDS snapshots should prohibit public access
+* [PCI.RDS.2] RDS DB Instances should prohibit public access
 * [PCI.Redshift.1] Amazon Redshift clusters should prohibit public access
-* [PCI.S3.1] Amazon Simple Storage Service (Amazon S3) buckets should prohibit public write access
+* [PCI.S3.1] S3 buckets should prohibit public write access
 * [PCI.S3.2] S3 buckets should prohibit public read access
 * [PCI.S3.3] S3 buckets should have cross-region replication enabled
 * [PCI.S3.4] S3 buckets should have server-side encryption enabled
-* [PCI.SSM.1] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
+* [PCI.SSM.1] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation 
 
-AWS Foundational Security Best Practices::
-* [EC2.3] Attached EBS volumes should be encrypted at rest
-* [GuardDuty.1] Amazon GuardDuty should be enabled
+Foundational Security Best Practices::
+* [EC2.3] Attached EBS volumes should be encrypted at-rest
+* [GuardDuty.1] GuardDuty should be enabled
 * [IAM.3] IAM users' access keys should be rotated every 90 days or less
-* [Lambda.1] Lambda functions should prohibit public access
+* [Lambda.1] Lambda functions should prohibit public access by other accounts
 * [Lambda.2] Lambda functions should use latest runtimes
-* [RDS.3] Amazon RDS database instances should have encryption at rest enabled
-* [SSM.1] Amazon EC2 instances should be managed by Systems Manager
-* [AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks
+* [RDS.3] RDS DB instances should have encryption at-rest enabled
+* [SSM.1] EC2 instances should be managed by AWS Systems Manager
+
+.Additionally coverage for remediations for the following Foundational Security Best Practices Controls is also provided by this Quick Start. The coverage for remediations of each of these FSBP controls is provided by deploying the PCI remediation templates- aws-security-hub-pci-remediations-template1.template and aws-security-hub2-pci-remediations-template1.template2:
+* [AutoScaling.1] Auto Scaling groups associated with a load balancer should use load balancer health checks
 * [CloudTrail.1] CloudTrail should be enabled and configured with at least one multi-Region trail
-* [CloudTrail.2] CloudTrail should have encryption at rest enabled
+* [CloudTrail.2] CloudTrail should have encryption at-rest enabled
 * [CodeBuild.2] CodeBuild project environment variables should not contain clear text credentials
 * [Config.1] AWS Config should be enabled
-* [EC2.1] EBS snapshots should not be public, determined by the ability to be restorable by anyone
+* [EC2.1] Amazon EBS snapshots should not be public, determined by the ability to be restorable by anyone
 * [EC2.2] The VPC default security group should not allow inbound and outbound traffic
 * [IAM.1] IAM policies should not allow full "*" administrative privileges
 * [IAM.2] IAM users should not have IAM policies attached
@@ -71,7 +87,5 @@ AWS Foundational Security Best Practices::
 * [S3.3] S3 buckets should prohibit public write access
 * [S3.4] S3 buckets should have server-side encryption enabled
 * [RDS.1] RDS snapshots should be private
-* [RDS.2] RDS database instances should prohibit public access, determined by the PubliclyAccessible configuration
-* [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation
-
-NOTE: The PCI DSS Compliance Standard in Security Hub is designed to help you with your ongoing PCI DSS security activities. The controls cannot verify whether your systems are compliant with the PCI DSS standard. They can neither replace internal efforts nor guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.
+* [RDS.2] RDS DB instances should prohibit public access, determined by the PubliclyAccessible configuration
+* [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation 
