@@ -7,9 +7,9 @@ Security Hub begins running security checks within two hours after you deploy PC
 
 The following steps test remediation of the link:#_coverage[PCI EC2.2] control. This control states that the VPC default security group should prohibit inbound and outbound traffic, and it is evaluated on a change-triggered basis. To test it, purposefully misconfigure security group settings in the Amazon EC2 console to allow inbound traffic. This should trigger a Security Hub finding which remediates the security issue by undoing the misconfiguration in the console.
 
-. Select *Security Groups* in the Amazon EC2 console. 
-. Select the *Security group ID* of the default VPC.
-. Select *Edit inbound rules*.
+. Choose *Security Groups* in the Amazon EC2 console. 
+. Choose the *Security group ID* of the default VPC.
+. Choose *Edit inbound rules*.
 
 :xrefstyle: short
 [#edit-inbound-rules]
@@ -28,7 +28,7 @@ image::../images/edit-inbound-rules.png[Architecture,width=100%,height=100%]
 image::../images/SSH-rule.png[Architecture,width=100%,height=100%]
 
 [start=6]
-. Select *Save rules*. Make a note of the Security Group Amazon Resource Number (ARN).
+. Select *Save rules*. Make a note of the security group Amazon Resource Number (ARN).
 . In Security Hub, select *Findings*. Locate the finding that corresponds to the misconfiguration.
 . Select the check box next to the finding and select *Actions*.
 . Select *PCI EC2.2* from the drop-down list. A message displays that findings were successfully sent to AWS CloudWatch Events.
@@ -38,9 +38,9 @@ image::../images/SSH-rule.png[Architecture,width=100%,height=100%]
 TIP: For more information on the format of Security Hub findings, see https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-results.html[Results of security checks^].
 
 == Best practices for using {partner-product-name} on AWS
-AWS categorizes each Security Hub service action into one of five access levels: `List`, `Read`, `Write`, `Permissions management`, or `Tagging`. To allow a large group of users to access `List` and `Read` Security Hub actions, and only a small group to access `Write` action, use managed IAM policies. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html[Security best practices in IAM^].
+AWS categorizes each Security Hub service action into one of five access levels: list, read, write, permissions management, or tagging. To allow a large group of users to access list and read Security Hub actions, and only a small group to access the write action, use managed IAM policies. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html[Security best practices in IAM^].
 
-Security Hub ingests findings generated from integrated providers (both third-party services using https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[AWS Security Finding Format (ASFF)^].
+Security Hub ingests findings generated from integrated providers (both third-party services using https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[ASFF^].
 
 == Security
 This Quick Start follows security best practices and guidelines as documented in link:https://docs.aws.amazon.com/securityhub/latest/userguide/security.html[Security in AWS Security Hub^].
