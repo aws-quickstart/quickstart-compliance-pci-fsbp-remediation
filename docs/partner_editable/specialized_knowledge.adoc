@@ -5,6 +5,6 @@ For more information about the AWS services that are used in this Quick Start, s
 
 === AWS Security Hub
 
-Security Hub uses service-linked AWS Config rules. Therefore, make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
+Security Hub uses service-linked AWS Config rules. Therefore, ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
 
-AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, Amazon CloudWatch Logs log groups, S3 buckets, and KMS key.
+AWS CloudFormation templates automate the provisioning of all required parameters to run the security remediation workflows deployed by this Quick Start. These include IAM roles, Amazon CloudWatch Logs log groups, S3 buckets, and AWS KMS key.
