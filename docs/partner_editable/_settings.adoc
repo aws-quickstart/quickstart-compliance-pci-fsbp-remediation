@@ -6,6 +6,7 @@
 :quickstart-contributors: Kanishk Mahajan and Andrew Glenn, AWS Quick Start team
 :deployment_time: 20 minutes
 :default_deployment_region: us-east-1
-:partner-product-name: PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub
+:partner-product-name: PCI DSS and AWS Foundational Security Best Practices
+:partner-product-short-name: PCI DSS and AWS FSBP
 :no_parameters:
 

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.12">
-<title>PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on the AWS Cloud</title>
+<title>PCI DSS and AWS Foundational Security Best Practices on the AWS Cloud</title>
 <style>
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -790,9 +790,8 @@ p.footer-text a{color:#d7d8d8}
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
-<li><a href="#_pci_dss_and_aws_foundational_security_best_practices_controls_using_aws_security_hub_on_aws">PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on AWS</a>
+<li><a href="#_pci_dss_and_aws_foundational_security_best_practices_on_aws">PCI DSS and AWS Foundational Security Best Practices on AWS</a>
 <ul class="sectlevel2">
-<li><a href="#_introduction">Introduction</a></li>
 <li><a href="#_coverage">Coverage</a></li>
 </ul>
 </li>
@@ -815,7 +814,7 @@ p.footer-text a{color:#d7d8d8}
 </ul>
 </li>
 <li><a href="#_test_the_deployment">Test the deployment</a></li>
-<li><a href="#_best_practices_for_using_pci_dss_and_aws_foundational_security_best_practices_controls_using_aws_security_hub_on_aws">Best practices for using PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on AWS</a></li>
+<li><a href="#_aws_security_best_practices">AWS Security Best Practices</a></li>
 <li><a href="#_security">Security</a></li>
 <li><a href="#_faq">FAQ</a></li>
 <li><a href="#_send_us_feedback">Send us feedback</a></li>
@@ -828,7 +827,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_pci_dss_and_aws_foundational_security_best_practices_controls_using_aws_security_hub_on_the_aws_cloud" class="discrete text-center">PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on the AWS Cloud</h2>
+<h2 id="_pci_dss_and_aws_foundational_security_best_practices_on_the_aws_cloud" class="discrete text-center">PCI DSS and AWS Foundational Security Best Practices on the AWS Cloud</h2>
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -861,27 +860,24 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides instructions for using <a href="http://aws.amazon.com/cloudformation/">AWS CloudFormation</a> templates to deploy automated security checks and remediation workflows based on the Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices standards.</p>
+<p>This reference deployment guide provides instructions for deploying Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices (AWS FSBP) on the AWS Cloud using <a href="http://aws.amazon.com/cloudformation/">AWS CloudFormation</a> templates.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_pci_dss_and_aws_foundational_security_best_practices_controls_using_aws_security_hub_on_aws">PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on AWS</h2>
+<h2 id="_pci_dss_and_aws_foundational_security_best_practices_on_aws">PCI DSS and AWS Foundational Security Best Practices on AWS</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_introduction">Introduction</h3>
 <div class="paragraph">
-<p>When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that involves constant checks against security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.</p>
+<p>When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that checks security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start uses <a href="http://aws.amazon.com/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> templates to deploy automated workflows to remediate deviations from the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html" target="_blank" rel="noopener">Payment Card Industry Data Security Standard (PCI DSS) 3.2.1</a> and <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html" target="_blank" rel="noopener">AWS Foundational Security Best Practices</a>.</p>
+<p>This Quick Start uses <a href="http://aws.amazon.com/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> templates to deploy automated workflows to remediate deviations from <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html" target="_blank" rel="noopener">PCI DSS 3.2.1</a> and <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html" target="_blank" rel="noopener">AWS FSBP</a>.</p>
 </div>
 <div class="paragraph">
-<p>With this deployment, AWS Security Hub continuously evaluates your AWS resources against the PCI DSS and AWS Foundational Best Practices controls. Security Hub processes and prioritizes security check findings using the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html" target="_blank" rel="noopener">AWS Security Finding Format (ASFF)</a>. Deviations from security controls invoke an automated process of remediation using <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html" target="_blank" rel="noopener">AWS Systems Manager runbooks</a>.</p>
+<p>With this deployment, AWS Security Hub continuously evaluates your AWS resources against the PCI DSS and AWS FSBP controls. Security Hub processes and prioritizes security check findings using the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html" target="_blank" rel="noopener">AWS Security Finding Format (ASFF)</a>. Deviations from security controls invoke an automated process of remediation using <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html" target="_blank" rel="noopener">AWS Systems Manager runbooks</a>.</p>
 </div>
 <div class="paragraph">
-<p>Each of the PCI DSS and AWS Foundational Security Best Practices standards sets are deployed in two templates. Links to deploy them are provided in the <a href="#_deployment_steps">Deployment steps</a> section, later in this guide. The following <a href="#_coverage">Coverage</a> section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the <a href="#_architecture">Architecture</a> section, later in this guide.</p>
-</div>
+<p>Each of the PCI DSS and AWS FSBP standards sets are deployed from separate templates. Links to deploy them are provided in the <a href="#_deployment_steps">Deployment steps</a> section, later in this guide. The following <a href="#_coverage">Coverage</a> section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the <a href="#_architecture">Architecture</a> section, later in this guide.</p>
 </div>
 <div class="sect2">
 <h3 id="_coverage">Coverage</h3>
@@ -895,170 +891,170 @@ report bugs, or submit feature ideas for this Quick Start.
 <div class="ulist">
 <ul>
 <li>
-<p>[PCI.AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use health checks</p>
+<p>[PCI.AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use health checks.</p>
 </li>
 <li>
-<p>[PCI.CloudTrail.1] AWS CloudTrail logs should be encrypted at rest using AWS Key Management System (AWS KMS) keys</p>
+<p>[PCI.CloudTrail.1] AWS CloudTrail logs should be encrypted at rest using AWS Key Management System (AWS KMS) keys.</p>
 </li>
 <li>
-<p>[PCI.CloudTrail.2] CloudTrail log file validation should be enabled</p>
+<p>[PCI.CloudTrail.2] AWS CloudTrail log file validation should be enabled.</p>
 </li>
 <li>
-<p>[PCI.CloudTrail.3] CloudTrail log file validation should be enabled</p>
+<p>[PCI.CloudTrail.3] AWS CloudTrail log file validation should be enabled.</p>
 </li>
 <li>
-<p>[PCI.CloudTrail.4] CloudTrail trails should be integrated with CloudWatch Logs</p>
+<p>[PCI.CloudTrail.4] AWS CloudTrail trails should be integrated with Amazon CloudWatch Logs.</p>
 </li>
 <li>
-<p>[PCI.CodeBuild.2] AWS CodeBuild project environment variables should not contain clear text credentials</p>
+<p>[PCI.CodeBuild.2] AWS CodeBuild project environment variables should not contain clear text credentials.</p>
 </li>
 <li>
-<p>[PCI.CW.1] A log metric filter and alarm should exist for usage of the "root" user</p>
+<p>[PCI.CW.1] A log metric filter and alarm should be available to the "root" user.</p>
 </li>
 <li>
-<p>[PCI.Config.1] AWS Config should be enabled</p>
+<p>[PCI.Config.1] AWS Config should be enabled.</p>
 </li>
 <li>
-<p>[PCI.EC2.1] Amazon Elastic Block Storage (Amazon EBS) snapshots should not be publicly restorable</p>
+<p>[PCI.EC2.1] Amazon Elastic Block Storage (Amazon EBS) snapshots should not be publicly restorable.</p>
 </li>
 <li>
-<p>[PCI.EC2.2] Amazon Virtual Private Cloud (Amazon VPC) default security group should prohibit inbound and outbound traffic</p>
+<p>[PCI.EC2.2] Amazon Virtual Private Cloud (Amazon VPC) default security group should prohibit inbound and outbound traffic.</p>
 </li>
 <li>
-<p>[PCI.EC2.3] Unused Amazon Elastic Compute Cloud (Amazon EC2) security groups should be removed</p>
+<p>[PCI.EC2.3] Unused Amazon Elastic Compute Cloud (Amazon EC2) security groups should be removed.</p>
 </li>
 <li>
-<p>[PCI.EC2.4] Unused Amazon EC2 Elastic IP (EIP) addresses should be removed</p>
+<p>[PCI.EC2.4] Unused Amazon EC2 Elastic IP addresses should be removed.</p>
 </li>
 <li>
-<p>[PCI EC2.5] Security groups should not allow ingress from 0.0.0.0/0 to port 22</p>
+<p>[PCI EC2.5] Security groups should not allow inbound traffic from 0.0.0.0/0 to port 22.</p>
 </li>
 <li>
-<p>[PCI.EC2.6] Amazon VPC flow logging should be enabled in all VPCs</p>
+<p>[PCI.EC2.6] Amazon VPC flow logging should be enabled in all VPCs.</p>
 </li>
 <li>
-<p>[PCI.IAM.1] AWS Identity and Access Management (IAM) root user access key should not exist</p>
+<p>[PCI.IAM.1] AWS Identity and Access Management (IAM) root user access key should not exist.</p>
 </li>
 <li>
-<p>[PCI.IAM.2] IAM users should not have IAM policies attached</p>
+<p>[PCI.IAM.2] IAM users should not have IAM policies attached.</p>
 </li>
 <li>
-<p>[PCI.IAM.3] IAM policies should not allow full "*" administrative privileges</p>
+<p>[PCI.IAM.3] IAM policies should not allow full administrative privileges.</p>
 </li>
 <li>
-<p>[PCI.KMS.1] KMS key rotation should be enabled</p>
+<p>[PCI.KMS.1] AWS KMS key rotation should be enabled.</p>
 </li>
 <li>
-<p>[PCI.Lambda.1] AWS Lambda functions should prohibit public access</p>
+<p>[PCI.Lambda.1] AWS Lambda functions should prohibit public access.</p>
 </li>
 <li>
-<p>[PCI.Lambda.2] Lambda functions should be in a VPC</p>
+<p>[PCI.Lambda.2] AWS Lambda functions should be in a VPC.</p>
 </li>
 <li>
-<p>[PCI.RDS.1] Amazon Relational Database Service (Amazon RDS) snapshots should prohibit public access</p>
+<p>[PCI.RDS.1] Amazon Relational Database Service (Amazon RDS) snapshots should prohibit public access.</p>
 </li>
 <li>
-<p>[PCI.RDS.2] Amazon RDS database instances should prohibit public access</p>
+<p>[PCI.RDS.2] Amazon RDS database instances should prohibit public access.</p>
 </li>
 <li>
-<p>[PCI.Redshift.1] Amazon Redshift clusters should prohibit public access</p>
+<p>[PCI.Redshift.1] Amazon Redshift clusters should prohibit public access.</p>
 </li>
 <li>
-<p>[PCI.S3.1] Amazon Simple Storage Service (Amazon S3) buckets should prohibit public write access</p>
+<p>[PCI.S3.1] Amazon Simple Storage Service (Amazon S3) buckets should prohibit public write access.</p>
 </li>
 <li>
-<p>[PCI.S3.2] S3 buckets should prohibit public read access</p>
+<p>[PCI.S3.2] S3 buckets should prohibit public read access.</p>
 </li>
 <li>
-<p>[PCI.S3.3] S3 buckets should have cross-region replication enabled</p>
+<p>[PCI.S3.3] S3 buckets should have cross-Region replication enabled.</p>
 </li>
 <li>
-<p>[PCI.S3.4] S3 buckets should have server-side encryption enabled</p>
+<p>[PCI.S3.4] S3 buckets should have server-side encryption enabled.</p>
 </li>
 <li>
-<p>[PCI.SSM.1] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation</p>
+<p>[PCI.SSM.1] Amazon EC2 instances managed by AWS Systems Manager should have a patch compliance status of <strong>COMPLIANT</strong> after a patch installation.</p>
 </li>
 </ul>
 </div>
 </dd>
-<dt class="hdlist1">AWS Foundational Security Best Practices</dt>
+<dt class="hdlist1">AWS FSBP</dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p>[EC2.3] Attached EBS volumes should be encrypted at rest</p>
+<p>[EC2.3] Attached Amazon EBS volumes should be encrypted at rest.</p>
 </li>
 <li>
-<p>[GuardDuty.1] Amazon GuardDuty should be enabled</p>
+<p>[GuardDuty.1] Amazon GuardDuty should be enabled.</p>
 </li>
 <li>
-<p>[IAM.3] IAM users' access keys should be rotated every 90 days or less</p>
+<p>[IAM.3] IAM .access keys should be rotated every 90 days or less.</p>
 </li>
 <li>
-<p>[Lambda.1] Lambda functions should prohibit public access</p>
+<p>[Lambda.1] AWS Lambda functions should prohibit public access.</p>
 </li>
 <li>
-<p>[Lambda.2] Lambda functions should use latest runtimes</p>
+<p>[Lambda.2] AWS Lambda functions should use latest runtimes.</p>
 </li>
 <li>
-<p>[RDS.3] Amazon RDS database instances should have encryption at rest enabled</p>
+<p>[RDS.3] Amazon RDS database instances should have encryption at rest enabled.</p>
 </li>
 <li>
-<p>[SSM.1] Amazon EC2 instances should be managed by Systems Manager</p>
+<p>[SSM.1] Amazon EC2 instances should be managed by AWS Systems Manager.</p>
 </li>
 <li>
-<p>[AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks</p>
+<p>[AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks.</p>
 </li>
 <li>
-<p>[CloudTrail.1] CloudTrail should be enabled and configured with at least one multi-Region trail</p>
+<p>[CloudTrail.1] AWS CloudTrail should be enabled and configured with at least one multi-Region trail.</p>
 </li>
 <li>
-<p>[CloudTrail.2] CloudTrail should have encryption at rest enabled</p>
+<p>[CloudTrail.2] AWS CloudTrail should have encryption at rest enabled.</p>
 </li>
 <li>
-<p>[CodeBuild.2] CodeBuild project environment variables should not contain clear text credentials</p>
+<p>[CodeBuild.2] AWS CodeBuild project environment variables should not contain clear text credentials.</p>
 </li>
 <li>
-<p>[Config.1] AWS Config should be enabled</p>
+<p>[Config.1] AWS Config should be enabled.</p>
 </li>
 <li>
-<p>[EC2.1] EBS snapshots should not be public, determined by the ability to be restorable by anyone</p>
+<p>[EC2.1] Only authorized users should be able to share Amazon EBS snapshots publicly.</p>
 </li>
 <li>
-<p>[EC2.2] The VPC default security group should not allow inbound and outbound traffic</p>
+<p>[EC2.2] The VPC default security group should not allow inbound and outbound traffic.</p>
 </li>
 <li>
-<p>[IAM.1] IAM policies should not allow full "*" administrative privileges</p>
+<p>[IAM.1] IAM policies should not allow full administrative privileges.</p>
 </li>
 <li>
-<p>[IAM.2] IAM users should not have IAM policies attached</p>
+<p>[IAM.2] IAM users should not have IAM policies attached.</p>
 </li>
 <li>
-<p>[IAM.4] IAM root user access key should not exist</p>
+<p>[IAM.4] IAM root user access key should not exist.</p>
 </li>
 <li>
-<p>[IAM.7] Password policies for IAM users should have strong configurations</p>
+<p>[IAM.7] Password policies for IAM users should have strong configurations.</p>
 </li>
 <li>
-<p>[S3.1] S3 Block Public Access setting should be enabled</p>
+<p>[S3.1] S3 Block Public Access setting should be enabled.</p>
 </li>
 <li>
-<p>[S3.2] S3 buckets should prohibit public read access</p>
+<p>[S3.2] S3 buckets should prohibit public read access.</p>
 </li>
 <li>
-<p>[S3.3] S3 buckets should prohibit public write access</p>
+<p>[S3.3] S3 buckets should prohibit public write access.</p>
 </li>
 <li>
-<p>[S3.4] S3 buckets should have server-side encryption enabled</p>
+<p>[S3.4] S3 buckets should have server-side encryption enabled.</p>
 </li>
 <li>
-<p>[RDS.1] RDS snapshots should be private</p>
+<p>[RDS.1] Amazon RDS snapshots should be private.</p>
 </li>
 <li>
-<p>[RDS.2] RDS database instances should prohibit public access, determined by the PubliclyAccessible configuration</p>
+<p>[RDS.2] Amazon RDS database instances should prohibit public access.</p>
 </li>
 <li>
-<p>[SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of COMPLIANT after a patch installation</p>
+<p>[SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of <strong>COMPLIANT</strong> after a patch installation</p>
 </li>
 </ul>
 </div>
@@ -1072,7 +1068,7 @@ report bugs, or submit feature ideas for this Quick Start.
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The PCI DSS Compliance Standard in Security Hub is designed to help you with your ongoing PCI DSS security activities. The controls cannot verify whether your systems are compliant with the PCI DSS standard. They can neither replace internal efforts nor guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.
+The PCI DSS compliance standard in AWS Security Hub is designed to help you with ongoing PCI DSS security activities. The controls cannot verify if your systems are compliant with the PCI DSS standard. They can&#8217;t replace internal efforts or guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.
 </td>
 </tr>
 </table>
@@ -1116,18 +1112,6 @@ After you deploy the Quick Start, <a href="https://docs.aws.amazon.com/awsaccoun
 <div class="paragraph">
 <p>You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using the Quick Start.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-After you deploy the Quick Start, we recommend that you enable the <a href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-reports-gettingstarted-turnonreports.html">AWS Cost and Usage Report</a> to track costs associated with the Quick Start. This report delivers billing metrics to an Amazon S3 bucket in your account. It provides cost estimates based on usage throughout each month and finalizes the data at the end of the month. For more information about the report, see the <a href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-reports-costusage.html">What are AWS Cost and Usage Reports?</a>
-</td>
-</tr>
-</table>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1140,7 +1124,7 @@ After you deploy the Quick Start, we recommend that you enable the <a href="http
 <div class="content">
 <a class="image" href="images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram.png"><img src="images/quickstart-compliance-pci-fsbp-remediation-architecture-diagram.png" alt="Architecture" width="100%" height="100%"></a>
 </div>
-<div class="title">Figure 1. PCI DSS and AWS Foundational Security Best Practices compliance using AWS Security Hub</div>
+<div class="title">Figure 1. PCI DSS and AWS FSBP compliance using AWS Security Hub</div>
 </div>
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, the Quick Start sets up the following:</p>
@@ -1148,13 +1132,13 @@ After you deploy the Quick Start, we recommend that you enable the <a href="http
 <div class="ulist">
 <ul>
 <li>
-<p>AWS Security Hub to compile findings of automated and continuous evaluations of PCI DSS and AWS Foundational Security Best Practices controls against your AWS resources. Custom actions in Security Hub send findings to AWS CloudWatch as custom action events.</p>
+<p>AWS Security Hub to compile findings of automated and continuous evaluations of PCI DSS and AWS FSBP controls against your AWS resources. Custom actions in Security Hub send findings to Amazon CloudWatch as custom events.</p>
 </li>
 <li>
-<p>AWS CloudWatch to match a custom action event from AWS Security Hub with a rule that triggers an AWS Lambda function.</p>
+<p>Amazon CloudWatch to match a custom event from AWS Security Hub with a rule that triggers an AWS Lambda function.</p>
 </li>
 <li>
-<p>AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook to remediate a finding of a deviation from PCI DSS and AWS Foundational Security Best Practices controls.</p>
+<p>AWS Lambda functions to invoke the appropriate AWS Systems Manager runbook to remediate a finding of a deviation from PCI DSS and AWS FSBP controls.</p>
 </li>
 <li>
 <p>AWS Systems Manager to perform the automated remediation actions defined in runbooks.</p>
@@ -1181,10 +1165,10 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <div class="sect2">
 <h3 id="_aws_security_hub">AWS Security Hub</h3>
 <div class="paragraph">
-<p>Security Hub uses service-linked AWS Config rules. Therefore, make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to <a href="https://aws.amazon.com/security-hub/pricing/" target="_blank" rel="noopener">AWS Security Hub pricing</a>.</p>
+<p>Security Hub uses service-linked AWS Config rules. Therefore, ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to <a href="https://aws.amazon.com/security-hub/pricing/" target="_blank" rel="noopener">AWS Security Hub pricing</a>.</p>
 </div>
 <div class="paragraph">
-<p>AWS CloudFormation templates automate the provisioning of all parameters needed to run the security remediation workflows deployed by this Quick Start. These include IAM roles, Amazon CloudWatch Logs log groups, S3 buckets, and KMS key.</p>
+<p>AWS CloudFormation templates automate the provisioning of all required parameters to run the security remediation workflows deployed by this Quick Start. These include IAM roles, Amazon CloudWatch Logs log groups, S3 buckets, and AWS KMS key.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1235,7 +1219,7 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AWS CloudWatch logs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon CloudWatch Logs</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
@@ -1251,7 +1235,7 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <p><a href="https://aws.amazon.com/about-aws/global-infrastructure/">Regions</a></p>
 </div>
 <div class="paragraph">
-<p>If you’re planning to deploy an architecture with three Availability Zones, choose an AWS Region that supports three zones.</p>
+<p>If you plan to deploy the architecture with three Availability Zones, choose an AWS Region that supports three zones.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1338,16 +1322,16 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-This Quick Start deploys automated workflows to remediate security compliance issues that may make changes to your AWS account. We do not recommend deploying this Quick Start in a production environment before appropriate evaluation and <a href="#_test_the_deployment">testing</a>.
+This Quick Start deploys automated workflows to remediate security compliance issues that modify your AWS account. We do not recommend deploying this Quick Start in a production environment before appropriate evaluation and <a href="#_test_the_deployment">testing</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Deploy PCI DSS and AWS Foundational Security Best Practices remediations</dt>
+<dt class="hdlist1">Deploy PCI DSS and AWS FSBP remediations</dt>
 <dd>
-<p>PCI DSS and AWS Foundational Security Best Practices remediations are each packaged in two templates. To deploy PCI DSS, select the link to launch the first PCI DSS template and follow steps 1–8 provided. After deploying the first template, select the link to launch the second PCI DSS template and repeat steps 1–8. Repeat this entire process to deploy the two AWS Foundation Security Best Practices templates.</p>
+<p>PCI DSS and AWS FSBP remediations are each packaged in two templates. To deploy PCI DSS, choose the link to launch the first PCI DSS template and follow steps 1–8 provided. After deploying the first template, choose the link to launch the second PCI DSS template and repeat steps 1–8. Repeat this entire process to deploy the two AWS FSBP templates.</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1357,10 +1341,10 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <p><a href="https://fwd.aws/bnKqj" target="_blank" rel="noopener">Launch the second PCI DSS template</a>.</p>
 </li>
 <li>
-<p><a href="https://fwd.aws/z7bKp" target="_blank" rel="noopener">Launch the first AWS Foundational Security Best Practices template</a>.</p>
+<p><a href="https://fwd.aws/z7bKp" target="_blank" rel="noopener">Launch the first AWS FSBP template</a>.</p>
 </li>
 <li>
-<p><a href="https://fwd.aws/m376K" target="_blank" rel="noopener">Launch the second AWS Foundational Security Best Practices template</a>.</p>
+<p><a href="https://fwd.aws/m376K" target="_blank" rel="noopener">Launch the second AWS FSBP template</a>.</p>
 </li>
 </ul>
 </div>
@@ -1395,7 +1379,7 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub deployment is ready.</p>
+<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the PCI DSS and AWS FSBP deployment is ready.</p>
 </li>
 <li>
 <p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">Figure 2</a>, to view the created resources.</p>
@@ -1406,7 +1390,7 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <div class="content">
 <a class="image" href="images/cfn_outputs.png"><img src="images/cfn_outputs.png" alt="cfn_outputs" width="100%" height="100%"></a>
 </div>
-<div class="title">Figure 2. PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub outputs after successful deployment</div>
+<div class="title">Figure 2. PCI DSS and AWS FSBP outputs after successful deployment</div>
 </div>
 </div>
 </div>
@@ -1415,7 +1399,7 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <h2 id="_test_the_deployment">Test the deployment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Security Hub begins running security checks within two hours after you deploy PCI DSS and AWS Foundational Security Best Practices controls. After the initial check, subsequent checks occur on a periodic or change-triggered basis, depending on the control. For more information, see <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-schedule.html" target="_blank" rel="noopener">Schedule for running security checks</a>. Follow the steps in this section to test the deployment.</p>
+<p>Security Hub begins running security checks within two hours after you deploy PCI DSS and AWS FSBP controls. After the initial check, subsequent checks occur on a periodic or change-triggered basis, depending on the control. For more information, see <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-schedule.html" target="_blank" rel="noopener">Schedule for running security checks</a>. Follow the steps in this section to test the deployment.</p>
 </div>
 <div class="paragraph">
 <p>The following steps test remediation of the <a href="#_coverage">PCI EC2.2</a> control. This control states that the VPC default security group should prohibit inbound and outbound traffic, and it is evaluated on a change-triggered basis. To test it, purposefully misconfigure security group settings in the Amazon EC2 console to allow inbound traffic. This should trigger a Security Hub finding which remediates the security issue by undoing the misconfiguration in the console.</p>
@@ -1423,13 +1407,13 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Select <strong>Security Groups</strong> in the Amazon EC2 console.</p>
+<p>Choose <strong>Security Groups</strong> in the Amazon EC2 console.</p>
 </li>
 <li>
-<p>Select the <strong>Security group ID</strong> of the default VPC.</p>
+<p>Choose the <strong>Security group ID</strong> of the default VPC.</p>
 </li>
 <li>
-<p>Select <strong>Edit inbound rules</strong>.</p>
+<p>Choose <strong>Edit inbound rules</strong>.</p>
 </li>
 </ol>
 </div>
@@ -1458,7 +1442,7 @@ This Quick Start deploys automated workflows to remediate security compliance is
 <div class="olist arabic">
 <ol class="arabic" start="6">
 <li>
-<p>Select <strong>Save rules</strong>. Make a note of the Security Group Amazon Resource Number (ARN).</p>
+<p>Select <strong>Save rules</strong>. Make a note of the security group Amazon Resource Number (ARN).</p>
 </li>
 <li>
 <p>In Security Hub, select <strong>Findings</strong>. Locate the finding that corresponds to the misconfiguration.</p>
@@ -1492,13 +1476,13 @@ For more information on the format of Security Hub findings, see <a href="https:
 </div>
 </div>
 <div class="sect1">
-<h2 id="_best_practices_for_using_pci_dss_and_aws_foundational_security_best_practices_controls_using_aws_security_hub_on_aws">Best practices for using PCI DSS and AWS Foundational Security Best Practices controls using AWS Security Hub on AWS</h2>
+<h2 id="_aws_security_best_practices">AWS Security Best Practices</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>AWS categorizes each Security Hub service action into one of five access levels: <code>List</code>, <code>Read</code>, <code>Write</code>, <code>Permissions management</code>, or <code>Tagging</code>. To allow a large group of users to access <code>List</code> and <code>Read</code> Security Hub actions, and only a small group to access <code>Write</code> action, use managed IAM policies. For more information, see <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html" target="_blank" rel="noopener">Security best practices in IAM</a>.</p>
+<p>AWS categorizes each Security Hub service action into one of five access levels: list, read, write, permissions management, or tagging. To allow a large group of users to access list and read Security Hub actions, and only a small group to access the write action, use managed IAM policies. For more information, see <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html" target="_blank" rel="noopener">Security best practices in IAM</a>.</p>
 </div>
 <div class="paragraph">
-<p>Security Hub ingests findings generated from integrated providers (both third-party services using <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html" target="_blank" rel="noopener">AWS Security Finding Format (ASFF)</a>.</p>
+<p>Security Hub ingests findings generated from integrated providers (both third-party services using <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html" target="_blank" rel="noopener">ASFF</a>.</p>
 </div>
 </div>
 </div>
@@ -1590,8 +1574,8 @@ and to share your customizations with others.</p>
 </html>
 <!--
 repo commit:
-6587054f139a77cff044e94c7d3321f85f67210e
+58aae380b4157b40c463b393c5cd4ac632debe56
 
 submodule config:
- 884b4c85313b818048d4d0f88720b0dc2878e9c4 docs/boilerplate (heads/main)
++18d2093a989c1f974a5d1ba0dc3be0f08d4735de docs/boilerplate (heads/main)
 -->
