@@ -2,6 +2,8 @@
 === Prerequisites
 
 [start=1]
-* Security Hub uses service-linked https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html[AWS Config rules^]. Make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
+* Ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is enabled. Security Hub uses service-linked https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html[AWS Config rules^]. You are not charged by AWS Config for these service-linked rules. you are only charged according to https://aws.amazon.com/security-hub/pricing/[AWS Security Hub pricing^].
+
+* Ensure that Security Hub is enabled in the account and Region where these templates are deployed.
 
 * This Quick Start uses a KMS key to remediate the link:#_coverage[PCI.CloudTrail.1 control]. The key must have permissions to encrypt/decrypt AWS CloudTrail logs in the AWS account in which this Quick Start is deployed. Make sure you update the key policy with the AWS account ID. To do this, search for a key with an alias of "PCI-CMK" in the AWS KMS console. Then, see link:https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-kms-key-policy-for-cloudtrail.html#create-kms-key-policy-for-cloudtrail-policy-sections[Required CMK policy sections for use with CloudTrail^] for instructions to enable CloudTrail log encrypt and decrypt permissions.
