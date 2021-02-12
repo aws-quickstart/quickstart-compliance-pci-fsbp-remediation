@@ -2,13 +2,22 @@
 // Briefly describe the software. Use consistent and clear branding.
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 // Describe how the software works on AWS.>
-When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that checks security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.
+Customers require compliance with established security and regulatory controls when migrating workloads to AWS but face numerous challenges. It is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remeditaion workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual, error prone, and results in a high MTTR (Mean Time To Remediation) for customers thus increasing risk and operational costs.
 
-This Quick Start uses http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates to deploy automated workflows to remediate deviations from https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html[PCI DSS 3.2.1^] and https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html[AWS FSBP^].
+AWS Security Hub provides checks that offer automated detection of findings of configuration noncompliance with PCI DSS and AWS FSBP. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for PCI DSS and AWS FSBP policy violations detected by AWS Security Hub.
 
-With this deployment, AWS Security Hub continuously evaluates your AWS resources against the PCI DSS and AWS FSBP controls. Security Hub processes and prioritizes security check findings using the https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html[AWS Security Finding Format (ASFF)^]. Deviations from security controls invoke an automated process of remediation using https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager runbooks^].
+=== Solution approach
 
-Each of the PCI DSS and AWS FSBP standards sets are deployed from separate templates. Links to deploy them are provided in the link:#_deployment_steps[Deployment steps] section, later in this guide. The following link:#_coverage[Coverage] section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the link:#_architecture[Architecture] section, later in this guide.
+This Quick Start is based on the following solution approach:
+
+[start=1]
+. Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI DSS and AWS FSBP findings.
+. Provides AWS Systems Manager automation documents for automated remediation of AWS Security Hub findings. All automation documents are automatically provisioned via an AWS CloudFormation template.
+. Provides integration of AWS Security Hub custom actions with AWS Systems Manager automation documents to provide real-time remediations of AWS Security Hub PCI DSS and AWS FSBP findings as follows:
+.. Leverages the ability of AWS Security Hub to send findings associated with custom actions to Amazon CloudWatch Events as Security Hub Findings - Custom Action events.
+.. The CloudWatch Events rule invokes the corresponding AWS Lambda function as the target for the Security Hub custom action event.
+.. The AWS Lambda function processes the finding using the AWS Security Finding Format (ASFF) and invokes the corresponding AWS Systems Manager Automation Document with the input from the ASFF finding.
+.. AWS Systems Manager remediates the Security Hub finding.
 
 === Coverage
 This Quick Start deploys automated remediation workflows for the following controls.
@@ -51,6 +60,8 @@ AWS FSBP::
 * [Lambda.2] AWS Lambda functions should use latest runtimes.
 * [RDS.3] Amazon RDS database instances should have encryption at rest enabled.
 * [SSM.1] Amazon EC2 instances should be managed by AWS Systems Manager.
+
+Additional AWS FSBP coverage provided when the PCI DSS remediation templates are deployed::
 * [AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks.
 * [CloudTrail.1] AWS CloudTrail should be enabled and configured with at least one multi-Region trail.
 * [CloudTrail.2] AWS CloudTrail should have encryption at rest enabled.
@@ -70,4 +81,4 @@ AWS FSBP::
 * [RDS.2] Amazon RDS database instances should prohibit public access.
 * [SSM.2] Amazon EC2 instances managed by Systems Manager should have a patch compliance status of *COMPLIANT* after a patch installation
 
-NOTE: The PCI DSS compliance standard in AWS Security Hub is designed to help you with ongoing PCI DSS security activities. The controls cannot verify if your systems are compliant with the PCI DSS standard. They can't replace internal efforts or guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.
+WARNING: The PCI DSS compliance standard in AWS Security Hub is designed to help you with ongoing PCI DSS security activities. The controls cannot verify if your systems are compliant with the PCI DSS standard. They can't replace internal efforts or guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.

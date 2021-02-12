@@ -232,7 +232,7 @@ Resources:
               Script: "def script_handler(events, context):\r\n  import boto3\r\n  client = boto3.client('guardduty')\r\n  findingpublishingfrequency= events['findingpublishingfrequency']\r\n\r\n  response = client.create_detector(\r\n      Enable=True,\r\n      FindingPublishingFrequency=findingpublishingfrequency\r\n  )\r\n"
               InputPayload:
                 AutomationAssumeRole: '{{AutomationAssumeRole}}'
-                functionname: '{{findingpublishingfrequency}}'
+                findingpublishingfrequency: '{{findingpublishingfrequency}}'
 
 #[Lambda.2]
   FSBPLambda2Automation:
