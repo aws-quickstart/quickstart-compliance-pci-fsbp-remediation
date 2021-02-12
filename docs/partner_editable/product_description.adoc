@@ -9,9 +9,9 @@ Customers require compliance with established security and regulatory controls w
 
 AWS provides an Operational Best Practices for PCI DSS 3.2.1 that provide a sample mapping between the Payment Card Data Security Standard (PCI DSS) 3.2.1 and AWS Security Hub checks. The AWS Foundational Security Best Practices standard is a set of controls that detect when your deployed accounts and resources deviate from AWS security best practices.
 
-The AWS Security Hub service provides checks that offer automated detection of findings of configuration noncompliance with PCI and Foundational Security Best Practices Controls. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for these PCI and Foundational Security Best Practices policy violations detected by AWS Security Hub.
+AWS Security Hub provides checks that offer automated detection of findings of configuration noncompliance with PCI DSS and AWS FSBP. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for PCI DSS and AWS FSBP policy violations detected by AWS Security Hub.
 
-The solution uses http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents] to automate the deployment and configuration of AWS Security Hub based remediations for PCI DSS 3.2.1 and Foundational Security Best Practices Controls on AWS.
+The solution uses http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates and https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html[AWS Systems Manager Automation documents] to automate the deployment and configuration of AWS Security Hub based remediations for PCI DSS 3.2.1 and AWS FSBP on AWS
 
 ==== Solution Approach
 This Quick Start is based on the following solution approach - 
