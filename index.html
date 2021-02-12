@@ -792,6 +792,7 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_overview">Overview</a></li>
 <li><a href="#_pci_dss_and_aws_foundational_security_best_practices_on_aws">PCI DSS and AWS Foundational Security Best Practices on AWS</a>
 <ul class="sectlevel2">
+<li><a href="#_solution_approach">Solution approach</a></li>
 <li><a href="#_coverage">Coverage</a></li>
 </ul>
 </li>
@@ -868,16 +869,45 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_pci_dss_and_aws_foundational_security_best_practices_on_aws">PCI DSS and AWS Foundational Security Best Practices on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When migrating workloads to AWS, customers face numerous challenges to comply with established security and regulatory controls. Compliance is a multi-step process that checks security best practices and regulatory requirements, individual policy definitions, configuration and execution of complex remediation workflows, and exception procedures. Furthermore, remediation of security issues may require extensive hands-on experience with multiple AWS services and resources. Manual remediation is error prone and increases risk and operational costs.</p>
+<p>Customers require compliance with established security and regulatory controls when migrating workloads to AWS but face numerous challenges. It is a multi-step process that involves reference to standards and regulatory requirements, individual policy definitions, remeditaion workflows, and exception procedures. Furthermore, several remediation steps may require extensive hands-on experience with AWS as individual findings require multiple configuration steps for remediation. This activity is manual, error prone, and results in a high MTTR (Mean Time To Remediation) for customers thus increasing risk and operational costs.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start uses <a href="http://aws.amazon.com/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> templates to deploy automated workflows to remediate deviations from <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-pcidss.html" target="_blank" rel="noopener">PCI DSS 3.2.1</a> and <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-fsbp.html" target="_blank" rel="noopener">AWS FSBP</a>.</p>
+<p>AWS Security Hub provides checks that offer automated detection of findings of configuration noncompliance with PCI DSS and AWS FSBP. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for PCI DSS and AWS FSBP policy violations detected by AWS Security Hub.</p>
 </div>
+<div class="sect2">
+<h3 id="_solution_approach">Solution approach</h3>
 <div class="paragraph">
-<p>With this deployment, AWS Security Hub continuously evaluates your AWS resources against the PCI DSS and AWS FSBP controls. Security Hub processes and prioritizes security check findings using the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html" target="_blank" rel="noopener">AWS Security Finding Format (ASFF)</a>. Deviations from security controls invoke an automated process of remediation using <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/automation-documents.html" target="_blank" rel="noopener">AWS Systems Manager runbooks</a>.</p>
+<p>This Quick Start is based on the following solution approach:</p>
 </div>
-<div class="paragraph">
-<p>Each of the PCI DSS and AWS FSBP standards sets are deployed from separate templates. Links to deploy them are provided in the <a href="#_deployment_steps">Deployment steps</a> section, later in this guide. The following <a href="#_coverage">Coverage</a> section lists the controls that are deployed with each set. For more information about the services and resources deployed by this Quick Start, see the <a href="#_architecture">Architecture</a> section, later in this guide.</p>
+<div class="olist arabic">
+<ol class="arabic" start="1">
+<li>
+<p>Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI DSS and AWS FSBP findings.</p>
+</li>
+<li>
+<p>Provides AWS Systems Manager automation documents for automated remediation of AWS Security Hub findings. All automation documents are automatically provisioned via an AWS CloudFormation template.</p>
+</li>
+<li>
+<p>Provides integration of AWS Security Hub custom actions with AWS Systems Manager automation documents to provide real-time remediations of AWS Security Hub PCI DSS and AWS FSBP findings as follows:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Leverages the ability of AWS Security Hub to send findings associated with custom actions to Amazon CloudWatch Events as Security Hub Findings - Custom Action events.</p>
+</li>
+<li>
+<p>The CloudWatch Events rule invokes the corresponding AWS Lambda function as the target for the Security Hub custom action event.</p>
+</li>
+<li>
+<p>The AWS Lambda function processes the finding using the AWS Security Finding Format (ASFF) and invokes the corresponding AWS Systems Manager Automation Document with the input from the ASFF finding.</p>
+</li>
+<li>
+<p>AWS Systems Manager remediates the Security Hub finding.</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_coverage">Coverage</h3>
@@ -1002,6 +1032,13 @@ report bugs, or submit feature ideas for this Quick Start.
 <li>
 <p>[SSM.1] Amazon EC2 instances should be managed by AWS Systems Manager.</p>
 </li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Additional AWS FSBP coverage provided when the PCI DSS remediation templates are deployed</dt>
+<dd>
+<div class="ulist">
+<ul>
 <li>
 <p>[AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks.</p>
 </li>
@@ -1061,11 +1098,11 @@ report bugs, or submit feature ideas for this Quick Start.
 </dd>
 </dl>
 </div>
-<div class="admonitionblock note">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
 The PCI DSS compliance standard in AWS Security Hub is designed to help you with ongoing PCI DSS security activities. The controls cannot verify if your systems are compliant with the PCI DSS standard. They can&#8217;t replace internal efforts or guarantee that you will pass a PCI DSS assessment. Security Hub does not check procedural controls that require manual evidence collection.
@@ -1262,7 +1299,10 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="ulist">
 <ul>
 <li>
-<p>Security Hub uses service-linked <a href="https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html" target="_blank" rel="noopener">AWS Config rules</a>. Make sure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and regions where Security Hub is deployed. You are not charged by AWS Config for these service-linked rules. You are only charged according to <a href="https://aws.amazon.com/security-hub/pricing/" target="_blank" rel="noopener">AWS Security Hub pricing</a>.</p>
+<p>Ensure that AWS Config is turned on and recording all supported resources, including global resources, in all accounts and Regions where Security Hub is enabled. Security Hub uses service-linked <a href="https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html" target="_blank" rel="noopener">AWS Config rules</a>. You are not charged by AWS Config for these service-linked rules. you are only charged according to <a href="https://aws.amazon.com/security-hub/pricing/" target="_blank" rel="noopener">AWS Security Hub pricing</a>.</p>
+</li>
+<li>
+<p>Ensure that Security Hub is enabled in the account and Region where these templates are deployed.</p>
 </li>
 <li>
 <p>This Quick Start uses a KMS key to remediate the <a href="#_coverage">PCI.CloudTrail.1 control</a>. The key must have permissions to encrypt/decrypt AWS CloudTrail logs in the AWS account in which this Quick Start is deployed. Make sure you update the key policy with the AWS account ID. To do this, search for a key with an alias of "PCI-CMK" in the AWS KMS console. Then, see <a href="https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create-kms-key-policy-for-cloudtrail.html#create-kms-key-policy-for-cloudtrail-policy-sections" target="_blank" rel="noopener">Required CMK policy sections for use with CloudTrail</a> for instructions to enable CloudTrail log encrypt and decrypt permissions.</p>
@@ -1574,7 +1614,7 @@ and to share your customizations with others.</p>
 </html>
 <!--
 repo commit:
-58aae380b4157b40c463b393c5cd4ac632debe56
+aeeea667f6dcbefa3dbca614fe8d50017d0d3da3
 
 submodule config:
 +18d2093a989c1f974a5d1ba0dc3be0f08d4735de docs/boilerplate (heads/main)
