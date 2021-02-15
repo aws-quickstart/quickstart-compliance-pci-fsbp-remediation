@@ -62,6 +62,8 @@ AWS FSBP::
 * [SSM.1] Amazon EC2 instances should be managed by AWS Systems Manager.
 
 Additional AWS FSBP coverage provided when the PCI DSS remediation templates are deployed::
+The coverage for remediations of each of these FSBP controls is provided by deploying the PCI remediation templates aws-security-hub-pci-remediations-template1.template and aws-security-hub2-pci-remediations-template1.template2.
+
 * [AutoScaling.1] Amazon EC2 Auto Scaling groups associated with a load balancer should use load balancer health checks.
 * [CloudTrail.1] AWS CloudTrail should be enabled and configured with at least one multi-Region trail.
 * [CloudTrail.2] AWS CloudTrail should have encryption at rest enabled.
