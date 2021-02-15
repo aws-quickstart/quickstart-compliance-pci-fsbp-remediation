@@ -6,9 +6,7 @@ Customers require compliance with established security and regulatory controls w
 
 AWS Security Hub provides checks that offer automated detection of findings of configuration noncompliance with PCI DSS and AWS FSBP. This Quick Start leverages the AWS Security Hub service and provides customers with an AWS native implementation for automated real time remediations for PCI DSS and AWS FSBP policy violations detected by AWS Security Hub.
 
-=== Solution approach
-
-This Quick Start is based on the following solution approach:
+This Quick Start is based on the following approach:
 
 [start=1]
 . Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI DSS and AWS FSBP findings.
