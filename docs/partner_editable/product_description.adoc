@@ -8,7 +8,7 @@ AWS Security Hub provides checks that offer automated detection of findings of c
 
 === Solution approach
 
-This Quick Start is based on the following solution approach:
+This Quick Start is based on the following approach:
 
 [start=1]
 . Leverages AWS Security Hub directly to provide automated and continuous detection and recording of PCI DSS and AWS FSBP findings.
