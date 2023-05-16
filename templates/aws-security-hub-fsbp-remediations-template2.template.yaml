@@ -14,7 +14,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt CreateSecurityHubCustomActionTargetLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -128,7 +128,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  IAMRotate90daysEnabledLambdaRole.Arn
-      Runtime: python3.6
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -240,7 +240,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt SSMQuickSetupEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -383,7 +383,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RestrictPublicAccessLambdaEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -500,7 +500,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt GuardDutyEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -609,7 +609,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt LatestRuntimeLambdaEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -719,7 +719,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 768
       Role: !GetAtt EBSVolumeEncryptionEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 875
       Environment:
         Variables:
@@ -841,7 +841,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 768
       Role: !GetAtt RDSInstanceEncryptionEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 875
       Environment:
         Variables:
