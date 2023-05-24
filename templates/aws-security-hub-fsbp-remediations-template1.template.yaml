@@ -113,7 +113,7 @@ Resources:
           - name: rotateiam90days
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: rotateiam90days_handler
               Script: |
                 def rotateiam90days_handler(events, context):
@@ -167,7 +167,7 @@ Resources:
           - name: EncryptRDSDBInstance
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: script_handler
               Script: "def script_handler(events, context):\r\n  import boto3\r\n  import time\r\n  client = boto3.client('rds')\r\n  dbinstanceId = events['dbinstanceId']\r\n  kmskeyArn = events['kmskeyArn']\r\n    \r\n  response_snapshot = client.create_db_snapshot(\r\n      DBSnapshotIdentifier=\"fsbp-snapshot-\" + dbinstanceId,\r\n      DBInstanceIdentifier=dbinstanceId\r\n  )\r\n    \r\n  response_snapshotA = client.get_waiter('db_snapshot_available').wait(\r\n      DBSnapshotIdentifier='fsbp-snapshot-' + dbinstanceId,\r\n      DBInstanceIdentifier=dbinstanceId\r\n  )\r\n\r\n    \r\n  response_snapshotCopy = client.copy_db_snapshot(\r\n      SourceDBSnapshotIdentifier=\"fsbp-snapshot-\" + dbinstanceId,\r\n      TargetDBSnapshotIdentifier=\"fsbp-snapshot-encrypted-\" + dbinstanceId,\r\n      KmsKeyId=kmskeyArn,\r\n      CopyTags=True\r\n  )\r\n                \r\n  response_snapshotB = client.get_waiter('db_snapshot_available').wait(\r\n      DBSnapshotIdentifier='fsbp-snapshot-encrypted-' + dbinstanceId,\r\n      DBInstanceIdentifier=dbinstanceId\r\n  )\r\n\r\n  response_restore = client.restore_db_instance_from_db_snapshot(\r\n      DBInstanceIdentifier='fsbp-encrypted-' + dbinstanceId,\r\n      DBSnapshotIdentifier='fsbp-snapshot-encrypted-' + dbinstanceId\r\n  )\r\n\r\n  response_snapshotC = client.get_waiter('db_instance_available').wait(\r\n      DBInstanceIdentifier='fsbp-encrypted-' + dbinstanceId\r\n  )\r\n\r\n  response_delete1 =  client.delete_db_snapshot(\r\n      DBSnapshotIdentifier='fsbp-snapshot-' + dbinstanceId\r\n  )\r\n                \r\n  response_delete2 = client.get_waiter('db_snapshot_deleted').wait(\r\n      DBSnapshotIdentifier='fsbp-snapshot-' + dbinstanceId,\r\n      WaiterConfig={\r\n           'Delay': 5,\r\n           'MaxAttempts': 30\r\n      }\r\n  )\r\n\r\n  response_delete3 = client.delete_db_instance(\r\n      DBInstanceIdentifier=dbinstanceId,\r\n      SkipFinalSnapshot=True\r\n  )\r\n                \r\n  response_wait = client.get_waiter('db_instance_deleted').wait(\r\n      DBInstanceIdentifier=dbinstanceId\r\n  )\r\n                \r\n  response_newinstance = client.modify_db_instance( \r\n      DBInstanceIdentifier='fsbp-encrypted-' + dbinstanceId,\r\n      ApplyImmediately=True, \r\n      NewDBInstanceIdentifier=dbinstanceId\r\n  )\r\n                \r\n  time.sleep(60)\r\n\r\n  response_final = client.get_waiter('db_instance_available').wait(\r\n      DBInstanceIdentifier=dbinstanceId\r\n  )\r\n  \r\n"
               InputPayload:
@@ -198,7 +198,7 @@ Resources:
           - name: EncryptEBSVolume
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: script_handler
               Script: "def script_handler(events, context):\r\n    # TODO implement\r\n    import json\r\n    import boto3\r\n    \r\n    client = boto3.client('ec2')\r\n    ebsvolumeId = events['ebsvolumeId']\r\n    kmskeyArn = events['kmskeyArn']\r\n    sourceregion = events['sourceregion']\r\n    \r\n    print('0. Describe Volume')\r\n    \r\n    response_volume = client.describe_volumes(\r\n        VolumeIds=[\r\n        ebsvolumeId\r\n        ]   \r\n    )\r\n    instanceid = response_volume['Volumes'][0]['Attachments'][0]['InstanceId']\r\n    size= response_volume['Volumes'][0]['Size']\r\n    availabilityzone = response_volume['Volumes'][0]['AvailabilityZone']\r\n    \r\n    response_snapshot = client.create_snapshot(\r\n        Description='New FSBP snapshot',\r\n        VolumeId=ebsvolumeId\r\n    )\r\n    \r\n    snapshotid = response_snapshot['SnapshotId']\r\n    \r\n    response_snapshotA = client.get_waiter('snapshot_completed').wait(\r\n        SnapshotIds=[snapshotid]\r\n    )\r\n\r\n    print('2. Copy and Encrypt. Creating encrypted snapshot from unencrypted copy')\r\n    \r\n    response_snapshotCopy = client.copy_snapshot(\r\n        Description='New FSBP Encrypted snapshot.',\r\n        DestinationRegion=sourceregion,\r\n        SourceRegion=sourceregion,\r\n        SourceSnapshotId=snapshotid,\r\n        KmsKeyId=kmskeyArn,\r\n        Encrypted=True\r\n    )\r\n    \r\n    snapshotencryptedId = response_snapshot['SnapshotId']\r\n    \r\n    response_snapshotB = client.get_waiter('snapshot_completed').wait(\r\n        SnapshotIds=[snapshotencryptedId]\r\n    )\r\n    \r\n    print('3. Create volume from encrypted snapshot')\r\n    \r\n    response_volume_encrypted = client.create_volume(\r\n        AvailabilityZone=availabilityzone,\r\n        Size=size,\r\n        VolumeType='gp2',\r\n        KmsKeyId=kmskeyArn,\r\n        Encrypted=True\r\n    )\r\n\r\n    encryptedVolumeId = response_volume_encrypted['VolumeId']\r\n    \r\n    response_snapshotC = client.get_waiter('volume_available').wait(\r\n        VolumeIds=[encryptedVolumeId]\r\n    )\r\n\r\n    print('4. Stop original instance or terminate original instance if instance in asg')\r\n    \r\n    asgclient = boto3.client('autoscaling')\r\n    \r\n    response_asg = asgclient.describe_auto_scaling_instances(\r\n        InstanceIds=[\r\n        instanceid\r\n        ]\r\n    )\r\n    \r\n    if not response_asg['AutoScalingInstances']:\r\n        response_terminateinstance = client.terminate_instances(\r\n            InstanceIds=[\r\n            instanceid\r\n            ]\r\n        )\r\n    else:\r\n         response_stopinstance = client.stop_instances(\r\n            InstanceIds=[\r\n            instanceid\r\n            ]\r\n        )\r\n        \r\n         response_instanceA = client.get_waiter('instance_stopped').wait(\r\n            InstanceIds=[instanceid]\r\n        )\r\n    \r\n         print('5. Detach original volume')\r\n    \r\n         response_detach_volume = client.detach_volume(\r\n            VolumeId=ebsvolumeId\r\n        )\r\n\r\n         response_snapshotC = client.get_waiter('volume_available').wait(\r\n            VolumeIds=[ebsvolumeId]\r\n        )\r\n    \r\n         print('6. Delete original volume')\r\n    \r\n         response = client.delete_volume(\r\n            VolumeId=ebsvolumeId\r\n        )\r\n    \r\n         response_volumeA = client.get_waiter('volume_deleted').wait(\r\n            VolumeIds=[ebsvolumeId]\r\n        )\r\n    \r\n    print('7. Delete original snapshot')\r\n    \r\n    response = client.delete_snapshot(\r\n        SnapshotId=snapshotid\r\n    )"
               InputPayload:
@@ -227,7 +227,7 @@ Resources:
           - name: EnableGuardDuty
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: script_handler
               Script: "def script_handler(events, context):\r\n  import boto3\r\n  client = boto3.client('guardduty')\r\n  findingpublishingfrequency= events['findingpublishingfrequency']\r\n\r\n  response = client.create_detector(\r\n      Enable=True,\r\n      FindingPublishingFrequency=findingpublishingfrequency\r\n  )\r\n"
               InputPayload:
@@ -255,7 +255,7 @@ Resources:
           - name: LatestRuntime
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: script_handler
               Script: "def script_handler(events, context):\r\n  import boto3\r\n  client = boto3.client('lambda')\r\n  functionname = events['functionname']\r\n    \r\n  response = client.get_function_configuration(\r\n      FunctionName=functionname\r\n  )\r\n  runtime = response['Runtime']\r\n    \r\n  if 'python' in runtime:\r\n      runtime = 'python3.10'\r\n  if 'node' in runtime:\r\n      runtime = 'nodejs12.x'\r\n  if 'java' in runtime:\r\n      runtime = 'java11'\r\n  if 'dotnet' in runtime:\r\n      runtime = 'dotnetcore3.1'\r\n  if 'ruby' in runtime:\r\n      runtime = 'ruby2.7'\r\n  if 'go' in runtime:\r\n      runtime = 'go1.x'\r\n        \r\n  response = client.update_function_configuration(\r\n      FunctionName=functionname,\r\n      Runtime=runtime\r\n  )\r\n  \r\n\r\n"
               InputPayload:
@@ -283,7 +283,7 @@ Resources:
           - name: RestrictLambda
             action: 'aws:executeScript'
             inputs:
-              Runtime: python3.10
+              Runtime: python3.8
               Handler: script_handler
               Script: "def script_handler(events, context):\r\n  import boto3\r\n  import json\r\n  \r\n  client = boto3.client('lambda')\r\n  functionname = events['functionname']\r\n  accountID = events['accountID']\r\n  response = client.get_policy(FunctionName=functionname)\r\n  policy = response['Policy']\r\n  policy_json = json.loads(policy)\r\n  statements = policy_json['Statement']\r\n  \r\n  for statement in statements:\r\n      Principal = str(statement['Principal']).replace(\"{'Service': '\",\"\")[:-2]\r\n      Action = statement['Action']\r\n      Resource = statement['Resource']\r\n      StatementId = statement ['Sid']\r\n      NewStatementId = \"New\" + StatementId\r\n        \r\n      response_old = client.remove_permission(\r\n                   FunctionName=functionname,\r\n                   StatementId=StatementId\r\n      )\r\n\r\n      response = client.add_permission(\r\n                  FunctionName=functionname,\r\n                  StatementId=NewStatementId,\r\n                  Action=Action,\r\n                  Principal=Principal,\r\n                  SourceAccount= accountID\r\n      )"
               InputPayload:
