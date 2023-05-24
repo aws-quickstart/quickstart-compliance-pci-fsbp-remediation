@@ -2145,7 +2145,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt IAMFullAdminPolicyDetachEnabledLambdaRole.Arn
-      Runtime: python3.6
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
