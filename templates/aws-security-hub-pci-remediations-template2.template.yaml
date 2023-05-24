@@ -55,7 +55,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt CreateSecurityHubCustomActionTargetLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -235,7 +235,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  S3RemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -351,7 +351,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  S3RemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -493,7 +493,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CloudTrailEncryptionEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -619,7 +619,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CMKBackingKeyRotationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -734,7 +734,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  RemoveUnusedEC2GroupsRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -850,7 +850,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt VPCDefaultGroupsRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -968,7 +968,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  RestrictEC2GroupsRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -1086,7 +1086,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  AutoScalingELBHealthCheckRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -1206,7 +1206,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CodeBuildEnvVariablesRuleRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -1327,7 +1327,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  ReleaseEIPRuleRemediationLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -1446,7 +1446,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CloudTrailCloudWatchLogsLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -1570,7 +1570,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CloudTrailEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -1687,7 +1687,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  CloudTrailLogFileValidationEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -1811,7 +1811,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  IAMPasswordPolicyEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -1917,7 +1917,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  DeactivateRootIAMAccessKeyEnabledLambdaRole.Arn
-      Runtime: python3.6
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -2029,7 +2029,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt IAMUserPolicyDetachEnabledLambdaRole.Arn
-      Runtime: python3.6
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -2258,7 +2258,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt S3BucketServerSideEncryptionEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -2372,7 +2372,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt S3ReplicationEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -2491,7 +2491,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt SSMBaselinePatchComplianceEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -2609,7 +2609,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RestrictPublicAccessLambdaEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -2724,7 +2724,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RestrictLambdaVPCLambdaEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -2853,7 +2853,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RDSNonPublicInstanceEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -2964,7 +2964,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RedshiftNonPublicClusterEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -3074,7 +3074,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt RDSPublicNonRestoreSnapshotEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
@@ -3186,7 +3186,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt  VPCFlowLogsEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Environment:
         Variables:
@@ -3312,7 +3312,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 256
       Role: !GetAtt EBSPublicNonRestoreSnapshotEnabledLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: python3.10
       Timeout: 60
       Code:
         ZipFile: |
