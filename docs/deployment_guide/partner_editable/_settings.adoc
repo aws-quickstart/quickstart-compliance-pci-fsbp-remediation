@@ -1,15 +1,15 @@
-:partner-solution-project-name: partner-solution-repo-name
+:partner-solution-project-name: quickstart-compliance-pci-fsbp-remediation
 :partner-solution-github-org: aws-quickstart
-:partner-product-name: Full Product Name
-:partner-product-short-name: Product Name
-:partner-company-name: Example Company Name, Ltd.
-:doc-month: January
-:doc-year: 2023
-:partner-contributors: John Smith, {partner-company-name}
+:partner-product-name: PCI DSS and AWS Foundational Security Best Practices
+:partner-product-short-name: PCI DSS and AWS FSBP
+// :partner-company-name: Example Company Name, Ltd.
+:doc-month: February
+:doc-year: 2021
+// :partner-contributors: John Smith, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
-:aws-contributors: Janine Singh, AWS IoT Partner team
-:aws-ia-contributors: Toni Jones, AWS Integration & Automation team
-:deployment_time: 15 minutes
+// :aws-contributors: Janine Singh, AWS IoT Partner team
+:aws-ia-contributors: Kanishk Mahajan and Andrew Glenn, AWS Integration & Automation team
+:deployment_time: 20 minutes
 :default_deployment_region: us-east-1
 // :private_repo:
 
