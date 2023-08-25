@@ -1,5 +1,0 @@
-https://aws.amazon.com/about-aws/global-infrastructure/[Regions]
-
-If you plan to deploy the architecture with three Availability Zones, choose an AWS Region that supports three zones.
-
-//Full list: https://docs.aws.amazon.com/general/latest/gr/rande.html

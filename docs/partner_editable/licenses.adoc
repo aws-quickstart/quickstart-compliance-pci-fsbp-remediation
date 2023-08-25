@@ -1,5 +1,0 @@
-// Include details about the license and how they can sign up. If no license is required, clarify that.
-
-No software licenses are necessary to use this Quick Start.
-
-You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using the Quick Start.

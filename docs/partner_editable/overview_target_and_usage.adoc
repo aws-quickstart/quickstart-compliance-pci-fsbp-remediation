@@ -1,4 +1,0 @@
-// Replace the content in <>
-// Identify your target audience and explain how/why they would use this Quick Start.
-//Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
-This reference deployment guide provides instructions for deploying Payment Card Industry Data Security Standard (PCI DSS) and AWS Foundational Security Best Practices (AWS FSBP) on the AWS Cloud using http://aws.amazon.com/cloudformation/[AWS CloudFormation] templates.
